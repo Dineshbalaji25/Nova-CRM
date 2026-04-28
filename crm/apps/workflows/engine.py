@@ -121,6 +121,80 @@ def action_create_task(context, config):
         logger.error(f"Error creating task: {str(e)}")
         return {"created": False, "error": str(e)}
 
+@ActionRegistry.register('email.send')
+def action_send_email(context, config):
+    """
+    Send an email via Django's send_mail (which uses settings.EMAIL_BACKEND).
+    config = {"to": "{{ contact.email }}", "subject": "Hello", "body": "Welcome to Nova CRM!"}
+    """
+    try:
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        raw_to = config.get('to', '')
+        to_email = resolve_variable(context, raw_to) if '{{' in raw_to else raw_to
+        
+        if not to_email:
+            return {"sent": False, "error": "No valid recipient email resolved."}
+            
+        subject = config.get('subject', 'Notification')
+        body = config.get('body', '')
+        
+        # basic interpolation for body
+        for key in context.keys():
+            if isinstance(context[key], dict):
+                for subkey, subval in context[key].items():
+                    placeholder = f"{{{{ {key}.{subkey} }}}}"
+                    if placeholder in body:
+                        body = body.replace(placeholder, str(subval))
+                        
+        send_mail(
+            subject=subject,
+            message=body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[to_email],
+            fail_silently=False,
+        )
+        return {"sent": True, "to": to_email}
+    except Exception as e:
+        logger.error(f"Error sending email: {str(e)}")
+        return {"sent": False, "error": str(e)}
+
+@ActionRegistry.register('crm.create_note')
+def action_create_note(context, config):
+    """
+    Create a note for a record.
+    config = {"body": "Automated note: {{ deal.title }} changed.", "model": "deal", "id": "{{ deal.id }}"}
+    """
+    try:
+        model_name = config.get('model')
+        raw_id = config.get('id', '')
+        record_id = resolve_variable(context, raw_id) if '{{' in raw_id else raw_id
+        
+        if not model_name or not record_id:
+            return {"created": False, "error": "Missing model or record id"}
+            
+        body = config.get('body', 'Automated note')
+        # basic interpolation
+        for key in context.keys():
+            if isinstance(context[key], dict):
+                for subkey, subval in context[key].items():
+                    placeholder = f"{{{{ {key}.{subkey} }}}}"
+                    if placeholder in body:
+                        body = body.replace(placeholder, str(subval))
+                        
+        Note = apps.get_model('crm', 'Note')
+        kwargs = {"body": body}
+        # Assuming the note model has FKs like deal_id, contact_id, etc.
+        fk_field = f"{model_name}_id"
+        kwargs[fk_field] = record_id
+        
+        note = Note.objects.create(**kwargs)
+        return {"created": True, "note_id": str(note.id)}
+    except Exception as e:
+        logger.error(f"Error creating note: {str(e)}")
+        return {"created": False, "error": str(e)}
+
 # -----------------------------------------------------------------------------
 # Condition Evaluator
 # -----------------------------------------------------------------------------
@@ -194,8 +268,29 @@ def run_node(execution_id, node_id):
             result = {"passed": passed}
             if not passed:
                 next_step_id = node.false_next_node_id
+
+        elif node.node_type == 'delay':
+            # E.g. {"minutes": 15}
+            delay_minutes = int(node.config.get('minutes', 0))
+            result = {"delayed_minutes": delay_minutes}
+            
+            log.status = 'success'
+            log.output_data = result
+            log.completed_at = timezone.now()
+            log.save()
+            
+            if next_step_id:
+                from .tasks import process_workflow_step
+                execution.current_node_id = next_step_id
+                execution.save()
+                # Apply delay using Celery's countdown
+                process_workflow_step.apply_async(
+                    args=[execution.id, next_step_id],
+                    countdown=delay_minutes * 60
+                )
+            return  # Stop executing synchronously
         
-        # Log Success
+        # Log Success for action/condition
         log.status = 'success'
         log.output_data = result
         log.completed_at = timezone.now()

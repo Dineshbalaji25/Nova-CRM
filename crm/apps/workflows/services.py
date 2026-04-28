@@ -96,59 +96,96 @@ class BlueprintService:
     @classmethod
     def execute_transition(cls, instance, model_name, transition_id, context_data):
         """
-        Executes a transition if valid.
-        context_data contains required_fields values.
+        Executes a blueprint transition.
+        1. Validates the record is in the correct from_state.
+        2. Validates all required_fields are present.
+        3. Updates required fields on the instance.
+        4. Updates the actual controlled_field on the instance using to_state.reference_value.
+        5. Fires post-transition actions.
+        6. Moves BlueprintRecordContext to new state.
         """
         try:
-            transition = BlueprintTransition.objects.get(id=transition_id)
+            transition = BlueprintTransition.objects.select_related(
+                'from_state', 'to_state', 'blueprint'
+            ).get(id=transition_id)
+            
             ctx = BlueprintRecordContext.objects.get(
                 blueprint=transition.blueprint,
                 record_model=model_name,
                 record_id=instance.id
             )
-            
+
             if ctx.current_state != transition.from_state:
-                return {"success": False, "error": "Invalid current state."}
-                
-            # Validate required fields
+                return {"success": False, "error": f"Record is in state '{ctx.current_state.name}', expected '{transition.from_state.name}'."}
+
+            # Validate and apply required fields
             for req in transition.required_fields:
-                field_name = req.get('name')
+                field_name = req.get('name') if isinstance(req, dict) else req
                 if field_name not in context_data:
                     return {"success": False, "error": f"Missing required field: {field_name}"}
-                    
-                # Update the instance
-                setattr(instance, field_name, context_data[field_name])
+                try:
+                    setattr(instance, field_name, context_data[field_name])
+                except AttributeError:
+                    return {"success": False, "error": f"Field '{field_name}' does not exist on {model_name}."}
+
+            # --- KEY FIX: Apply to_state.reference_value to the controlled_field ---
+            blueprint = transition.blueprint
+            controlled_field = blueprint.controlled_field
+            reference_value = transition.to_state.reference_value
+
+            if controlled_field and reference_value:
+                # Handle FK fields (e.g. 'stage_id' expects an integer/UUID)
+                # Try to cast reference_value to the appropriate type
+                field_obj = instance._meta.get_field(controlled_field.replace('_id', ''))
+                from django.db.models import ForeignKey
+                if isinstance(field_obj, ForeignKey) and not controlled_field.endswith('_id'):
+                    controlled_field = controlled_field + '_id'
                 
-            # Update instance reference_value if state maps to one
-            if transition.to_state.reference_value:
-                # E.g. 'stage_id'
-                # For MVP, we need to know WHICH field on instance maps to the state.
-                # Assuming the blueprint target_model handles this, or hardcode for now.
-                # We'll just update the BlueprintRecordContext
-                pass
-                
+                # Try numeric cast for FK IDs, else use string
+                try:
+                    casted_value = int(reference_value)
+                except (ValueError, TypeError):
+                    try:
+                        import uuid
+                        casted_value = uuid.UUID(reference_value)
+                    except (ValueError, AttributeError):
+                        casted_value = reference_value
+
+                setattr(instance, controlled_field, casted_value)
+
             instance.save()
-            
-            # Execute post-transition actions
+
+            # Fire post-transition actions
             action_context = {
                 model_name: {
-                    "id": str(instance.id)
+                    "id": str(instance.id),
+                    **context_data,
+                    "new_state": transition.to_state.name,
                 }
             }
-            action_context[model_name].update(context_data)
-            
             for action_config in transition.actions:
                 action_type = action_config.get("type")
                 handler = ActionRegistry.get_action(action_type)
                 if handler:
-                    handler(action_context, action_config)
-            
-            # Move to next state
+                    try:
+                        handler(action_context, action_config)
+                    except Exception as e:
+                        logger.error(f"Post-transition action '{action_type}' failed: {e}")
+
+            # Advance the state context
             ctx.current_state = transition.to_state
             ctx.save()
-            
-            return {"success": True, "new_state": ctx.current_state.name}
-            
+
+            return {
+                "success": True,
+                "new_state": ctx.current_state.name,
+                "new_state_id": str(ctx.current_state.id)
+            }
+
+        except BlueprintTransition.DoesNotExist:
+            return {"success": False, "error": "Transition not found."}
+        except BlueprintRecordContext.DoesNotExist:
+            return {"success": False, "error": "Record is not enrolled in this blueprint."}
         except Exception as e:
             logger.exception("Transition execution failed")
             return {"success": False, "error": str(e)}

@@ -49,10 +49,11 @@ function renderList() {
 
     listContainer.innerHTML = dashboards.map(d => `
         <div class="dash-item ${activeDashId === d.id ? 'active' : ''}" onclick="selectDashboard('${d.id}')">
-            <div style="width:32px; height:32px; border-radius:6px; background:var(--gray-100); display:flex; align-items:center; justify-content:center; color:var(--gray-500);">
-                <i data-lucide="layout-dashboard" size="16"></i>
+            <div class="dash-item-icon" style="width:36px; height:36px; border-radius:10px; background:var(--gray-50); display:flex; align-items:center; justify-content:center; color:var(--gray-400); transition: all 0.2s;">
+                <i data-lucide="layout-dashboard" size="18"></i>
             </div>
             <div class="font-bold text-sm text-truncate">${d.name}</div>
+            ${activeDashId === d.id ? '<i data-lucide="chevron-right" size="14" class="ms-auto"></i>' : ''}
         </div>
     `).join('');
     
@@ -122,47 +123,47 @@ async function refreshDashboard() {
 
 function renderWidgets(components) {
     if (components.length === 0) {
-        grid.innerHTML = '<div class="col-span-12 text-center text-muted p-5 bg-white border rounded">No widgets found. Add one.</div>';
+        grid.innerHTML = '<div class="col-span-12 text-center text-muted p-10 bg-white border rounded-xl">No widgets found. Add one to get started.</div>';
         return;
     }
 
     grid.innerHTML = '';
 
     components.forEach(c => {
-        // Fallback default width
-        const widthClass = `col-span-6`; // Simplified for Phase 1. 
+        const widthClass = `col-span-${c.grid_width || 6}`; 
 
         let bodyHtml = '';
 
         if (c.error) {
-            bodyHtml = `<div class="text-danger text-sm">${c.error}</div>`;
+            bodyHtml = `<div class="text-danger text-sm p-4 bg-red-50 rounded-lg border border-red-100">${c.error}</div>`;
         } else if (c.chart_type === 'metric') {
-            // Assume single row, pull first numerical value or count
             let val = 0;
             if (c.data && c.data.length > 0) {
                 const row = c.data[0];
                 const keys = Object.keys(row);
-                val = row[keys[keys.length - 1]]; // just guess last column
+                val = row[keys[keys.length - 1]];
             }
-            bodyHtml = `<div class="widget-metric">${val}</div>`;
+            bodyHtml = `<div class="widget-metric">${typeof val === 'number' ? val.toLocaleString() : val}</div>`;
         } else if (c.chart_type === 'table') {
             if (!c.data || c.data.length === 0) {
-                bodyHtml = '<div class="text-muted">No data</div>';
+                bodyHtml = '<div class="text-muted">No data available</div>';
             } else {
                 const keys = Object.keys(c.data[0]);
-                const rows = c.data.slice(0, 5).map(row => `<tr>${keys.map(k => `<td class="text-xs p-1 border-bottom">${row[k]}</td>`).join('')}</tr>`).join('');
-                bodyHtml = `<table class="w-100"><thead><tr>${keys.map(k => `<th class="text-xs p-1 border-bottom text-muted">${k}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>`;
+                const rows = c.data.slice(0, 8).map(row => `<tr>${keys.map(k => `<td class="text-xs p-2 border-bottom">${row[k]}</td>`).join('')}</tr>`).join('');
+                bodyHtml = `<table class="w-100"><thead><tr>${keys.map(k => `<th class="text-xs p-2 border-bottom text-muted uppercase font-bold tracking-tighter">${k}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>`;
             }
         } else {
-            // ChartJS container
-            bodyHtml = `<canvas id="chart-${c.id}"></canvas>`;
+            bodyHtml = `<div class="chart-container" style="position: relative; height:300px; width:100%"><canvas id="chart-${c.id}"></canvas></div>`;
         }
 
         const html = `
-            <div class="widget-card ${widthClass}">
+            <div class="widget-card ${widthClass} animate-slide-up">
                 <div class="widget-header">
-                    <h5 class="m-0 text-sm font-bold">${c.name}</h5>
-                    <button class="btn-icon text-danger" onclick="deleteWidget('${c.id}')"><i data-lucide="trash-2" size="14"></i></button>
+                    <h5 class="widget-title m-0">${c.name}</h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn-icon btn-sm" onclick="refreshDashboard()"><i data-lucide="rotate-cw" size="14"></i></button>
+                        <button class="btn-icon btn-sm text-danger" onclick="deleteWidget('${c.id}')"><i data-lucide="trash-2" size="14"></i></button>
+                    </div>
                 </div>
                 <div class="widget-body">
                     ${bodyHtml}

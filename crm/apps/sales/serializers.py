@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Product, PriceBook, PriceBookEntry, Quote, QuoteLineItem, SalesOrder, Invoice
 from apps.crm.serializers import CompanySerializer, ContactSerializer, DealSerializer
 from apps.users.serializers import UserSerializer
+from apps.users.fls import FieldLevelSecurityMixin
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,7 +31,7 @@ class QuoteLineItemSerializer(serializers.ModelSerializer):
         model = QuoteLineItem
         fields = '__all__'
 
-class QuoteSerializer(serializers.ModelSerializer):
+class QuoteSerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
     line_items = QuoteLineItemSerializer(many=True, read_only=True)
     company_details = CompanySerializer(source='company', read_only=True)
     deal_details = DealSerializer(source='deal', read_only=True)
@@ -40,7 +41,7 @@ class QuoteSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('tenant',)
 
-class SalesOrderSerializer(serializers.ModelSerializer):
+class SalesOrderSerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
     company_details = CompanySerializer(source='company', read_only=True)
     quote_details = QuoteSerializer(source='quote', read_only=True)
     
@@ -49,7 +50,7 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('tenant',)
 
-class InvoiceSerializer(serializers.ModelSerializer):
+class InvoiceSerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
     company_details = CompanySerializer(source='company', read_only=True)
     sales_order_details = SalesOrderSerializer(source='sales_order', read_only=True)
     

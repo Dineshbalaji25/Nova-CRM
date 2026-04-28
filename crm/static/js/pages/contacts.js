@@ -26,18 +26,29 @@ async function fetchContacts(url = '/crm/contacts/') {
 
         tbody.innerHTML = results.map(contact => `
             <tr>
-                <td><input type="checkbox"></td>
+                <td><input type="checkbox" class="form-check-input"></td>
                 <td>
-                    <div class="contact-info">
-                        <div class="contact-avatar" style="background:var(--primary-100); color:var(--primary-600);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 36px; height: 36px; background: var(--accent-glass); color: var(--accent-700); border: 1px solid var(--accent-500); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">
                             ${(contact.first_name[0] + (contact.last_name ? contact.last_name[0] : '')).toUpperCase()}
                         </div>
-                        <div class="font-bold">${contact.first_name} ${contact.last_name}</div>
+                        <div>
+                            <div class="font-bold text-gray-900">${contact.first_name} ${contact.last_name}</div>
+                            <div class="text-xs text-muted">ID: ${contact.id.substring(0, 8)}</div>
+                        </div>
                     </div>
                 </td>
-                <td class="text-muted text-sm">${contact.email || '-'}</td>
-                <td class="text-muted text-sm">${contact.phone || '-'}</td>
-                <td><span class="badge badge-success">Active</span></td>
+                <td class="text-sm text-gray-600">${contact.email || '-'}</td>
+                <td class="text-sm text-gray-600">${contact.phone || '-'}</td>
+                <td class="text-sm">
+                    <span class="font-medium text-gray-700">${contact.company_name || 'Individual'}</span>
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <i data-lucide="award" size="14" class="text-accent"></i>
+                        <span class="font-bold text-xs">85</span>
+                    </div>
+                </td>
                 <td><button class="btn-icon"><i data-lucide="more-horizontal" size="16"></i></button></td>
             </tr>
         `).join('');

@@ -15,25 +15,47 @@ async function fetchTasks() {
 }
 
 function renderTasks() {
-    const list = document.getElementById('tasksList');
-    if (!list) return;
+    const tbody = document.getElementById('tasksTableBody');
+    if (!tbody) return;
 
     if (allTasks.length === 0) {
-        list.innerHTML = '<div style="padding: 20px;" class="text-muted">No tasks found.</div>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;"><div class="text-muted">No tasks found.</div></td></tr>';
         return;
     }
 
-    list.innerHTML = allTasks.map(task => `
-        <div class="task-item" onclick="selectTask('${task.id}')" id="task-${task.id}">
-            <div class="task-checkbox ${task.is_completed ? 'checked' : ''}" onclick="toggleTask('${task.id}', event)"></div>
-            <div class="task-content">
-                <div class="font-bold text-sm ${task.is_completed ? 'text-muted' : ''}" style="${task.is_completed ? 'text-decoration: line-through;' : ''}">${task.subject}</div>
-                <div class="task-meta">
-                    <span>${task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date'}</span>
-                </div>
-            </div>
-        </div>
+    tbody.innerHTML = allTasks.map(task => `
+        <tr>
+            <td><input type="checkbox" class="form-check-input" ${task.is_completed ? 'checked' : ''} onclick="toggleTask('${task.id}', event)"></td>
+            <td>
+                <div class="font-bold text-gray-900 ${task.is_completed ? 'text-muted' : ''}" style="${task.is_completed ? 'text-decoration: line-through;' : ''}">${task.subject}</div>
+                <div class="text-xs text-muted truncate" style="max-width: 300px;">${task.body || 'No description'}</div>
+            </td>
+            <td>
+                <span class="badge ${task.is_completed ? 'badge-success' : 'badge-warning'}" style="background: ${task.is_completed ? 'var(--success-bg)' : 'var(--warning-bg)'}; color: ${task.is_completed ? 'var(--success)' : 'var(--warning)'};">
+                    ${task.is_completed ? 'Completed' : 'Pending'}
+                </span>
+            </td>
+            <td class="text-sm text-gray-600">${task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}</td>
+            <td>
+                <span class="text-xs font-bold px-2 py-1 rounded" style="background: ${getPriorityColor(task.priority)}; color: white;">
+                    ${task.priority || 'Normal'}
+                </span>
+            </td>
+            <td class="text-sm text-gray-600">${task.related_to_name || '-'}</td>
+            <td><button class="btn-icon"><i data-lucide="more-horizontal" size="16"></i></button></td>
+        </tr>
     `).join('');
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function getPriorityColor(p) {
+    switch (p) {
+        case 'High': return '#ef4444';
+        case 'Normal': return '#3b82f6';
+        case 'Low': return '#64748b';
+        default: return '#3b82f6';
+    }
 }
 
 function selectTask(id) {

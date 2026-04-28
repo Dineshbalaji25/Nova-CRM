@@ -274,3 +274,35 @@ class AppliedScoringRule(BaseModel):
         indexes = [
             models.Index(fields=['record_model', 'record_id']),
         ]
+
+
+
+# -----------------------------------------------------------------------------
+# AI & Analytics Support
+# -----------------------------------------------------------------------------
+
+class AINextAction(TenantAwareModel):
+    """
+    AI-generated suggestions for the next best action for a lead or deal.
+    """
+    TARGET_CHOICES = (
+        ('lead', 'Lead'),
+        ('deal', 'Deal'),
+    )
+    target_model = models.CharField(max_length=20, choices=TARGET_CHOICES)
+    target_id = models.UUIDField()
+    
+    suggestion = models.TextField()
+    reasoning = models.TextField(blank=True)
+    confidence_score = models.FloatField(default=0.0)
+    
+    status = models.CharField(max_length=20, choices=(('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected'), ('ignored', 'Ignored')), default='pending')
+    
+    generated_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['target_model', 'target_id']),
+        ]
+        ordering = ['-generated_at']

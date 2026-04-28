@@ -1,75 +1,73 @@
-# Nova CRM
+# Nova CRM — Next-Gen Multi-Tenant CRM
 
-A modern, multi-tenant enterprise CRM application built with Django and vanilla JavaScript. Nova CRM provides advanced functionality equivalent to leading platforms like Zoho CRM and Salesforce, designed for high performance and exceptional user experience.
+![Nova CRM Dashboard](crm/static/img/auth-bg.png)
 
-## ✨ Features
+Nova CRM is a premium, high-performance CRM platform designed for modern, high-growth teams. Built with **Django** and **Vanilla JavaScript**, it offers a seamless, vibrant user experience with "Royal Indigo" and "Vibrant Gold" aesthetics.
 
-Nova CRM includes a rich suite of enterprise features:
+## 🚀 Features
 
-- **Multi-Tenant Architecture**: Robust data isolation ensuring that each registered organization operates within its own secure workspace.
-- **Core Sales Pipeline**: Comprehensive management of Leads, Contacts, Companies, and Deals.
-- **Territory Management**: Build sales territories with hierarchical structures and automate record assignment dynamically via rules.
-- **Workflow Automation**: Visual node-based workflow builder for trigger-action automations.
-- **Blueprint State Machines**: Define strict processes (Blueprints) ensuring records follow mandatory stages.
-- **Lead Scoring Rules**: Dynamic point allocation engine to rank and prioritize leads.
-- **Omnichannel Communication**: 
-  - **Emails**: Native IMAP integration for syncing and viewing emails directly attached to CRM records.
-  - **Calls**: Telephony logs to track inbound and outbound calls.
-- **Advanced Analytics & Reporting**: Custom JSON-driven report builder and interactive Dashboards powered by Chart.js.
-- **Partner & Customer Portals**: Admin-configurable external portals with module-level access control.
-- **Modern UI/UX**: Premium, colorful design featuring custom CSS layouts, split-screen interfaces, and a stunning authentication flow.
+### Core CRM Modules
+- **Companies & Contacts**: Manage your business relationships with a clean, searchable interface.
+- **Deals Pipeline**: A drag-and-drop Kanban board for tracking your sales lifecycle.
+- **Tasks & Activities**: Organize your workflow with interactive task lists and activity feeds.
 
-## 🚀 Technology Stack
+### Advanced Analytics
+- **Dynamic Dashboards**: Create custom visualizations with multiple chart types (Bar, Pie, Line, Metric).
+- **Report Engine**: Powerful data aggregation for sales and customer insights.
 
-- **Backend**: Django, Django REST Framework
-- **Frontend**: Vanilla JavaScript (ES6+), HTML5, Custom CSS
-- **Authentication**: JWT (JSON Web Tokens)
-- **Icons**: Lucide Icons
-- **Charting**: Chart.js
+### AI-Powered Insights
+- **OpenRouter Integration**: Leverages state-of-the-art LLMs for smart suggestions and automated data entry.
+- **Sentiment Analysis**: Understand customer needs through omnichannel communication logs.
 
-## 📦 Installation & Setup
+### Enterprise Infrastructure
+- **Multi-Tenancy**: Secure organization-level data isolation.
+- **Omnichannel Support**: Integration points for email, calls, and webforms.
+- **Workflows & Blueprints**: Automate complex business processes with a flexible node-based engine.
 
-1. **Clone the repository:**
+## 🎨 Design System
+
+Nova CRM uses a custom-built design system defined in `global.css`, featuring:
+- **Royal Indigo Palette**: Professional and trustworthy base colors.
+- **Vibrant Gold (#EABF32)**: High-contrast accents for primary actions.
+- **Glassmorphism**: Translucent card effects and blur filters for depth.
+- **Smooth Animations**: 60fps transitions and entry effects.
+
+## 🛠️ Tech Stack
+
+- **Backend**: Django (Python)
+- **Frontend**: Vanilla JavaScript + Lucide Icons
+- **Database**: PostgreSQL / SQLite (Development)
+- **Styling**: Modern CSS3 (Variables, Grid, Flexbox)
+- **AI**: OpenRouter API
+
+## 🚦 Getting Started
+
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/Dineshbalaji25/Nova-CRM.git
-   cd Nova-CRM
    ```
 
-2. **Set up a virtual environment (Optional but recommended):**
-   ```bash
-   python -m venv env
-   source env/bin/activate  # On Windows use `env\Scripts\activate`
+2. **Set up Environment**:
+   Create a `.env` file with:
+   ```env
+   OPENROUTER_API_KEY=your_key
+   SECRET_KEY=your_django_secret
    ```
 
-3. **Install dependencies:**
+3. **Install Dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run migrations:**
+4. **Run Migrations**:
    ```bash
-   cd crm
    python manage.py migrate
    ```
 
-5. **Start the development server:**
+5. **Start Development Server**:
    ```bash
    python manage.py runserver
    ```
 
-6. **Access the Application:**
-   Open your browser and navigate to `http://127.0.0.1:8000`.
-
-## 🎨 UI/UX Highlights
-
-- The application entirely bypasses third-party UI frameworks (like Bootstrap or Tailwind) in favor of lightweight, custom Vanilla CSS.
-- Implements interactive side-drawers, modals, and split-screen editor views.
-- Dynamic color themes and rich abstract backgrounds.
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome. Feel free to check the issues page if you want to contribute.
-
-## 📄 License
-
-This project is open-source and available under the MIT License.
+---
+Built with ❤️ for high-performance teams.

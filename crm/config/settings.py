@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'apps.analytics',
     'apps.omnichannel',
     'apps.portals',
+    'encrypted_model_fields',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,47 @@ CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = env('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+from celery.schedules import crontab
+
+# Encryption
+FIELD_ENCRYPTION_KEY = env('FIELD_ENCRYPTION_KEY', default='')
+
+# AI Services  
+ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY', default='')
+OPENAI_API_KEY = env('OPENAI_API_KEY', default='')
+OPENROUTER_API_KEY = env('OPENROUTER_API_KEY', default='')
+AI_MODEL = env('AI_MODEL', default='openai/gpt-4o') # Default to OpenRouter model ID format
+
+# Cache (for FLS and RBAC caching)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': env('REDIS_URL', default='redis://localhost:6379/1'),
+    }
+}
+
+# Email (for workflow email.send action)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@novacrm.io')
+
+# Celery Beat Schedule
+CELERY_BEAT_SCHEDULE = {
+    'sync-emails': {
+        'task': 'apps.omnichannel.tasks.sync_all_email_integrations',
+        'schedule': crontab(minute='*/15'),
+    },
+    'evaluate-scheduled-workflows': {
+        'task': 'apps.workflows.tasks.evaluate_scheduled_workflows',
+        'schedule': crontab(minute=0),
+    },
+    'generate-ai-deal-suggestions': {
+        'task': 'apps.crm.tasks.generate_ai_suggestions_for_all_deals',
+        'schedule': crontab(hour=2, minute=0),
+    },
+}

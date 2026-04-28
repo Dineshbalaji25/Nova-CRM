@@ -12,6 +12,7 @@ from .serializers import (
     NoteSerializer, ActivitySerializer, TerritorySerializer, AssignmentRuleSerializer,
     ScoringRuleSerializer, AppliedScoringRuleSerializer
 )
+from apps.users.rbac import get_visible_user_ids
 
 class BaseTenantViewSet(viewsets.ModelViewSet):
     """
@@ -21,9 +22,13 @@ class BaseTenantViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 
     def get_queryset(self):
-        # The key security enforcement.
-        # Can only see objects belonging to request.tenant_id
-        return self.queryset.filter(tenant_id=self.request.tenant_id, is_deleted=False)
+        qs = self.queryset.filter(tenant_id=self.request.tenant_id, is_deleted=False)
+        model = self.queryset.model
+        if hasattr(model, 'owner'):
+            visible_ids = get_visible_user_ids(self.request.user, self.request.tenant_id)
+            if visible_ids is not None:
+                qs = qs.filter(owner_id__in=visible_ids)
+        return qs
 
     def perform_create(self, serializer):
         # Automatically inject tenant and owner
@@ -75,7 +80,7 @@ class CustomFieldDefinitionViewSet(BaseTenantViewSet):
 # -----------------------------------------------------------------------------
 
 class CompanyViewSet(BaseTenantViewSet):
-    queryset = Company.objects.all()
+    queryset = Company.objects.select_related('owner').prefetch_related('tags', 'territories', 'contacts', 'deals')
     serializer_class = CompanySerializer
     search_fields = ['name', 'domain']
     filterset_fields = ['owner']
@@ -86,7 +91,7 @@ import csv
 import io
 
 class ContactViewSet(BaseTenantViewSet):
-    queryset = Contact.objects.all()
+    queryset = Contact.objects.select_related('company', 'owner').prefetch_related('tags', 'territories')
     serializer_class = ContactSerializer
     search_fields = ['first_name', 'last_name', 'email']
     filterset_fields = ['company', 'owner']
@@ -121,13 +126,28 @@ class ContactViewSet(BaseTenantViewSet):
             return Response({'error': str(e)}, status=400)
 
 class LeadViewSet(BaseTenantViewSet):
-    queryset = Lead.objects.all()
+    queryset = Lead.objects.select_related('owner', 'converted_contact').prefetch_related('tags', 'territories')
     serializer_class = LeadSerializer
     search_fields = ['first_name', 'last_name', 'company_name']
     filterset_fields = ['status', 'owner']
 
+    @action(detail=True, methods=['post'])
+    def convert(self, request, pk=None):
+        lead = self.get_object()
+        create_deal = request.data.get('create_deal', False)
+        deal_data = request.data.get('deal_data', {})
+        
+        from .services import LeadConversionService
+        try:
+            result = LeadConversionService.convert(lead, create_deal=create_deal, deal_data=deal_data)
+            return Response(result)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=400)
+
 class DealViewSet(BaseTenantViewSet):
-    queryset = Deal.objects.all()
+    queryset = Deal.objects.select_related(
+        'pipeline', 'stage', 'company', 'primary_contact', 'owner'
+    ).prefetch_related('tags', 'territories')
     serializer_class = DealSerializer
     search_fields = ['title']
     filterset_fields = ['pipeline', 'stage', 'owner', 'company']
@@ -138,7 +158,7 @@ class NoteViewSet(BaseTenantViewSet):
     filterset_fields = ['contact', 'deal', 'company', 'lead']
 
 class ActivityViewSet(BaseTenantViewSet):
-    queryset = Activity.objects.all()
+    queryset = Activity.objects.select_related('contact', 'company', 'deal', 'completed_by')
     serializer_class = ActivitySerializer
     filterset_fields = ['contact', 'deal', 'company', 'activity_type']
 

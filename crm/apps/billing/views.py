@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from apps.crm.views import BaseTenantViewSet
-from .models import Subscription, Invoice, Plan, UsageRecord
-from .serializers import SubscriptionSerializer, InvoiceSerializer, PlanSerializer, UsageRecordSerializer
+from .models import Subscription, BillingInvoice, Plan, UsageRecord
+from .serializers import SubscriptionSerializer, BillingInvoiceSerializer, PlanSerializer, UsageRecordSerializer
 
 class PlanViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Plan.objects.filter(is_public=True)
@@ -17,6 +17,6 @@ class SubscriptionViewSet(BaseTenantViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
 
-class InvoiceViewSet(BaseTenantViewSet):
-    queryset = Invoice.objects.all()
-    serializer_class = InvoiceSerializer
+class BillingInvoiceViewSet(BaseTenantViewSet):
+    queryset = BillingInvoice.objects.all()
+    serializer_class = BillingInvoiceSerializer

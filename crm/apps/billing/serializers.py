@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Plan, Subscription, Invoice, UsageRecord
+from .models import Plan, Subscription, BillingInvoice, UsageRecord
 
 class PlanSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,9 +13,9 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = ('id', 'status', 'current_period_end', 'plan', 'plan_name', 'cancel_at_period_end')
 
-class InvoiceSerializer(serializers.ModelSerializer):
+class BillingInvoiceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Invoice
+        model = BillingInvoice
         fields = '__all__'
 
 class UsageRecordSerializer(serializers.ModelSerializer):

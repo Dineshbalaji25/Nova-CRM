@@ -5,8 +5,8 @@ from .models import Portal, PortalMember
 from .serializers import PortalSerializer, PortalMemberSerializer
 from .permissions import IsPortalUser, PortalFilterMixin
 from apps.crm.views import BaseTenantViewSet, DealViewSet
-from apps.billing.models import Invoice
-from apps.billing.serializers import InvoiceSerializer # Assuming this exists or will be created
+from apps.billing.models import BillingInvoice
+from apps.billing.serializers import BillingInvoiceSerializer
 
 class PortalViewSet(BaseTenantViewSet):
     queryset = Portal.objects.all()
@@ -51,9 +51,7 @@ class PortalDealViewSet(PortalFilterMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Deal.objects.all()
     serializer_class = DealSerializer
 
-class PortalInvoiceViewSet(PortalFilterMixin, viewsets.ReadOnlyModelViewSet):
+class PortalBillingInvoiceViewSet(PortalFilterMixin, viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsPortalUser]
-    queryset = Invoice.objects.all()
-    # Need to verify if InvoiceSerializer exists
-    from apps.billing.serializers import InvoiceSerializer
-    serializer_class = InvoiceSerializer
+    queryset = BillingInvoice.objects.all()
+    serializer_class = BillingInvoiceSerializer

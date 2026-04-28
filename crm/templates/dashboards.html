@@ -7,9 +7,9 @@
 <style>
     .dash-container {
         display: flex;
-        height: calc(100vh - 60px);
-        overflow: hidden;
-        background: #f8fafc;
+        height: calc(100vh - 80px);
+        background: var(--gray-50);
+        margin: -24px; /* Compensate for content area padding */
     }
 
     .dash-sidebar {
@@ -18,39 +18,45 @@
         border-right: 1px solid var(--gray-200);
         display: flex;
         flex-direction: column;
+        z-index: 10;
     }
 
     .dash-sidebar-header {
-        padding: 20px;
-        border-bottom: 1px solid var(--gray-200);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        padding: 24px;
+        border-bottom: 1px solid var(--gray-100);
+        background: white;
     }
 
     .dash-list {
         flex: 1;
         overflow-y: auto;
-        padding: 12px;
+        padding: 16px;
     }
 
     .dash-item {
         padding: 12px 16px;
-        border-radius: 8px;
+        border-radius: 12px;
         cursor: pointer;
         transition: all 0.2s;
-        border: 1px solid transparent;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
         gap: 12px;
+        border: 1px solid transparent;
+        color: var(--gray-600);
     }
 
-    .dash-item:hover { background: var(--gray-50); }
+    .dash-item:hover {
+        background: var(--gray-50);
+        color: var(--gray-900);
+    }
+
     .dash-item.active {
-        background: var(--primary-50);
-        border-color: var(--primary-200);
-        color: var(--primary-700);
+        background: var(--accent-glass);
+        border-color: var(--accent-500);
+        color: var(--accent-700);
+        font-weight: 700;
+        box-shadow: var(--shadow-sm);
     }
 
     .dash-main {
@@ -58,66 +64,79 @@
         display: flex;
         flex-direction: column;
         position: relative;
+        background: var(--gray-100);
     }
 
     .dash-header {
-        height: 64px;
+        height: 72px;
         background: white;
         border-bottom: 1px solid var(--gray-200);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 24px;
-        z-index: 10;
+        padding: 0 32px;
+        z-index: 5;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
 
     .dash-content {
         flex: 1;
         overflow-y: auto;
-        padding: 24px;
-        background: #f1f5f9;
+        padding: 32px;
     }
 
     /* Grid Layout */
     .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(12, 1fr);
-        gap: 20px;
-        grid-auto-rows: minmax(100px, auto);
+        gap: 24px;
     }
 
     .widget-card {
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        box-shadow: var(--shadow-md);
         display: flex;
         flex-direction: column;
         overflow: hidden;
         border: 1px solid var(--gray-200);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .widget-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
     }
 
     .widget-header {
-        padding: 16px 20px;
+        padding: 18px 24px;
         border-bottom: 1px solid var(--gray-100);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        background: #fafafa;
+    }
+
+    .widget-title {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--gray-900);
     }
 
     .widget-body {
-        padding: 20px;
+        padding: 24px;
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 250px;
-        position: relative;
+        min-height: 300px;
     }
     
     .widget-metric {
-        font-size: 48px;
+        font-size: 3.5rem;
         font-weight: 900;
-        color: var(--primary-600);
+        color: var(--accent-600);
+        letter-spacing: -0.05em;
     }
 
     /* Responsive Spans */

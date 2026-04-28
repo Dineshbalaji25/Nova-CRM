@@ -58,6 +58,7 @@ class WebForm(TenantAwareModel):
         ('contact', 'Contact'),
     )
     name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
     target_model = models.CharField(max_length=20, choices=TARGET_CHOICES, default='lead')
     return_url = models.URLField(blank=True, help_text="Redirect URL after submission")
     

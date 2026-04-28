@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from apps.users.fls import FieldLevelSecurityMixin
 from .models import (
     Pipeline, Stage, Tag, CustomFieldDefinition,
     Company, Contact, Lead, Deal, Note, Activity,
@@ -42,7 +43,7 @@ class CustomFieldDefinitionSerializer(serializers.ModelSerializer):
 # Helper Mixin for Custom Data validation could go here
 # For now, we allow generic dicts
 
-class ContactSerializer(serializers.ModelSerializer):
+class ContactSerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.full_name', read_only=True)
     company_name = serializers.CharField(source='company.name', read_only=True)
 
@@ -51,7 +52,7 @@ class ContactSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('tenant', 'created_at', 'updated_at')
 
-class CompanySerializer(serializers.ModelSerializer):
+class CompanySerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.full_name', read_only=True)
 
     class Meta:
@@ -59,13 +60,13 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('tenant', 'created_at', 'updated_at')
 
-class LeadSerializer(serializers.ModelSerializer):
+class LeadSerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
     class Meta:
         model = Lead
         fields = '__all__'
         read_only_fields = ('tenant', 'created_at', 'updated_at')
 
-class DealSerializer(serializers.ModelSerializer):
+class DealSerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.name', read_only=True)
     stage_name = serializers.CharField(source='stage.name', read_only=True)
 

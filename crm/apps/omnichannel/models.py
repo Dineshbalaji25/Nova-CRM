@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from apps.core.models import TenantAwareModel, BaseModel
 from apps.crm.models import Lead, Contact, Deal
+from encrypted_model_fields.fields import EncryptedCharField
 
 # -----------------------------------------------------------------------------
 # Telephony Integration (Twilio / Plivo)
@@ -46,6 +47,42 @@ class CallLog(TenantAwareModel):
     
     notes = models.TextField(blank=True)
 
+    # NEW: Transcription
+    transcript = models.TextField(blank=True)
+    transcript_status = models.CharField(
+        max_length=20,
+        choices=(
+            ('pending', 'Pending'),
+            ('processing', 'Processing'),
+            ('done', 'Done'),
+            ('failed', 'Failed'),
+        ),
+        default='pending'
+    )
+    
+    # NEW: Sentiment Analysis
+    sentiment = models.CharField(
+        max_length=20,
+        choices=(
+            ('positive', 'Positive'),
+            ('neutral', 'Neutral'),
+            ('negative', 'Negative'),
+        ),
+        blank=True
+    )
+    sentiment_score = models.FloatField(null=True, blank=True)  # -1.0 to 1.0
+    
+    # NEW: Key topics/keywords extracted
+    key_topics = models.JSONField(default=list, blank=True)  # e.g. ["pricing", "timeline", "objection"]
+    
+    # NEW: Action items extracted from call
+    action_items = models.JSONField(default=list, blank=True)  # e.g. ["Send proposal by Friday", "Schedule demo"]
+    
+    # NEW: AI summary
+    call_summary = models.TextField(blank=True)
+    
+    transcribed_at = models.DateTimeField(null=True, blank=True)
+
 
 # -----------------------------------------------------------------------------
 # Email IMAP/SMTP Integration
@@ -63,8 +100,7 @@ class EmailIntegration(TenantAwareModel):
     smtp_server = models.CharField(max_length=255)
     smtp_port = models.IntegerField(default=587)
     
-    # Needs to be encrypted in a real production system
-    password = models.CharField(max_length=255) 
+    password = EncryptedCharField(max_length=255) 
     
     is_active = models.BooleanField(default=True)
     last_sync_at = models.DateTimeField(null=True, blank=True)

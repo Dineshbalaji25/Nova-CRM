@@ -113,6 +113,14 @@ class Blueprint(TenantAwareModel):
     # e.g., 'crm.Deal', 'sales.Quote'
     target_model = models.CharField(max_length=100)
     
+    # NEW: Which field on the target model does this blueprint control?
+    # e.g. 'stage_id' for Deal blueprints, 'status' for Lead blueprints
+    controlled_field = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Field name on the target model that transitions update. E.g. 'stage_id' or 'status'"
+    )
+    
     # When criteria is met, a record enters the blueprint
     # e.g. {"pipeline_id": 1}
     entry_criteria = models.JSONField(default=dict, blank=True)

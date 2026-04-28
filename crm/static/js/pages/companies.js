@@ -17,10 +17,10 @@ async function fetchCompanies() {
 
         tbody.innerHTML = results.map(company => `
             <tr>
-                <td><input type="checkbox"></td>
+                <td><input type="checkbox" class="form-check-input"></td>
                 <td>
                     <div class="company-name-group">
-                        <div class="company-logo-initials">${company.name.substring(0, 2).toUpperCase()}</div>
+                        <div class="company-logo-initials" style="background: var(--accent-glass); color: var(--accent-700); font-weight: 800; border: 1px solid var(--accent-500);">${company.name.substring(0, 2).toUpperCase()}</div>
                         <div class="font-bold">${company.name}</div>
                     </div>
                 </td>
@@ -28,13 +28,13 @@ async function fetchCompanies() {
                 <td class="revenue-text">${company.annual_revenue ? '$' + parseFloat(company.annual_revenue).toLocaleString() : '-'}</td>
                 <td>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 24px; height: 24px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center;">
-                            ${(company.owner_name || 'U').substring(0, 2).toUpperCase()}
+                        <div style="width: 28px; height: 28px; background: var(--primary-100); color: var(--primary-600); border-radius: 8px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;">
+                            ${(company.owner_name || 'U').substring(0, 1).toUpperCase()}
                         </div>
-                        <span class="text-sm">${company.owner_name || 'Unknown'}</span>
+                        <span class="text-sm font-medium">${company.owner_name || 'Unknown'}</span>
                     </div>
                 </td>
-                <td><span class="badge ${company.is_active ? 'badge-success' : 'badge-warning'}">${company.status || 'Active'}</span></td>
+                <td><span class="badge ${company.is_active ? 'badge-success' : 'badge-warning'}" style="background: ${company.is_active ? 'var(--success-bg)' : 'var(--warning-bg)'}; color: ${company.is_active ? 'var(--success)' : 'var(--warning)'}; border: 1px solid currentColor; font-weight: 700;">${company.status || 'Active'}</span></td>
                 <td><button class="btn-icon"><i data-lucide="more-horizontal" size="16"></i></button></td>
             </tr>
         `).join('');

@@ -3,7 +3,7 @@
  */
 
 async function initDashboard() {
-    console.log("Initializing Dashboard...");
+    console.log("Initializing Enhanced Dashboard...");
     try {
         // Fetch Deals for KPIs
         const dealsResponse = await api.get('/crm/deals/');
@@ -11,13 +11,23 @@ async function initDashboard() {
 
         // Calculate KPIs
         const totalRevenue = deals.reduce((sum, d) => sum + parseFloat(d.amount), 0);
-        const activeDeals = deals.length;
+        const activeDeals = deals.filter(d => d.status !== 'closed').length;
 
         // Update UI
-        document.querySelector('.kpi-grid .card:nth-child(1) .text-2xl').innerText = `$${totalRevenue.toLocaleString()}`;
-        document.querySelector('.kpi-grid .card:nth-child(2) .text-2xl').innerText = activeDeals;
+        const revEl = document.getElementById('kpi-revenue');
+        if (revEl) revEl.innerText = `$${totalRevenue.toLocaleString()}`;
+        
+        const dealsEl = document.getElementById('kpi-deals');
+        if (dealsEl) dealsEl.innerText = activeDeals;
 
-        // Fetch Recent Activity (Notes or Activities)
+        // Fetch User Info for Welcome
+        const profile = await api.get('/users/profile/');
+        if (profile) {
+            const welcomeEl = document.getElementById('welcome-name');
+            if (welcomeEl) welcomeEl.innerText = profile.first_name || 'Explorer';
+        }
+
+        // Fetch Recent Activity
         const activitiesResponse = await api.get('/crm/activities/');
         const activities = activitiesResponse.results || [];
         renderActivities(activities);
@@ -28,20 +38,22 @@ async function initDashboard() {
 }
 
 function renderActivities(activities) {
-    const container = document.querySelector('.card h3').parentElement.nextElementSibling;
+    const container = document.getElementById('activity-list');
+    if (!container) return;
+
     if (activities.length === 0) {
-        container.innerHTML = '<div class="text-muted text-sm">No recent activity</div>';
+        container.innerHTML = '<div class="text-muted text-sm p-4 text-center">No recent activity to display.</div>';
         return;
     }
 
-    container.innerHTML = activities.slice(0, 5).map(act => `
-        <div style="display: flex; gap: 16px;">
-            <div style="width: 32px; height: 32px; background: var(--primary-100); color: var(--primary-600); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <i data-lucide="${getActivityIcon(act.activity_type)}" size="16"></i>
+    container.innerHTML = activities.slice(0, 6).map(act => `
+        <div class="activity-item d-flex gap-3 p-3 rounded-md hover-bg" style="transition: background 0.2s; border-radius: 12px;">
+            <div class="activity-icon" style="width: 40px; height: 40px; background: var(--gray-100); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i data-lucide="${getActivityIcon(act.activity_type)}" size="18" style="color: var(--primary-600);"></i>
             </div>
-            <div>
-                <div><strong>${act.subject}</strong></div>
-                <div class="text-xs text-muted" style="margin-top: 4px;">${new Date(act.occurred_at).toLocaleString()}</div>
+            <div class="overflow-hidden">
+                <div class="font-bold text-sm truncate">${act.subject}</div>
+                <div class="text-xs text-muted mt-1">${new Date(act.occurred_at).toLocaleDateString()} • ${act.activity_type}</div>
             </div>
         </div>
     `).join('');

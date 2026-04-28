@@ -78,9 +78,9 @@ class UsageRecord(TenantAwareModel):
     class Meta:
         unique_together = ('tenant', 'metric', 'period_start')
 
-class Invoice(TenantAwareModel):
+class BillingInvoice(TenantAwareModel):
     """
-    Payment history.
+    Payment history for the subscription.
     """
     gateway_invoice_id = models.CharField(max_length=100, unique=True)
     amount_paid_cents = models.PositiveIntegerField()

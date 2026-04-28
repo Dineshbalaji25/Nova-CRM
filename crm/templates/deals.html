@@ -8,54 +8,63 @@
 {% endblock %}
 
 {% block content %}
-<header
-    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 0 32px;">
-    <div>
-        <h2 class="text-lg font-bold">Deals Pipeline</h2>
-    </div>
-    <div class="flex-column" style="flex-direction: row; gap: 8px;">
-        <button class="btn btn-primary" onclick="openAddDealModal()"><i data-lucide="plus" size="16"></i> New
-            Deal</button>
-    </div>
-</header>
+<div class="animate-slide-up">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="text-2xl font-bold mb-1">Sales Pipeline</h1>
+            <p class="text-sm text-muted">Track and manage your deals through custom stages.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-secondary"><i data-lucide="settings" size="16"></i> Pipeline Settings</button>
+            <button class="btn btn-accent" onclick="openAddDealModal()">
+                <i data-lucide="plus" size="16"></i> New Deal
+            </button>
+        </div>
+    </header>
 
-<div class="kanban-container">
-    <div class="kanban-board" id="kanbanBoard">
-        <!-- Columns will be injected here -->
-        <div style="padding: 40px; text-align: center; width: 100%;">
-            <div class="text-muted">Loading pipeline...</div>
+    <div class="kanban-container">
+        <div class="kanban-board" id="kanbanBoard">
+            <!-- Columns will be injected here -->
+            <div style="padding: 100px; text-align: center; width: 100%;">
+                <div class="spinner-border text-accent mb-3"></div>
+                <div class="text-muted">Orchestrating your pipeline...</div>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- ADD DEAL MODAL -->
-<div id="addDealModal" class="modal"
-    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-    <div class="card" style="width: 450px; padding: 24px;">
-        <h3 style="margin-bottom: 20px;">Add New Deal</h3>
-        <form id="addDealForm">
-            <div class="form-group">
+<div id="addDealModal" class="cmd-overlay" style="display: none; align-items: center; padding-top: 0;">
+    <div class="cmd-modal" style="width: 450px;">
+        <div class="cmd-header">
+            <h3 class="text-lg">Create New Deal</h3>
+            <button class="btn-icon ms-auto" onclick="closeAddDealModal()"><i data-lucide="x" size="18"></i></button>
+        </div>
+        <form id="addDealForm" style="padding: 24px;">
+            <div class="mb-3">
                 <label class="form-label">Deal Title</label>
                 <input type="text" name="title" class="form-input" placeholder="e.g. Enterprise Expansion" required>
             </div>
-            <div class="form-group">
-                <label class="form-label">Amount</label>
-                <input type="number" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stage</label>
+                    <select id="stageSelect" name="stage" class="form-input" required>
+                        <!-- Stages will be loaded here -->
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Pipeline & Stage</label>
-                <select id="stageSelect" name="stage" class="form-input" required>
-                    <!-- Stages will be loaded here -->
-                </select>
-                <input type="hidden" id="pipelineId" name="pipeline">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Company (ID)</label>
+            <div class="mb-4">
+                <label class="form-label">Associated Company</label>
                 <select id="companySelect" name="company" class="form-input">
                     <option value="">None</option>
                 </select>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+            <input type="hidden" id="pipelineId" name="pipeline">
+            <div class="d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary" onclick="closeAddDealModal()">Cancel</button>
                 <button type="submit" class="btn btn-primary">Create Deal</button>
             </div>

@@ -72,3 +72,32 @@ class DashboardComponent(BaseModel):
 
     def __str__(self):
         return f"{self.dashboard.name} - {self.name}"
+
+# -----------------------------------------------------------------------------
+# AI Forecasting
+# -----------------------------------------------------------------------------
+
+class SalesForecast(TenantAwareModel):
+    """
+    Quarterly/Monthly revenue projections.
+    """
+    PERIOD_CHOICES = (
+        ('monthly', 'Monthly'),
+        ('quarterly', 'Quarterly'),
+    )
+    name = models.CharField(max_length=100)
+    period_type = models.CharField(max_length=20, choices=PERIOD_CHOICES)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    
+    # Values
+    target_amount = models.DecimalField(max_digits=14, decimal_places=2)
+    projected_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    actual_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    
+    # Metadata
+    is_ai_generated = models.BooleanField(default=True)
+    confidence_interval = models.JSONField(null=True, blank=True) # e.g. {"low": 8000, "high": 12000}
+    
+    class Meta:
+        ordering = ['-start_date']

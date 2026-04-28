@@ -62,12 +62,17 @@ function renderBoard(stages, deals) {
             <div class="stage-indicator" style="background: ${getStageColor(stage.position)}"></div>
             <div class="kanban-cards" id="stage-${stage.id}" data-stage-id="${stage.id}">
                 ${stageDeals.map(deal => `
-                    <div class="kanban-card" id="deal-${deal.id}" draggable="true" ondragstart="handleDragStart(event)" data-deal-id="${deal.id}">
-                        <div class="text-sm font-bold text-muted" style="margin-bottom: 4px;">${deal.company_name || 'Individual'}</div>
-                        <div class="font-bold text-dark" style="font-size: 14px; margin-bottom: 8px;">${deal.title}</div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="deal-value">$${parseFloat(deal.amount).toLocaleString()}</span>
-                            <div class="text-xs text-muted">Owner: You</div>
+                    <div class="kanban-card glass-card hover-lift" id="deal-${deal.id}" draggable="true" ondragstart="handleDragStart(event)" data-deal-id="${deal.id}" style="padding: 16px; margin-bottom: 12px; border-left: 4px solid var(--accent-500);">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="text-xs font-bold text-muted uppercase tracking-wider">${deal.company_name || 'Individual'}</span>
+                            <i data-lucide="external-link" size="12" class="text-muted cursor-pointer"></i>
+                        </div>
+                        <div class="font-bold text-gray-900 mb-3" style="font-size: 0.9375rem; line-height: 1.4;">${deal.title}</div>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div class="text-accent font-bold" style="font-size: 0.875rem;">$${parseFloat(deal.amount).toLocaleString()}</div>
+                            <div class="d-flex -space-x-2">
+                                <div style="width: 24px; height: 24px; background: var(--primary-100); color: var(--primary-600); border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800;">YO</div>
+                            </div>
                         </div>
                     </div>
                 `).join('')}

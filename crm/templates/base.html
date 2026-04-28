@@ -31,116 +31,63 @@
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <img src="{% static 'img/logo.png' %}" alt="Nova CRM Logo"
-                    style="width: 24px; height: 24px; margin-right: 10px; border-radius: 4px;">
-                Nova CRM
+                <i data-lucide="zap" class="text-accent me-2"></i>
+                NOVA CRM
             </div>
-            <nav style="flex: 1; padding-top: 20px;">
-                <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}"
-                    id="nav-dashboard">
+            <nav>
+                <div class="nav-category">Main Menu</div>
+                <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" id="nav-dashboard">
                     <i data-lucide="layout-dashboard" size="18"></i> <span class="nav-text">Dashboard</span>
                 </a>
-                <a href="/companies" class="nav-item {% if request.path == '/companies' %}active{% endif %}"
-                    id="nav-companies">
+                <a href="/companies" class="nav-item {% if request.path == '/companies' %}active{% endif %}" id="nav-companies">
                     <i data-lucide="building" size="18"></i> <span class="nav-text">Companies</span>
                 </a>
-                <a href="/contacts" class="nav-item {% if request.path == '/contacts' %}active{% endif %}"
-                    id="nav-contacts">
+                <a href="/contacts" class="nav-item {% if request.path == '/contacts' %}active{% endif %}" id="nav-contacts">
                     <i data-lucide="users" size="18"></i> <span class="nav-text">Contacts</span>
                 </a>
                 <a href="/deals" class="nav-item {% if request.path == '/deals' %}active{% endif %}" id="nav-deals">
                     <i data-lucide="bar-chart-2" size="18"></i> <span class="nav-text">Deals</span>
                 </a>
-                <a href="/tasks" class="nav-item {% if request.path == '/tasks' %}active{% endif %}" id="nav-tasks">
-                    <i data-lucide="check-square" size="18"></i> <span class="nav-text">Tasks</span>
+                
+                <div class="nav-category">Sales & CPQ</div>
+                <a href="/products" class="nav-item {% if request.path == '/products' %}active{% endif %}" id="nav-products">
+                    <i data-lucide="package" size="18"></i> <span class="nav-text">Products</span>
                 </a>
-                <!-- MULTI-MODULE CATEGORIES -->
-                <div class="nav-category"
-                    style="padding: 10px 24px 5px; color: var(--gray-600); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                    Sales & CPQ</div>
-                <a href="/products" class="nav-item {% if request.path == '/products' %}active{% endif %}"
-                    id="nav-products"><i data-lucide="package" size="18"></i> <span class="nav-text">Products</span></a>
-                <a href="/quotes" class="nav-item {% if request.path == '/quotes' %}active{% endif %}"
-                    id="nav-quotes"><i data-lucide="file-text" size="18"></i> <span class="nav-text">Quotes</span></a>
-                <a href="/sales-orders" class="nav-item {% if request.path == '/sales-orders' %}active{% endif %}"
-                    id="nav-sales-orders"><i data-lucide="shopping-cart" size="18"></i> <span class="nav-text">Sales
-                        Orders</span></a>
-                <a href="/invoices" class="nav-item {% if request.path == '/invoices' %}active{% endif %}"
-                    id="nav-invoices"><i data-lucide="receipt" size="18"></i> <span class="nav-text">Invoices</span></a>
+                <a href="/quotes" class="nav-item {% if request.path == '/quotes' %}active{% endif %}" id="nav-quotes">
+                    <i data-lucide="file-text" size="18"></i> <span class="nav-text">Quotes</span>
+                </a>
+                <a href="/sales-orders" class="nav-item {% if request.path == '/sales-orders' %}active{% endif %}" id="nav-sales-orders">
+                    <i data-lucide="shopping-cart" size="18"></i> <span class="nav-text">Orders</span>
+                </a>
 
-                <div class="nav-category"
-                    style="padding: 10px 24px 5px; color: var(--gray-600); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                    Marketing</div>
-                <a href="/campaigns" class="nav-item {% if request.path == '/campaigns' %}active{% endif %}"
-                    id="nav-campaigns"><i data-lucide="target" size="18"></i> <span
-                        class="nav-text">Campaigns</span></a>
-                <a href="/webforms" class="nav-item {% if request.path == '/webforms' %}active{% endif %}"
-                    id="nav-webforms"><i data-lucide="layout-template" size="18"></i> <span
-                        class="nav-text">Webforms</span></a>
+                <div class="nav-category">Omnichannel</div>
+                <a href="/calls" class="nav-item {% if request.path == '/calls' %}active{% endif %}" id="nav-calls">
+                    <i data-lucide="phone" size="18"></i> <span class="nav-text">Calls</span>
+                </a>
+                <a href="/emails" class="nav-item {% if request.path == '/emails' %}active{% endif %}" id="nav-emails">
+                    <i data-lucide="mail" size="18"></i> <span class="nav-text">Emails</span>
+                </a>
 
-                <div class="nav-category"
-                    style="padding: 10px 24px 5px; color: var(--gray-600); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                    Omnichannel</div>
-                <a href="/calls" class="nav-item {% if request.path == '/calls' %}active{% endif %}" id="nav-calls"><i
-                        data-lucide="phone" size="18"></i> <span class="nav-text"></span>Calls</span></a>
-                <a href="/emails" class="nav-item {% if request.path == '/emails' %}active{% endif %}"
-                    id="nav-emails"><i data-lucide="mail" size="18"></i> <span class="nav-text">Emails</span></a>
-
-                <div class="nav-category"
-                    style="padding: 10px 24px 5px; color: var(--gray-600); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                    Analytics & BI</div>
-                <a href="/dashboards" class="nav-item {% if request.path == '/dashboards' %}active{% endif %}"
-                    id="nav-dashboards"><i data-lucide="pie-chart" size="18"></i> <span
-                        class="nav-text">Dashboards</span></a>
-                <a href="/reports" class="nav-item {% if request.path == '/reports' %}active{% endif %}"
-                    id="nav-reports"><i data-lucide="table" size="18"></i> <span class="nav-text">Reports</span></a>
-                <div class="nav-category"
-                    style="padding: 10px 24px 5px; color: var(--gray-600); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                    Automation & Setup</div>
-                <a href="/blueprints" class="nav-item {% if request.path == '/blueprints' %}active{% endif %}"
-                    id="nav-blueprints"><i data-lucide="workflow" size="18"></i> <span
-                        class="nav-text">Blueprints</span></a>
-                <a href="/workflows" class="nav-item {% if request.path == '/workflows' %}active{% endif %}"
-                    id="nav-workflows"><i data-lucide="git-branch" size="18"></i> <span
-                        class="nav-text">Automations</span></a>
-                <a href="/scoring-rules" class="nav-item {% if request.path == '/scoring-rules' %}active{% endif %}"
-                    id="nav-scoring-rules"><i data-lucide="crosshair" size="18"></i> <span
-                        class="nav-text">Scoring Rules</span></a>
-                <a href="/portals" class="nav-item {% if request.path == '/portals' %}active{% endif %}"
-                    id="nav-portals"><i data-lucide="monitor" size="18"></i> <span
-                        class="nav-text">Portals</span></a>
-                <a href="/territories" class="nav-item {% if request.path == '/territories' %}active{% endif %}"
-                    id="nav-territories"><i data-lucide="map" size="18"></i> <span
-                        class="nav-text">Territories</span></a>
-                <a href="/roles" class="nav-item {% if request.path == '/roles' %}active{% endif %}" id="nav-roles"><i
-                        data-lucide="shield-alert" size="18"></i> <span class="nav-text">Roles</span></a>
-                <a href="/profiles" class="nav-item {% if request.path == '/profiles' %}active{% endif %}"
-                    id="nav-profiles"><i data-lucide="user-check" size="18"></i> <span
-                        class="nav-text">Profiles</span></a>
-
-                <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}"
-                    id="nav-settings"><i data-lucide="settings" size="18"></i> <span
-                        class="nav-text">Settings</span></a>
-                <a href="/billing" class="nav-item {% if request.path == '/billing' %}active{% endif %}"
-                    id="nav-billing"><i data-lucide="credit-card" size="18"></i> <span
-                        class="nav-text">Billing</span></a>
-                <a href="/audit" class="nav-item {% if request.path == '/audit' %}active{% endif %}" id="nav-audit"><i
-                        data-lucide="shield" size="18"></i> <span class="nav-text">Audit Logs</span></a>
-                <a href="/team" class="nav-item {% if request.path == '/team' %}active{% endif %}" id="nav-team"><i
-                        data-lucide="users" size="18"></i> <span class="nav-text">Team</span></a>
-                <a href="/login" class="nav-item" id="nav-logout"><i data-lucide="log-out" size="18"></i> <span
-                        class="nav-text">Logout</span></a>
+                <div class="nav-category">System</div>
+                <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" id="nav-settings">
+                    <i data-lucide="settings" size="18"></i> <span class="nav-text">Settings</span>
+                </a>
+                <a href="/billing" class="nav-item {% if request.path == '/billing' %}active{% endif %}" id="nav-billing">
+                    <i data-lucide="credit-card" size="18"></i> <span class="nav-text">Billing</span>
+                </a>
+                <a href="/login" class="nav-item mt-4" id="nav-logout" style="color: var(--danger); opacity: 0.8;">
+                    <i data-lucide="log-out" size="18"></i> <span class="nav-text">Logout</span>
+                </a>
             </nav>
 
-            <!-- User Profile -->
-            <div style="padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
-                <div style="display: flex; align-items: center; gap: 10px;" id="user-profile-section">
-                    <div style="width: 32px; height: 32px; background: var(--accent-500); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;"
-                        id="user-initials">
-                        ??</div>
-                    <div class="flex-column">
-                        <div class="text-sm font-bold" id="user-full-name">Loading...</div>
-                        <div class="text-xs text-muted" id="user-org-name">...</div>
+            <!-- User Profile (Bottom) -->
+            <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-500), var(--accent-600)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--gray-900);" id="user-initials">
+                        JD</div>
+                    <div class="flex-column overflow-hidden">
+                        <div class="text-xs font-bold text-white truncate" id="user-full-name">John Doe</div>
+                        <div class="text-xs truncate" style="color: var(--gray-500);" id="user-org-name">Acme Corp</div>
                     </div>
                 </div>
             </div>
@@ -150,36 +97,31 @@
         <div class="main-content">
             <!-- TOPBAR -->
             <header class="topbar">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <!-- Hamburger Menu (Mobile) -->
-                    <button class="btn-icon d-md-none" id="mobile-menu-btn" style="z-index: 1060; position: relative;">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <button class="btn-icon d-md-none" id="mobile-menu-btn">
                         <i data-lucide="menu" size="20"></i>
                     </button>
                     <!-- Search Trigger -->
-                    <div style="position: relative; width: 300px; cursor: pointer;"
-                        onclick="window.dispatchEvent(new KeyboardEvent('keydown', {'key': 'k', 'metaKey': true}))"
-                        class="d-none d-sm-block">
-                        <i data-lucide="search" size="16"
-                            style="position: absolute; left: 10px; top: 12px; color: var(--gray-400);"></i>
-                        <div
-                            style="display:flex; align-items:center; height:36px; padding-left:36px; color:var(--gray-400); background: var(--gray-50); border-radius:var(--radius-md); border:1px solid var(--gray-200); font-size:13px;">
-                            Search... (Cmd+K)
+                    <div class="d-none d-sm-block" style="position: relative; width: 320px;" onclick="window.dispatchEvent(new KeyboardEvent('keydown', {'key': 'k', 'metaKey': true}))">
+                        <i data-lucide="search" size="16" style="position: absolute; left: 12px; top: 12px; color: var(--gray-400);"></i>
+                        <div style="height: 40px; padding-left: 40px; display: flex; align-items: center; background: var(--gray-100); border-radius: 10px; color: var(--gray-500); font-size: 13px; font-weight: 500; border: 1px solid transparent; transition: all 0.2s;">
+                            Search anything... <span style="margin-left: auto; margin-right: 12px; opacity: 0.5; font-size: 10px;">⌘K</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="display: flex; gap: 8px; align-items: center;">
                     <button class="btn-icon"><i data-lucide="bell" size="18"></i></button>
-                    <div style="height: 24px; width: 1px; background: var(--gray-200);"></div>
-                    <button class="btn btn-primary"
-                        onclick="openGenericModal('Contact', '/crm/contacts/', ['First Name', 'Last Name', 'Email'])"><i
-                            data-lucide="plus" size="16"></i> New</button>
+                    <button class="btn-icon"><i data-lucide="help-circle" size="18"></i></button>
+                    <div style="height: 24px; width: 1px; background: var(--gray-200); margin: 0 8px;"></div>
+                    <button class="btn btn-accent" onclick="openGenericModal('Contact', '/crm/contacts/', ['First Name', 'Last Name', 'Email'])">
+                        <i data-lucide="plus" size="16"></i> Create
+                    </button>
                 </div>
             </header>
 
             <!-- DYNAMIC CONTENT SLOT -->
-            <div class="page-body" id="app-slot" style="position: relative;">
+            <div class="page-body animate-fade-in" id="app-slot">
                 {% block content %}{% endblock %}
 
                 <!-- GENERIC CREATE MODAL -->
