@@ -1,0 +1,390 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Nova CRM</title>
+    <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EABF32;
+            --primary-hover: #D4A92A;
+            --bg-dark: #0f172a;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #ffffff;
+        }
+
+        .split-layout {
+            display: flex;
+            width: 100%;
+        }
+
+        .left-pane {
+            flex: 1;
+            display: none;
+            position: relative;
+            background-color: var(--bg-dark);
+            overflow: hidden;
+        }
+
+        @media (min-width: 992px) {
+            .left-pane {
+                display: block;
+            }
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.85;
+            mix-blend-mode: luminosity;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(234, 191, 50, 0.4) 0%, rgba(15, 23, 42, 0.9) 100%);
+            z-index: 1;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            color: white;
+        }
+
+        .left-content h2 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--primary), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .left-content p {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 480px;
+        }
+
+        .right-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-container img {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(234, 191, 50, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .auth-header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .auth-header p {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            outline: none;
+            background: #f8fafc;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(234, 191, 50, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(234, 191, 50, 0.3), 0 2px 4px -1px rgba(234, 191, 50, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(234, 191, 50, 0.4), 0 4px 6px -2px rgba(234, 191, 50, 0.2);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .auth-footer a {
+            color: var(--primary-hover);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            display: none;
+            padding: 0.75rem 1rem;
+            background: #fef2f2;
+            border: 1px solid #f87171;
+            color: #b91c1c;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            display: none;
+            padding: 0.75rem 1rem;
+            background: #f0fdf4;
+            border: 1px solid #4ade80;
+            color: #166534;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="split-layout">
+        <div class="left-pane">
+            <!-- Different abstract image for register -->
+            <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2000&auto=format&fit=crop" alt="Abstract Background" class="bg-image">
+            <div class="bg-overlay"></div>
+            <div class="left-content">
+                <h2>Build Your<br>Masterpiece.</h2>
+                <p>Join thousands of organizations transforming their sales and customer relationships with Nova CRM.</p>
+            </div>
+        </div>
+
+        <div class="right-pane">
+            <div class="auth-card">
+                <div class="logo-container">
+                    <img src="{% static 'img/logo.png' %}" alt="Nova CRM">
+                    <span class="logo-text">Nova CRM</span>
+                </div>
+                
+                <div class="auth-header">
+                    <h1>Create Account</h1>
+                    <p>Set up your organization's workspace</p>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="organization_name">Organization Name</label>
+                        <input type="text" id="organization_name" class="form-input" placeholder="Acme Corp" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="first_name">First Name</label>
+                            <input type="text" id="first_name" class="form-input" placeholder="Jane" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="last_name">Last Name</label>
+                            <input type="text" id="last_name" class="form-input" placeholder="Doe" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Work Email</label>
+                        <input type="email" id="email" class="form-input" placeholder="jane@acme.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" class="form-input" placeholder="••••••••" required minlength="8">
+                    </div>
+
+                    <button type="submit" class="btn-primary">Create Organization</button>
+                </form>
+
+                <div class="auth-footer">
+                    Already have an account? <a href="/login">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/core.js' %}"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            btn.textContent = 'Creating...';
+            btn.disabled = true;
+            errorDiv.classList.remove('show');
+            successDiv.classList.remove('show');
+
+            const payload = {
+                organization_name: document.getElementById('organization_name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value
+            };
+
+            try {
+                const res = await fetch('/api/v1/users/register/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    successDiv.textContent = 'Organization created successfully! Redirecting to login...';
+                    successDiv.classList.add('show');
+                    setTimeout(() => window.location.href = '/login', 2000);
+                } else {
+                    let err = 'Registration failed. ';
+                    if (typeof data === 'object') {
+                        err += Object.values(data).join(' ');
+                    }
+                    errorDiv.textContent = err;
+                    errorDiv.classList.add('show');
+                    btn.textContent = 'Create Organization';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                errorDiv.textContent = 'A network error occurred. Please try again.';
+                errorDiv.classList.add('show');
+                btn.textContent = 'Create Organization';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

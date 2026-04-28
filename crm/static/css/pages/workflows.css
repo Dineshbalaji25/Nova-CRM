@@ -1,0 +1,58 @@
+/* Workflows Page CSS */
+
+.workflow-container {
+    padding: 24px 32px;
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.workflow-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.workflow-canvas {
+    flex: 1;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.node {
+    position: absolute;
+    background: white;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 12px;
+    width: 240px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.node.trigger {
+    border-left: 4px solid var(--accent-500);
+}
+
+.node.action {
+    border-left: 4px solid var(--primary-500);
+}
+
+.node.condition {
+    border-left: 4px solid var(--warning-fg);
+}
+
+.connector-line {
+    position: absolute;
+    width: 2px;
+    background: var(--gray-300);
+    z-index: 0;
+}

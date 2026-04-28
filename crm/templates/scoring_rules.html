@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Scoring Rules - Nova CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+    .score-container {
+        display: flex;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+        background: #f8fafc;
+    }
+
+    .score-sidebar {
+        width: 350px;
+        background: white;
+        border-right: 1px solid var(--gray-200);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .score-sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .score-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+    }
+
+    .score-item {
+        padding: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid var(--gray-200);
+        margin-bottom: 12px;
+        background: white;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .score-item:hover {
+        border-color: var(--primary-300);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .score-item.active {
+        background: var(--primary-50);
+        border-color: var(--primary-300);
+    }
+
+    .points-badge {
+        font-weight: 800;
+        font-size: 14px;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+    .points-positive { background: #dcfce7; color: #166534; }
+    .points-negative { background: #fee2e2; color: #991b1b; }
+
+    /* Main Area */
+    .score-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .score-header {
+        height: 64px;
+        background: white;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        z-index: 10;
+    }
+
+    .score-canvas {
+        flex: 1;
+        overflow-y: auto;
+        padding: 40px;
+    }
+
+    /* Configurator Form */
+    .config-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    /* Criteria Builder */
+    .criteria-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+        background: var(--gray-50);
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid var(--gray-200);
+    }
+
+    .criteria-row .form-select, .criteria-row .form-control {
+        flex: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="score-container">
+    <!-- Sidebar -->
+    <div class="score-sidebar">
+        <div class="score-sidebar-header">
+            <div>
+                <h2 class="text-lg font-bold mb-0">Scoring Rules</h2>
+                <div class="text-xs text-muted mt-1">Lead & Contact Qualification</div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="openCreateMode()">
+                <i data-lucide="plus" size="16"></i> New
+            </button>
+        </div>
+        <div class="score-list" id="ruleListContainer">
+            <div class="p-4 text-center text-muted">Loading rules...</div>
+        </div>
+    </div>
+
+    <!-- Main Builder -->
+    <div class="score-main">
+        <!-- Empty State -->
+        <div id="emptyState" class="d-flex flex-column align-items-center justify-content-center h-100">
+            <div style="width: 64px; height: 64px; background: var(--primary-50); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--primary-600);">
+                <i data-lucide="crosshair" size="32"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Select or Create a Rule</h3>
+            <p class="text-muted text-sm max-w-md text-center">Automatically add or deduct points based on record attributes to prioritize your sales efforts.</p>
+        </div>
+
+        <!-- Editor State -->
+        <div id="editorArea" style="display: none; flex-direction: column; height: 100%;">
+            <div class="score-header">
+                <h3 class="text-lg font-bold mb-0" id="editorTitle">Edit Rule</h3>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-danger btn-sm" id="btnDelete" onclick="deleteRule()">Delete</button>
+                    <button class="btn btn-primary btn-sm" onclick="saveRule()">Save Rule</button>
+                </div>
+            </div>
+            
+            <div class="score-canvas">
+                <div class="config-card">
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">Rule Name</label>
+                            <input type="text" id="ruleName" class="form-control" placeholder="e.g., C-Level Executive">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">Module</label>
+                            <select id="ruleModule" class="form-select">
+                                <option value="lead">Lead</option>
+                                <option value="contact">Contact</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">Points</label>
+                            <input type="number" id="rulePoints" class="form-control fw-bold" placeholder="+10 or -5">
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        <input class="form-check-input" type="checkbox" id="ruleActive" checked>
+                        <label class="form-check-label text-sm fw-bold" for="ruleActive">Rule is Active</label>
+                    </div>
+
+                    <hr class="my-4 border-gray-200">
+
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <label class="form-label text-xs fw-bold text-muted text-uppercase mb-0">Criteria Builder</label>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="addCriteriaRow()">
+                            <i data-lucide="plus" size="14"></i> Add Condition
+                        </button>
+                    </div>
+                    
+                    <div id="criteriaContainer">
+                        <!-- Rows injected here -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/scoring_rules.js' %}"></script>
+{% endblock %}

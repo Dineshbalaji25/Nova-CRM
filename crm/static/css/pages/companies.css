@@ -1,0 +1,27 @@
+/* Companies Page CSS */
+
+.company-logo-initials {
+    width: 32px;
+    height: 32px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.company-name-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.revenue-text {
+    font-family: monospace;
+    color: #0f172a;
+    font-weight: 500;
+}

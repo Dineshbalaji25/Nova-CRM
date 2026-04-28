@@ -1,0 +1,24 @@
+from rest_framework import serializers
+from .models import Plan, Subscription, Invoice, UsageRecord
+
+class PlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Plan
+        fields = ('id', 'name', 'amount_cents', 'interval', 'currency')
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    plan_name = serializers.CharField(source='plan.name', read_only=True)
+    
+    class Meta:
+        model = Subscription
+        fields = ('id', 'status', 'current_period_end', 'plan', 'plan_name', 'cancel_at_period_end')
+
+class InvoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invoice
+        fields = '__all__'
+
+class UsageRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UsageRecord
+        fields = '__all__'

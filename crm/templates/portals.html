@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Portals Configuration - Nova CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+    .portal-container {
+        display: flex;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+        background: #f8fafc;
+    }
+
+    .portal-sidebar {
+        width: 320px;
+        background: white;
+        border-right: 1px solid var(--gray-200);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .portal-sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .portal-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+    }
+
+    .portal-item {
+        padding: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid var(--gray-200);
+        margin-bottom: 12px;
+        background: white;
+    }
+
+    .portal-item:hover { border-color: var(--primary-300); }
+    .portal-item.active {
+        background: var(--primary-50);
+        border-color: var(--primary-300);
+    }
+
+    .portal-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .portal-header {
+        height: 64px;
+        background: white;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+    }
+
+    .portal-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px;
+    }
+
+    .config-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="portal-container">
+    <div class="portal-sidebar">
+        <div class="portal-sidebar-header">
+            <div>
+                <h2 class="text-lg font-bold mb-0">Portals</h2>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="openCreatePortal()">
+                <i data-lucide="plus" size="16"></i> New
+            </button>
+        </div>
+        <div class="portal-list" id="portalListContainer">
+            <div class="p-4 text-center text-muted">Loading portals...</div>
+        </div>
+    </div>
+
+    <div class="portal-main">
+        <div id="emptyState" class="d-flex flex-column align-items-center justify-content-center h-100">
+            <div style="width: 64px; height: 64px; background: var(--primary-50); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--primary-600);">
+                <i data-lucide="monitor" size="32"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Select a Portal</h3>
+            <p class="text-muted text-sm max-w-md text-center">Configure external portals for your customers and partners to view Deals, Invoices, and update their Profiles.</p>
+        </div>
+
+        <div id="detailArea" style="display: none; flex-direction: column; height: 100%;">
+            <div class="portal-header">
+                <h3 class="text-lg font-bold mb-0" id="detailName">Portal Configuration</h3>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-danger btn-sm" onclick="deletePortal()">Delete</button>
+                    <button class="btn btn-primary btn-sm" onclick="savePortal()">Save Configuration</button>
+                </div>
+            </div>
+            
+            <div class="portal-content">
+                <div class="config-card">
+                    <input type="hidden" id="pId">
+                    
+                    <h4 class="font-bold text-md mb-4 border-bottom pb-2">General Settings</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">Portal Name</label>
+                            <input type="text" id="pName" class="form-control" placeholder="e.g., Customer Portal">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">URL Slug</label>
+                            <input type="text" id="pSlug" class="form-control" placeholder="e.g., customer-portal">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">Theme Color (Hex)</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="color" id="pColor" class="form-control form-control-color" value="#2563EB" title="Choose color">
+                                <span class="text-xs text-muted" id="pColorText">#2563EB</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end pb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="pActive" checked>
+                                <label class="form-check-label text-sm fw-bold" for="pActive">Portal is Active</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-md mb-3 border-bottom pb-2 mt-5">Module Access</h4>
+                    <p class="text-sm text-muted mb-4">Select which CRM modules external users can access when logged into this portal.</p>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="pAllowDeals">
+                        <label class="form-check-label fw-bold" for="pAllowDeals">Deals</label>
+                        <div class="text-xs text-muted">Users can view deals linked to their company or contact record.</div>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="pAllowInvoices">
+                        <label class="form-check-label fw-bold" for="pAllowInvoices">Invoices</label>
+                        <div class="text-xs text-muted">Users can view and download invoices linked to their account.</div>
+                    </div>
+                    
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="pAllowProfile">
+                        <label class="form-check-label fw-bold" for="pAllowProfile">Profile Editing</label>
+                        <div class="text-xs text-muted">Users can update their own contact information.</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/portals.js' %}"></script>
+{% endblock %}

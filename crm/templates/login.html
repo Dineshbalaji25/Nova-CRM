@@ -1,0 +1,327 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Nova CRM</title>
+    <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EABF32;
+            --primary-hover: #D4A92A;
+            --bg-dark: #0f172a;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #ffffff;
+        }
+
+        .split-layout {
+            display: flex;
+            width: 100%;
+        }
+
+        .left-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .right-pane {
+            flex: 1;
+            display: none;
+            position: relative;
+            background-color: var(--bg-dark);
+            overflow: hidden;
+        }
+
+        @media (min-width: 992px) {
+            .right-pane {
+                display: block;
+            }
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.85;
+            mix-blend-mode: luminosity;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(234, 191, 50, 0.4) 100%);
+            z-index: 1;
+        }
+
+        .right-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            color: white;
+        }
+
+        .right-content h2 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #ffffff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .right-content p {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 480px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-container img {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(234, 191, 50, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .auth-header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .auth-header p {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            outline: none;
+            background: #f8fafc;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(234, 191, 50, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(234, 191, 50, 0.3), 0 2px 4px -1px rgba(234, 191, 50, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(234, 191, 50, 0.4), 0 4px 6px -2px rgba(234, 191, 50, 0.2);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .auth-footer a {
+            color: var(--primary-hover);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            display: none;
+            padding: 0.75rem 1rem;
+            background: #fef2f2;
+            border: 1px solid #f87171;
+            color: #b91c1c;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="split-layout">
+        <div class="left-pane">
+            <div class="auth-card">
+                <div class="logo-container">
+                    <img src="{% static 'img/logo.png' %}" alt="Nova CRM">
+                    <span class="logo-text">Nova CRM</span>
+                </div>
+                
+                <div class="auth-header">
+                    <h1>Welcome Back</h1>
+                    <p>Sign in to your CRM workspace</p>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" class="form-input" placeholder="you@company.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Sign In</button>
+                </form>
+
+                <div class="auth-footer">
+                    Don't have an account? <a href="/register">Create Organization</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="right-pane">
+            <!-- Vibrant Abstract Image from Unsplash -->
+            <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop" alt="Abstract Background" class="bg-image">
+            <div class="bg-overlay"></div>
+            <div class="right-content">
+                <h2>Accelerate<br>Your Growth.</h2>
+                <p>Experience the next generation CRM. Powerful automation, seamless omnichannel integrations, and vibrant analytics all in one platform.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/core.js' %}"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            const btn = e.target.querySelector('button');
+
+            btn.textContent = 'Signing in...';
+            btn.disabled = true;
+            errorDiv.classList.remove('show');
+
+            try {
+                const data = await apiClient.login(email, password);
+
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                if (data.tenant_id) localStorage.setItem('tenant_id', data.tenant_id);
+                if (data.user) localStorage.setItem('user_full_name', data.user.full_name || data.user.email);
+                if (data.organization_name) localStorage.setItem('organization_name', data.organization_name);
+
+                window.location.href = '/dashboard';
+            } catch (err) {
+                console.error(err);
+                errorDiv.textContent = err.data?.detail || 'Invalid credentials. Please try again.';
+                errorDiv.classList.add('show');
+                btn.textContent = 'Sign In';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

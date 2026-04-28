@@ -1,0 +1,26 @@
+/* Audit & Team Table CSS */
+/* Re-using data-table but refining specific column styles */
+
+.monospace-cell {
+    font-family: monospace;
+    color: var(--gray-600);
+    background: var(--gray-50);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.action-badge {
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.role-select {
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+    background: white;
+}

@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Invoices - Nova CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Invoice specific template logic */
+    #invoice-print-area {
+        background: white;
+        padding: 2rem;
+        min-height: 297mm;
+        /* Standard A4 */
+        display: none;
+    }
+
+    .invoice-ready #invoice-print-area {
+        display: block;
+        margin-top: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Base print media query */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #invoice-print-area,
+        #invoice-print-area * {
+            visibility: visible;
+        }
+
+        #invoice-print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" id="main-view">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Invoices</h2>
+            <p class="text-muted text-sm mt-1">Generate bills, apply payments, and download PDFs.</p>
+        </div>
+        <button class="btn btn-primary" onclick="startNewInvoice()">
+            <i data-lucide="plus" size="16"></i> New Invoice
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice Number</th>
+                            <th>Subject</th>
+                            <th>Company</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-table-body">
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- INVOICE CREATION / TEMPLATE VIEW -->
+<div id="invoice-builder-view" class="container-fluid p-4 d-none">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn-icon" onclick="exitInvoiceBuilder()"><i data-lucide="arrow-left" size="20"></i></button>
+            <h4 class="fw-bold mb-0">Draft New Invoice</h4>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-secondary" onclick="generatePdf()"><i data-lucide="download" size="16"></i> Download
+                PDF</button>
+            <button class="btn btn-primary" onclick="saveInvoice()"><i data-lucide="save" size="16"></i> Process
+                Invoice</button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Input Form -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                <h6 class="fw-bold mb-4 text-primary-600">Billing Details</h6>
+                <form id="invoiceForm">
+                    <div class="mb-3">
+                        <label class="form-label text-xs fw-bold text-muted text-uppercase">Subject <span
+                                class="text-danger">*</span></label>
+                        <input type="text" name="subject" class="form-control" required
+                            placeholder="e.g. Q4 Platform Subscription" oninput="updateTemplate()">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-xs fw-bold text-muted text-uppercase">Client Company <span
+                                class="text-danger">*</span></label>
+                        <select name="company" id="clientSelect" class="form-select" required
+                            onchange="updateTemplate()">
+                            <option value="">Select Company...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-xs fw-bold text-muted text-uppercase">Status</label>
+                        <select name="status" class="form-select" onchange="updateTemplate()">
+                            <option value="created">Created (Draft)</option>
+                            <option value="sent">Sent</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+
+                    <div class="border-top pt-3 mt-4">
+                        <h6 class="text-xs fw-bold text-muted text-uppercase mb-3">Line items</h6>
+                        <div class="mb-3">
+                            <label class="form-label text-xs text-muted">Description</label>
+                            <input type="text" id="tempDesc" class="form-control" value="Premium SaaS License (Yearly)"
+                                oninput="updateTemplate()">
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-8">
+                                <label class="form-label text-xs text-muted">Amount ($)</label>
+                                <input type="number" name="grand_total" id="tempTotal"
+                                    class="form-control fw-bold text-success" step="0.01" value="499.00"
+                                    oninput="updateTemplate()">
+                                <input type="hidden" name="sub_total" id="tempSubTotal" value="499.00">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Live Template Render -->
+        <div class="col-lg-8 bg-gray-100 invoice-ready rounded d-flex justify-content-center p-3"
+            style="overflow-y:auto; max-height:80vh">
+            <div id="invoice-print-area" class="card rounded-0" style="width: 100%; max-width:800px;">
+                <!-- Modern Invoice Template -->
+                <div class="d-flex justify-content-between border-bottom pb-4 mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0 text-gray-900" style="letter-spacing:-1px;">INVOICE</h2>
+                        <p class="text-muted mt-2 mb-0" id="inv-date">Date: </p>
+                    </div>
+                    <div class="text-end">
+                        <h4 class="fw-bold text-primary-600 mb-1" id="inv-my-company">Nova CRM Technologies</h4>
+                        <p class="text-muted text-sm mb-0">123 Cloud Avenue<br>San Francisco, CA 94107</p>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-sm-6">
+                        <h6 class="text-xs fw-bold text-muted text-uppercase mb-2">Billed To:</h6>
+                        <h5 class="fw-bold mb-1" id="inv-client-name">Select a client</h5>
+                        <p class="text-muted text-sm mb-0" id="inv-subject">Subject line goes here</p>
+                    </div>
+                    <div class="col-sm-6 text-end">
+                        <h6 class="text-xs fw-bold text-muted text-uppercase mb-2">Status:</h6>
+                        <h5 class="fw-bold mb-0 text-success" id="inv-status">CREATED</h5>
+                    </div>
+                </div>
+
+                <table class="table mb-5" style="border: 1px solid var(--gray-200);">
+                    <thead style="background: var(--gray-50);">
+                        <tr>
+                            <th class="py-3 px-3 text-xs fw-bold text-muted text-uppercase">Description</th>
+                            <th class="text-end py-3 px-3 text-xs fw-bold text-muted text-uppercase">Qty</th>
+                            <th class="text-end py-3 px-3 text-xs fw-bold text-muted text-uppercase">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-4 px-3 fw-medium" id="inv-item-desc">Premium SaaS License (Yearly)</td>
+                            <td class="text-end py-4 px-3 text-muted">1</td>
+                            <td class="text-end py-4 px-3 fw-bold" id="inv-item-amt">$499.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="text-muted text-sm mt-2">Thank you for your business. Please remit payment within 30
+                            days.</p>
+                    </div>
+                    <div class="col-sm-6 text-end">
+                        <div class="d-flex justify-content-end align-items-center gap-4">
+                            <h5 class="text-muted mb-0">Total Due:</h5>
+                            <h2 class="fw-bold text-gray-900 mb-0" id="inv-total">$499.00</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let activeCompanies = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('inv-date').innerText = `Date: ${today}`;
+        document.getElementById('inv-my-company').innerText = localStorage.getItem('organization_name') || 'Your Company';
+
+        fetchInvoices();
+    });
+
+    async function fetchInvoices() {
+        try {
+            const res = await api.get('/sales/invoices/');
+            const tbody = document.getElementById('invoice-table-body');
+            tbody.innerHTML = '';
+
+            if (res.results && res.results.length > 0) {
+                res.results.forEach(inv => {
+                    const statusClass = inv.status === 'paid' ? 'badge-success' : (inv.status === 'created' ? 'badge-warning' : 'badge-primary');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold text-primary-600">${inv.invoice_number || inv.id}</td>
+                            <td class="fw-bold text-gray-800">${inv.subject}</td>
+                            <td>${inv.company_details?.name || '-'}</td>
+                            <td><span class="badge ${statusClass}">${inv.status.toUpperCase()}</span></td>
+                            <td class="fw-bold">$${parseFloat(inv.grand_total).toFixed(2)}</td>
+                            <td class="text-end">
+                                <button class="btn-icon" title="Download PDF" onclick="alert('Demo: To render existing PDF open in builder.')"><i data-lucide="download" size="16"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                lucide.createIcons();
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">No invoices generated yet.</td></tr>`;
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('invoice-table-body').innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Error loading data.</td></tr>`;
+        }
+    }
+
+    async function startNewInvoice() {
+        document.getElementById('main-view').classList.add('d-none');
+        document.getElementById('invoice-builder-view').classList.remove('d-none');
+        document.getElementById('invoiceForm').reset();
+
+        try {
+            const comp = await api.get('/crm/companies/');
+            activeCompanies = comp.results || [];
+            const select = document.getElementById('clientSelect');
+            select.innerHTML = '<option value="">Select Company...</option>';
+            activeCompanies.forEach(c => select.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+        } catch (e) { console.error('Error fetching companies', e); }
+
+        updateTemplate();
+    }
+
+    function exitInvoiceBuilder() {
+        document.getElementById('invoice-builder-view').classList.add('d-none');
+        document.getElementById('main-view').classList.remove('d-none');
+        fetchInvoices(); // Refresh grid
+    }
+
+    function updateTemplate() {
+        const form = document.getElementById('invoiceForm');
+        const data = Object.fromEntries(new FormData(form).entries());
+
+        // Find company name
+        let compName = "Select a client";
+        if (data.company) {
+            const co = activeCompanies.find(c => c.id == data.company);
+            if (co) compName = co.name;
+        }
+
+        document.getElementById('inv-client-name').innerText = compName;
+        document.getElementById('inv-subject').innerText = data.subject || 'Invoice Subject';
+        document.getElementById('inv-status').innerText = (data.status || 'Created').toUpperCase();
+
+        const desc = document.getElementById('tempDesc').value;
+        const total = parseFloat(document.getElementById('tempTotal').value || 0).toFixed(2);
+        document.getElementById('tempSubTotal').value = total; // Sync hidden subtotal config
+
+        document.getElementById('inv-item-desc').innerText = desc || 'Item';
+        document.getElementById('inv-item-amt').innerText = `$${total}`;
+        document.getElementById('inv-total').innerText = `$${total}`;
+    }
+
+    function generatePdf() {
+        // Simple but highly effective method relying on @media print
+        window.print();
+    }
+
+    async function saveInvoice() {
+        const form = document.getElementById('invoiceForm');
+        if (!form.reportValidity()) return;
+
+        const data = Object.fromEntries(new FormData(form).entries());
+        try {
+            await api.post('/sales/invoices/', data);
+            alert("Invoice securely saved to database!");
+            exitInvoiceBuilder();
+        } catch (e) {
+            alert('Failed to save invoice: ' + (e.data?.detail || JSON.stringify(e.data)));
+        }
+    }
+</script>
+{% endblock %}

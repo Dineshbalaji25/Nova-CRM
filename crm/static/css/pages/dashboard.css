@@ -1,0 +1,84 @@
+/* Dashboard Specific Styles */
+
+/* KPI Grid */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+@media (max-width: 1024px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Activity Feed */
+.activity-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    border: 1px solid var(--gray-200);
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.activity-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activity-icon.money {
+    background: var(--primary-100);
+    color: var(--primary-600);
+}
+
+.activity-icon.mail {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.activity-icon.alert {
+    background: var(--warning-bg);
+    color: var(--warning-fg);
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-meta {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 4px;
+}

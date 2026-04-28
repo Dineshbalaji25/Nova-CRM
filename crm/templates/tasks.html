@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tasks - Nova CRM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/tasks.css' %}">
+{% endblock %}
+
+{% block content %}
+<header
+    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 0 32px;">
+    <div>
+        <h2 class="text-lg font-bold">Tasks</h2>
+    </div>
+</header>
+<div id="tasksApp" style="padding: 0 32px;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/tasks.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Webforms - Nova CRM{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Webforms</h2>
+        <button class="btn btn-primary" onclick="openGenericModal('Webforms', '/marketing/webforms/', ['Name', 'Description'])"><i data-lucide="plus" size="16"></i> New Webforms</button>
+    </div>
+    
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <p class="text-muted">Web-to-Lead Forms</p>
+            <div id="webforms-list">Loading...</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function fetchData() {
+        try {
+            const res = await api.get('/marketing/webforms/');
+            if(res.results) {
+                document.getElementById('webforms-list').innerHTML = `<pre>${JSON.stringify(res.results, null, 2)}</pre>`;
+            } else {
+                document.getElementById('webforms-list').innerHTML = `<div class="alert alert-info">No data found.</div>`;
+            }
+        } catch(e) {
+            document.getElementById('webforms-list').innerHTML = `<div class="alert alert-warning">Failed to load webforms.</div>`;
+        }
+    }
+    fetchData();
+</script>
+{% endblock %}

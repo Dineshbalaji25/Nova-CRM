@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block title %}Quotes - Nova CRM{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Quotes</h2>
+            <p class="text-muted text-sm mt-1">Configure pricing and deliver quotes to prospects.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openQuoteModal()">
+            <i data-lucide="plus" size="16"></i> Create Quote
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Quote Number</th>
+                            <th>Subject</th>
+                            <th>Company</th>
+                            <th>Status</th>
+                            <th>Grand Total</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quotes-table-body">
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quote Modal -->
+<div class="modal fade" id="quoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Build Quote / CPQ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="background-color: var(--gray-50);">
+                <form id="quoteForm">
+                    <div class="row g-4">
+                        <!-- Left Side: Core Details -->
+                        <div class="col-md-5">
+                            <div class="card border-0 shadow-sm p-3 h-100">
+                                <h6 class="fw-bold mb-3">Quote Details</h6>
+                                <div class="mb-3">
+                                    <label class="form-label text-xs fw-bold text-muted text-uppercase">Subject <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" name="subject" class="form-control" required
+                                        placeholder="Q3 Licensing Quote">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-xs fw-bold text-muted text-uppercase">Company <span
+                                            class="text-danger">*</span></label>
+                                    <select name="company" id="companySelect" class="form-select" required>
+                                        <option value="">Select Company...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-xs fw-bold text-muted text-uppercase">Status</label>
+                                    <select name="status" class="form-select">
+                                        <option value="draft">Draft</option>
+                                        <option value="negotiation">Negotiation</option>
+                                        <option value="delivered">Delivered</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-xs fw-bold text-muted text-uppercase">Valid
+                                        Until</label>
+                                    <input type="date" name="valid_until" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Items and Pricing -->
+                        <div class="col-md-7">
+                            <div class="card border-0 shadow-sm p-3 h-100 flex-column">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold mb-0">Line Items</h6>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="addLineItem()">
+                                        <i data-lucide="plus" size="14"></i> Add Line
+                                    </button>
+                                </div>
+
+                                <div id="lineItemsContainer" style="flex:1; overflow-y: auto; max-height: 250px;">
+                                    <!-- Items injected here -->
+                                </div>
+
+                                <div class="mt-auto border-top pt-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Subtotal:</span>
+                                        <span class="fw-bold" id="subtotalDisplay">$0.00</span>
+                                    </div>
+                                    <input type="hidden" name="sub_total" id="inputSubTotal" value="0">
+                                    <!-- For simplicity forcing grand total equal sub total on creation mask -->
+                                    <input type="hidden" name="grand_total" id="inputGrandTotal" value="0">
+                                    <input type="hidden" name="tax_amount" value="0">
+                                    <input type="hidden" name="discount_amount" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 pt-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveQuote()">Save Quote</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let quoteModal;
+    let productsList = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        quoteModal = new bootstrap.Modal(document.getElementById('quoteModal'));
+        fetchQuotes();
+    });
+
+    async function fetchQuotes() {
+        try {
+            const res = await api.get('/sales/quotes/');
+            const tbody = document.getElementById('quotes-table-body');
+            tbody.innerHTML = '';
+
+            if (res.results && res.results.length > 0) {
+                res.results.forEach(q => {
+                    const statusColors = {
+                        'draft': 'badge-warning',
+                        'delivered': 'badge-primary',
+                        'closed_won': 'badge-success'
+                    };
+                    const badgeClass = statusColors[q.status] || 'badge-secondary';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold text-primary-600">${q.quote_number || q.id}</td>
+                            <td class="fw-bold text-gray-800">${q.subject}</td>
+                            <td>${q.company_details?.name || '-'}</td>
+                            <td><span class="badge ${badgeClass}" style="background-color:var(--gray-200); color:var(--gray-700);">${q.status.replace('_', ' ').toUpperCase()}</span></td>
+                            <td class="fw-bold">$${parseFloat(q.grand_total).toFixed(2)}</td>
+                            <td class="text-end">
+                                <button class="btn-icon" title="View PDF"><i data-lucide="file-text" size="16"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                lucide.createIcons();
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">No quotes found. Start by creating one.</td></tr>`;
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('quotes-table-body').innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Error loading data.</td></tr>`;
+        }
+    }
+
+    async function openQuoteModal() {
+        // Fetch products and companies for dropdowns
+        document.getElementById('quoteForm').reset();
+        document.getElementById('lineItemsContainer').innerHTML = '';
+
+        try {
+            const [companies, prods] = await Promise.all([
+                api.get('/crm/companies/'),
+                api.get('/sales/products/')
+            ]);
+
+            const cSelect = document.getElementById('companySelect');
+            cSelect.innerHTML = '<option value="">Select Company...</option>';
+            (companies.results || []).forEach(c => {
+                cSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+
+            productsList = prods.results || [];
+
+            addLineItem(); // Start with one line
+            quoteModal.show();
+        } catch (e) {
+            alert("Error loading prerequisites for quote.");
+        }
+    }
+
+    function addLineItem() {
+        const container = document.getElementById('lineItemsContainer');
+        const lineId = Date.now();
+
+        let productOptions = '<option value="">Select Product/SKU</option>';
+        productsList.forEach(p => {
+            productOptions += `<option value="${p.id}" data-price="${p.unit_price}">${p.name} ($${parseFloat(p.unit_price).toFixed(2)})</option>`;
+        });
+
+        const html = `
+            <div class="line-item d-flex gap-2 mb-2" id="line-${lineId}">
+                <select class="form-select text-sm line-product" style="flex:2" onchange="updateLinePrice(${lineId})">
+                    ${productOptions}
+                </select>
+                <input type="number" class="form-control text-sm line-qty" value="1" min="1" step="1" style="width: 70px;" onchange="calculateTotals()">
+                <input type="number" class="form-control text-sm line-price" value="0.00" step="0.01" style="width: 100px;" onkeyup="calculateTotals()">
+                <button type="button" class="btn-icon text-danger" onclick="document.getElementById('line-${lineId}').remove(); calculateTotals();"><i data-lucide="trash-2" size="16"></i></button>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+        lucide.createIcons();
+    }
+
+    function updateLinePrice(id) {
+        const line = document.getElementById(`line-${id}`);
+        const select = line.querySelector('.line-product');
+        const priceInput = line.querySelector('.line-price');
+
+        const opt = select.options[select.selectedIndex];
+        if (opt && opt.dataset.price) {
+            priceInput.value = parseFloat(opt.dataset.price).toFixed(2);
+        }
+        calculateTotals();
+    }
+
+    function calculateTotals() {
+        let subtotal = 0;
+        document.querySelectorAll('.line-item').forEach(line => {
+            const qty = parseFloat(line.querySelector('.line-qty').value) || 0;
+            const price = parseFloat(line.querySelector('.line-price').value) || 0;
+            subtotal += (qty * price);
+        });
+
+        document.getElementById('subtotalDisplay').innerText = `$${subtotal.toFixed(2)}`;
+        document.getElementById('inputSubTotal').value = subtotal;
+        document.getElementById('inputGrandTotal').value = subtotal; // Assuming no tax/discount mock
+    }
+
+    async function saveQuote() {
+        const form = document.getElementById('quoteForm');
+        if (!form.reportValidity()) return;
+
+        const payload = Object.fromEntries(new FormData(form).entries());
+        try {
+            await api.post('/sales/quotes/', payload);
+            quoteModal.hide();
+            fetchQuotes();
+        } catch (e) {
+            alert('Failed to save quote: ' + (e.data?.detail || JSON.stringify(e.data)));
+        }
+    }
+</script>
+{% endblock %}

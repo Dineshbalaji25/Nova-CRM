@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Setup Hub - Nova CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+    .setup-card {
+        transition: all 0.2s ease-in-out;
+        border-left: 4px solid transparent;
+    }
+
+    .setup-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-left-color: var(--primary-500);
+    }
+
+    .setup-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-50);
+        color: var(--primary-600);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+    }
+</style>
+<link rel="stylesheet" href="{% static 'css/pages/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <header class="mb-4">
+        <h2 class="fw-bold">Setup</h2>
+        <p class="text-muted">Configure and customize your CRM instance.</p>
+    </header>
+
+    <div class="row g-4">
+        <!-- General / Users & Control -->
+        <div class="col-12 col-xl-4 col-md-6">
+            <h5 class="fw-bold mb-3 mt-2 text-uppercase text-muted" style="font-size: 12px; letter-spacing: 0.5px;">
+                Users & Control</h5>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <a href="/team" class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3"><i data-lucide="users" size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Users</h6><small class="text-muted">Manage active members and
+                            managers</small>
+                    </div>
+                </a>
+            </div>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <a href="/roles" class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3"><i data-lucide="shield" size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Security Roles</h6><small class="text-muted">Hierarchy-based data
+                            sharing restrictions</small>
+                    </div>
+                </a>
+            </div>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <a href="/profiles" class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3"><i data-lucide="user-check" size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Security Profiles</h6><small class="text-muted">Module and
+                            Field-level access permissions</small>
+                    </div>
+                </a>
+            </div>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <a href="/territories" class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3"><i data-lucide="map" size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Territories</h6><small class="text-muted">Geographical segment lead
+                            routing</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Automation -->
+        <div class="col-12 col-xl-4 col-md-6">
+            <h5 class="fw-bold mb-3 mt-2 text-uppercase text-muted" style="font-size: 12px; letter-spacing: 0.5px;">
+                Process Management</h5>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <a href="/blueprints" class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3"><i data-lucide="workflow" size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Blueprints</h6><small class="text-muted">Enforce deal flows through
+                            state machines</small>
+                    </div>
+                </a>
+            </div>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <a href="/workflows" class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3"><i data-lucide="git-branch" size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Workflow Rules</h6><small class="text-muted">Trigger emails,
+                            updates, webhooks instantly</small>
+                    </div>
+                </a>
+            </div>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <div class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3"><i data-lucide="list-checks" size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Assignment Rules</h6><small class="text-muted">Auto-assign webform
+                            leads sequentially</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Channels & Developer API -->
+        <div class="col-12 col-xl-4 col-md-6">
+            <h5 class="fw-bold mb-3 mt-2 text-uppercase text-muted" style="font-size: 12px; letter-spacing: 0.5px;">
+                Channels & APIs</h5>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <a href="/calls" class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3" style="background:#e0e7ff; color:#4f46e5;"><i data-lucide="phone"
+                            size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Telephony (Twilio)</h6><small class="text-muted">Configure
+                            cloud-pbx integrations</small>
+                    </div>
+                </a>
+            </div>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <a href="/emails" class="text-decoration-none text-dark d-flex p-3 align-items-center">
+                    <div class="setup-icon me-3" style="background:#e0e7ff; color:#4f46e5;"><i data-lucide="mail"
+                            size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Email (IMAP) Sync</h6><small class="text-muted">Mirror emails
+                            natively as interactions</small>
+                    </div>
+                </a>
+            </div>
+            <div class="card border-0 shadow-sm mb-3 setup-card">
+                <div class="text-decoration-none text-dark d-flex p-3 align-items-center" data-bs-toggle="modal"
+                    data-bs-target="#apiKeyModal" style="cursor: pointer;">
+                    <div class="setup-icon me-3" style="background:#fce7f3; color:#db2777;"><i data-lucide="key"
+                            size="20"></i></div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">API Credentials</h6><small class="text-muted">Generate access keys
+                            for integrations</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal fade" id="apiKeyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">API Credentials</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <p class="text-muted text-sm">Use these API keys to authenticate headless integrations. Pass the key
+                        in the headers block as <code>Authorization: Api-Key sk_live_...</code></p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0">Your Active Keys</h6>
+                        <button class="btn btn-primary btn-sm" onclick="createKey()">
+                            <i data-lucide="plus" size="14"></i> Generate New Key
+                        </button>
+                    </div>
+                    <!-- The JS populates this container -->
+                    <div id="apiKeyContainer">
+                        <div class="text-center py-4 text-muted">
+                            <div class="spinner-border spinner-border-sm"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="background: var(--gray-50); padding: 16px; border-radius: 8px; border: 1px dashed var(--gray-300);">
+                    <h6 class="fw-bold text-sm mb-2"><i data-lucide="terminal" size="14" class="me-1"></i> Quick Start
+                        (cURL)</h6>
+                    <pre class="mb-0" style="font-size: 11px; color: var(--gray-600); overflow-x: auto;"><code>curl -X GET {{ request.scheme }}://{{ request.get_host }}/api/v1/crm/contacts/ \
+  -H "Authorization: Api-Key your_api_key_here"</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/settings.js' %}"></script>
+{% endblock %}

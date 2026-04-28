@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Territories - Nova CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ter-container {
+        display: flex;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+        background: #f8fafc;
+    }
+
+    .ter-sidebar {
+        width: 320px;
+        background: white;
+        border-right: 1px solid var(--gray-200);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ter-sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .ter-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+    }
+
+    .ter-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ter-item:hover {
+        background: var(--gray-50);
+    }
+
+    .ter-item.active {
+        background: var(--primary-50);
+        border-color: var(--primary-200);
+        color: var(--primary-700);
+    }
+
+    /* Main Area */
+    .ter-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .ter-header {
+        height: 64px;
+        background: white;
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        z-index: 10;
+    }
+
+    .ter-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px;
+    }
+
+    /* Rule Cards */
+    .rule-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+    }
+    
+    .rule-card.inactive {
+        opacity: 0.6;
+        background: var(--gray-50);
+    }
+
+    /* Criteria Builder (Reused style idea from Scoring) */
+    .criteria-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+        background: var(--gray-50);
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid var(--gray-200);
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ter-container">
+    <!-- Sidebar -->
+    <div class="ter-sidebar">
+        <div class="ter-sidebar-header">
+            <div>
+                <h2 class="text-lg font-bold mb-0">Territories</h2>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="openCreateTerritory()">
+                <i data-lucide="plus" size="16"></i> New
+            </button>
+        </div>
+        <div class="ter-list" id="terListContainer">
+            <div class="p-4 text-center text-muted">Loading territories...</div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="ter-main">
+        <!-- Empty State -->
+        <div id="emptyState" class="d-flex flex-column align-items-center justify-content-center h-100">
+            <div style="width: 64px; height: 64px; background: var(--primary-50); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--primary-600);">
+                <i data-lucide="map" size="32"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Select a Territory</h3>
+            <p class="text-muted text-sm max-w-md text-center">Manage territory details and define automated assignment rules for Leads, Contacts, Companies, and Deals.</p>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detailArea" style="display: none; flex-direction: column; height: 100%;">
+            <div class="ter-header">
+                <div>
+                    <h3 class="text-lg font-bold mb-0" id="detailName">Territory Name</h3>
+                    <div class="text-xs text-muted" id="detailManager">Manager: None</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="editTerritory()">Edit Details</button>
+                </div>
+            </div>
+            
+            <div class="ter-content">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="font-bold text-md m-0">Assignment Rules</h4>
+                    <button class="btn btn-primary btn-sm" onclick="openCreateRule()">
+                        <i data-lucide="plus" size="14"></i> Add Rule
+                    </button>
+                </div>
+
+                <div id="rulesContainer">
+                    <!-- Rules injected here -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Territory Modal -->
+<div class="modal fade" id="territoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="terModalTitle">Territory</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="territoryForm">
+                    <input type="hidden" id="terId">
+                    <div class="mb-3">
+                        <label class="form-label text-xs fw-bold text-muted text-uppercase">Name</label>
+                        <input type="text" id="terName" class="form-control" required placeholder="e.g., North America">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-xs fw-bold text-muted text-uppercase">Description</label>
+                        <textarea id="terDesc" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-xs fw-bold text-muted text-uppercase">Parent Territory</label>
+                        <select id="terParent" class="form-select">
+                            <option value="">None (Top Level)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-danger me-auto" id="btnDeleteTer" style="display:none;" onclick="deleteTerritory()">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveTerritory()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rule Modal -->
+<div class="modal fade" id="ruleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="ruleModalTitle">Assignment Rule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="ruleForm">
+                    <input type="hidden" id="ruleId">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">Rule Name</label>
+                            <input type="text" id="ruleName" class="form-control" required placeholder="e.g., Assign CA Leads">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">Target Module</label>
+                            <select id="ruleTarget" class="form-select">
+                                <option value="lead">Lead</option>
+                                <option value="contact">Contact</option>
+                                <option value="company">Company</option>
+                                <option value="deal">Deal</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-xs fw-bold text-muted text-uppercase">Priority (Lower = First)</label>
+                            <input type="number" id="rulePosition" class="form-control" value="10">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end pb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="ruleActive" checked>
+                                <label class="form-check-label text-sm fw-bold" for="ruleActive">Rule is Active</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label text-xs fw-bold text-muted text-uppercase mb-0">Assignment Criteria</label>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addRuleCriteriaRow()">
+                            <i data-lucide="plus" size="14"></i> Add Condition
+                        </button>
+                    </div>
+                    <div id="ruleCriteriaContainer"></div>
+
+                </form>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-danger me-auto" id="btnDeleteRule" style="display:none;" onclick="deleteRule()">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveRule()">Save Rule</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/territories.js' %}"></script>
+{% endblock %}

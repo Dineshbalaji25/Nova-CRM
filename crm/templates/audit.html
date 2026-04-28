@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Audit Logs - Nova CRM{% endblock %}
+
+{% block content %}
+<header
+    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 0 32px;">
+    <div>
+        <h2 class="text-lg font-bold">Audit Logs</h2>
+    </div>
+</header>
+<div id="auditApp" style="padding: 0 32px;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/audit.js' %}"></script>
+{% endblock %}
