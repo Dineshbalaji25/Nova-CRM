@@ -1,18 +1,127 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Profiles - Nova CRM{% endblock %}
+{% block title %}Profile - Nova CRM{% endblock %}
 
 {% block content %}
-<div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Profiles</h2>
-        <button class="btn btn-primary" onclick="openGenericModal('Profiles', '/users/profiles/', ['Name', 'Description'])"><i data-lucide="plus" size="16"></i> New Profiles</button>
-    </div>
-    
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <p class="text-muted">Field-level Security Profiles</p>
-            <div id="profiles-list">Loading...</div>
+<div class="animate-slide-up space-y-8">
+    <!-- Profile Header -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-surface border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
+
+        <div class="flex items-center gap-6 relative z-10">
+            <div class="w-24 h-24 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-xl shadow-primary/20" id="profile-initials">
+                JD
+            </div>
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight mb-1" id="profile-name">John Doe</h1>
+                <p class="text-gray-400 font-medium flex items-center gap-2">
+                    <i data-lucide="building" class="w-4 h-4"></i> <span id="profile-org">Acme Corp</span>
+                </p>
+                <div class="flex gap-2 mt-3">
+                    <span class="px-2 py-0.5 rounded-md bg-success/10 border border-success/20 text-[10px] font-bold text-success uppercase tracking-widest">Active</span>
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-3 relative z-10">
+            <button class="btn-premium-secondary"><i data-lucide="mail" class="w-4 h-4"></i> Send Email</button>
+            <button class="btn-premium-primary"><i data-lucide="edit-3" class="w-4 h-4"></i> Edit Profile</button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Details Column -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-surface border border-white/5 rounded-2xl p-8 shadow-xl">
+                <h3 class="text-xl font-bold text-white tracking-tight mb-6">Personal Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Email Address</p>
+                        <p class="text-white font-medium" id="profile-email">john@example.com</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Phone Number</p>
+                        <p class="text-white font-medium" id="profile-phone">+1 (555) 000-0000</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Location</p>
+                        <p class="text-white font-medium">San Francisco, CA</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Joined Date</p>
+                        <p class="text-white font-medium">January 12, 2024</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="bg-surface border border-white/5 rounded-2xl p-8 shadow-xl">
+                <h3 class="text-xl font-bold text-white tracking-tight mb-8">Activity Timeline</h3>
+                <div class="space-y-8 relative">
+                    <div class="absolute left-[15px] top-2 bottom-2 w-px bg-white/5"></div>
+
+                    <div class="flex gap-6 relative">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center relative z-10 bg-surface">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 text-primary"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-white">Email Sent: Q3 Follow-up</p>
+                            <p class="text-xs text-gray-500 mt-1">2 hours ago • By Sarah Jenkins</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-6 relative">
+                        <div class="w-8 h-8 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center relative z-10 bg-surface">
+                            <i data-lucide="phone" class="w-3.5 h-3.5 text-gold"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-white">Call Logged: Discovery Call</p>
+                            <p class="text-xs text-gray-500 mt-1">Yesterday at 4:30 PM • By Sarah Jenkins</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="space-y-8">
+            <!-- Account Stats -->
+            <div class="bg-surface border border-white/5 rounded-2xl p-8 shadow-xl">
+                <h3 class="text-lg font-bold text-white tracking-tight mb-6">Account Value</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-end mb-2">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Lead Score</p>
+                            <p class="text-lg font-black text-primary">85/100</p>
+                        </div>
+                        <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%]"></div>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-white/5 grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Open Deals</p>
+                            <p class="text-xl font-bold text-white mt-1">3</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Lifetime Value</p>
+                            <p class="text-xl font-bold text-white mt-1">$12.4k</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags/Groups -->
+            <div class="bg-surface border border-white/5 rounded-2xl p-8 shadow-xl">
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Segments</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-bold text-gray-400">High Intent</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-bold text-gray-400">Tech Sector</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-bold text-gray-400">Decision Maker</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -20,18 +129,21 @@
 
 {% block extra_js %}
 <script>
-    async function fetchData() {
-        try {
-            const res = await api.get('/users/profiles/');
-            if(res.results) {
-                document.getElementById('profiles-list').innerHTML = `<pre>${JSON.stringify(res.results, null, 2)}</pre>`;
-            } else {
-                document.getElementById('profiles-list').innerHTML = `<div class="alert alert-info">No data found.</div>`;
-            }
-        } catch(e) {
-            document.getElementById('profiles-list').innerHTML = `<div class="alert alert-warning">Failed to load profiles.</div>`;
+    function updateProfileFromStorage() {
+        const userName = localStorage.getItem('user_full_name') || 'User';
+        const orgName = localStorage.getItem('organization_name') || 'Organization';
+
+        const nameEl = document.getElementById('profile-name');
+        const orgEl = document.getElementById('profile-org');
+        const initialsEl = document.getElementById('profile-initials');
+
+        if (nameEl) nameEl.textContent = userName;
+        if (orgEl) orgEl.textContent = orgName;
+        if (initialsEl) {
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            initialsEl.textContent = initials || '??';
         }
     }
-    fetchData();
+    document.addEventListener('DOMContentLoaded', updateProfileFromStorage);
 </script>
 {% endblock %}

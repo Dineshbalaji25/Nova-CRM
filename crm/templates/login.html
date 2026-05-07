@@ -1,292 +1,94 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Nova CRM</title>
     <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #EABF32;
-            --primary-hover: #D4A92B;
-            --bg-dark: #0f172a;
-            --gray-900: #0f172a;
-            --gray-800: #1e293b;
-            --gray-500: #64748b;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            display: flex;
-            min-height: 100vh;
-            background-color: var(--gray-900);
-            color: white;
-            overflow: hidden;
-        }
-
-        .split-layout {
-            display: flex;
-            width: 100%;
-        }
-
-        .left-pane {
-            flex: 1.2;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 4rem;
-            background: white;
-            color: var(--gray-900);
-            z-index: 10;
-            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
-        }
-
-        .right-pane {
-            flex: 2;
-            display: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @media (min-width: 992px) {
-            .right-pane {
-                display: block;
-            }
-        }
-
-        .bg-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.6) contrast(1.1);
-        }
-
-        .bg-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(234, 191, 50, 0.1) 100%);
-            backdrop-filter: blur(2px);
-        }
-
-        .auth-card {
-            width: 100%;
-            max-width: 400px;
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .logo-container {
-            margin-bottom: 3rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-box {
-            width: 40px;
-            height: 40px;
-            background: var(--primary);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            color: var(--gray-900);
-            box-shadow: 0 4px 12px rgba(234, 191, 50, 0.3);
-        }
-
-        .logo-text {
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-        }
-
-        .auth-header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.05em;
-        }
-
-        .auth-header p {
-            color: var(--gray-500);
-            margin-bottom: 2.5rem;
-            font-size: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--gray-500);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-            background: #f8fafc;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(234, 191, 50, 0.1);
-            background: white;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: var(--gray-900);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 1rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            background: #000;
-        }
-
-        .auth-footer {
-            margin-top: 2.5rem;
-            font-size: 0.875rem;
-            color: var(--gray-500);
-            text-align: center;
-        }
-
-        .auth-footer a {
-            color: var(--primary-hover);
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .right-content {
-            position: absolute;
-            bottom: 6rem;
-            left: 6rem;
-            color: white;
-            z-index: 10;
-            max-width: 500px;
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .right-content h2 {
-            font-size: 4rem;
-            font-weight: 900;
-            line-height: 0.9;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.06em;
-        }
-
-        .right-content p {
-            font-size: 1.125rem;
-            opacity: 0.8;
-            line-height: 1.6;
-        }
-
-        .error-message {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            display: none;
-            border: 1px solid #fecaca;
-        }
-
-        .error-message.show { display: block; }
+        body { font-family: 'Inter', sans-serif; }
+        .plus-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
 
-<body>
-    <div class="split-layout">
-        <div class="left-pane">
-            <div class="auth-card">
-                <div class="logo-container">
-                    <div class="logo-box">N</div>
-                    <span class="logo-text">NOVA CRM</span>
-                </div>
-                
-                <div class="auth-header">
-                    <h1>Sign In</h1>
-                    <p>Enter your credentials to access your workspace</p>
+<body class="bg-background text-gray-100 min-h-screen flex">
+    <div class="flex w-full overflow-hidden">
+        <!-- Left: Auth Form -->
+        <div class="flex-1 flex flex-col justify-center items-center p-8 lg:p-20 bg-gray-950/50 backdrop-blur-3xl z-10 border-r border-white/5 shadow-2xl">
+            <div class="w-full max-w-[400px] animate-slide-up">
+                <div class="flex items-center gap-3 mb-12">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                        <span class="text-white font-black text-xl">N</span>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-white plus-jakarta">NOVA CRM</span>
                 </div>
 
-                <div id="errorMessage" class="error-message"></div>
+                <div class="mb-10">
+                    <h1 class="text-4xl font-extrabold text-white tracking-tight mb-3 plus-jakarta">Sign In</h1>
+                    <p class="text-gray-500 font-medium">Enter your credentials to access your workspace</p>
+                </div>
 
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label class="form-label" for="email">Email Address</label>
-                        <input type="email" id="email" class="form-input" placeholder="name@company.com" required>
+                <div id="errorMessage" class="hidden mb-6 p-4 bg-danger/10 border border-danger/20 text-danger text-sm font-semibold rounded-xl"></div>
+
+                <form id="loginForm" class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest" for="email">Email Address</label>
+                        <input type="email" id="email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" placeholder="name@company.com" required>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="password">Password</label>
-                        <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest" for="password">Password</label>
+                            <a href="#" class="text-xs font-bold text-primary hover:text-primary-hover transition-colors">Forgot?</a>
+                        </div>
+                        <input type="password" id="password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" placeholder="••••••••" required>
                     </div>
 
-                    <button type="submit" class="btn-primary">Sign In to Dashboard</button>
+                    <button type="submit" class="w-full py-4 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary-hover hover:-translate-y-0.5 transition-all duration-200 shadow-xl shadow-primary/20">
+                        Sign In to Dashboard
+                    </button>
                 </form>
 
-                <div class="auth-footer">
-                    New here? <a href="/register">Create an Organization</a>
+                <div class="mt-10 text-center">
+                    <p class="text-gray-500 text-sm font-medium">
+                        New here? <a href="/register" class="text-gold font-bold hover:underline underline-offset-4">Create an Organization</a>
+                    </p>
                 </div>
             </div>
         </div>
-        
-        <div class="right-pane">
-            <!-- Using the generated premium background -->
-            <img src="{% static 'img/auth-bg.png' %}" alt="Abstract Background" class="bg-image">
-            <div class="bg-overlay"></div>
-            <div class="right-content">
-                <div class="text-accent mb-4" style="font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.75rem;">Platform Update v2.0</div>
-                <h2>The future of<br>Customer Relations.</h2>
-                <p>Powerful AI insights, seamless omnichannel communication, and a beautiful interface designed for high-growth teams.</p>
+
+        <!-- Right: Premium Branding -->
+        <div class="hidden lg:block flex-[1.5] relative overflow-hidden">
+            <img src="{% static 'img/auth-bg.png' %}" alt="Abstract Background" class="absolute inset-0 w-full h-full object-cover scale-110 blur-[2px] brightness-75">
+            <div class="absolute inset-0 bg-gradient-to-br from-background/90 via-background/40 to-transparent"></div>
+
+            <!-- Branding Content -->
+            <div class="absolute bottom-20 left-20 right-20 space-y-8 animate-fade-in">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 backdrop-blur-md">
+                    <span class="flex h-2 w-2 rounded-full bg-gold animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-white uppercase tracking-widest">Platform Update v2.0</span>
+                </div>
+                <h2 class="text-7xl font-extrabold text-white leading-[1.1] tracking-tight plus-jakarta">
+                    The future of<br><span class="text-primary">Customer Relations.</span>
+                </h2>
+                <p class="text-xl text-gray-300 max-w-xl font-medium leading-relaxed">
+                    Powerful AI insights, seamless omnichannel communication, and a beautiful interface designed for high-growth teams.
+                </p>
+
+                <div class="flex gap-4 pt-4">
+                    <div class="px-6 py-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
+                        <div class="text-2xl font-bold text-white">99.9%</div>
+                        <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Uptime</div>
+                    </div>
+                    <div class="px-6 py-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
+                        <div class="text-2xl font-bold text-white">2k+</div>
+                        <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Enterprises</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -300,13 +102,15 @@
             const errorDiv = document.getElementById('errorMessage');
             const btn = e.target.querySelector('button');
 
+            const originalText = btn.textContent;
             btn.textContent = 'Signing in...';
             btn.disabled = true;
-            errorDiv.classList.remove('show');
+            errorDiv.classList.add('hidden');
 
             try {
                 const data = await apiClient.login(email, password);
 
+                // Redundant storage for safety, though apiClient.login already does this in core.js
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
                 if (data.tenant_id) localStorage.setItem('tenant_id', data.tenant_id);
@@ -317,8 +121,8 @@
             } catch (err) {
                 console.error(err);
                 errorDiv.textContent = err.data?.detail || 'Invalid credentials. Please try again.';
-                errorDiv.classList.add('show');
-                btn.textContent = 'Sign In';
+                errorDiv.classList.remove('hidden');
+                btn.textContent = originalText;
                 btn.disabled = false;
             }
         });

@@ -1,4 +1,4 @@
-/* Command Palette CSS */
+/* Command Palette CSS - Premium Dark SaaS Edition */
 
 .cmd-overlay {
     position: fixed;
@@ -6,42 +6,42 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(4px);
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
     z-index: 10000;
     display: none;
-    /* Hidden by default */
     justify-content: center;
-    padding-top: 12vh;
+    padding-top: 15vh;
 }
 
 .cmd-overlay.active {
     display: flex;
-    animation: fadeIn 0.1s ease-out;
 }
 
 .cmd-modal {
-    width: 600px;
+    width: 640px;
     max-width: 90%;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    background: #1F2937; /* surface */
+    border-radius: 16px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     max-height: 500px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .cmd-input-wrapper {
     display: flex;
     align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cmd-icon {
-    color: #94a3b8;
-    margin-right: 12px;
+    color: #6b7280;
+    margin-right: 16px;
     width: 20px;
     height: 20px;
 }
@@ -51,12 +51,13 @@
     border: none;
     font-size: 16px;
     outline: none;
-    color: #0f172a;
+    color: white;
     background: transparent;
+    font-weight: 500;
 }
 
 .cmd-input::placeholder {
-    color: #94a3b8;
+    color: #4b5563;
 }
 
 .cmd-results {
@@ -65,31 +66,34 @@
 }
 
 .cmd-group-title {
-    padding: 8px 12px;
-    font-size: 11px;
-    font-weight: 600;
+    padding: 12px 16px 8px;
+    font-size: 10px;
+    font-weight: 800;
     text-transform: uppercase;
-    color: #64748b;
-    margin-top: 4px;
+    letter-spacing: 0.1em;
+    color: #6b7280;
 }
 
 .cmd-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 12px;
+    padding: 12px 16px;
     cursor: pointer;
-    border-radius: 6px;
-    color: #475569;
-    transition: background-color 0.1s;
+    border-radius: 10px;
+    color: #9ca3af;
+    transition: all 0.2s;
 }
 
 .cmd-item:hover,
 .cmd-item.selected {
-    background-color: #eef2ff;
-    /* Indigo-50 */
-    color: #4f46e5;
-    /* Indigo-600 */
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.cmd-item.selected {
+    background-color: rgba(79, 70, 229, 0.1);
+    color: #6366F1;
 }
 
 .cmd-item-icon {
@@ -104,30 +108,38 @@
 .cmd-item-text {
     flex: 1;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .cmd-item-meta {
-    font-size: 12px;
-    opacity: 0.7;
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.5;
 }
 
 .cmd-footer {
-    padding: 8px 16px;
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    font-size: 11px;
-    color: #94a3b8;
+    gap: 16px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .kbd-shortcut {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: inherit;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    color: #9ca3af;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
