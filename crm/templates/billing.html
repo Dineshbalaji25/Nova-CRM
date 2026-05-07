@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Billing - Nova CRM{% endblock %}
+{% block title %}Billing & Subscription - Nova CRM{% endblock %}
 
 {% block content %}
-<header
-    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 0 32px;">
-    <div>
-        <h2 class="text-lg font-bold">Billing</h2>
+<div class="animate-slide-up space-y-10">
+    <header>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight mb-1">Billing & Subscription</h1>
+        <p class="text-gray-500 font-medium">Manage your plan, invoices, and payment methods.</p>
+    </header>
+
+    <div id="billingApp" class="space-y-8">
+        <!-- Billing App JS will mount here -->
+        <div class="flex flex-col items-center justify-center py-40 gap-4">
+            <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Accessing financial records...</p>
+        </div>
     </div>
-</header>
-<div id="billingApp" style="padding: 0 32px;"></div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

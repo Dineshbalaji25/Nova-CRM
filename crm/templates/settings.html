@@ -3,148 +3,102 @@
 
 {% block title %}Setup Hub - Nova CRM{% endblock %}
 
-{% block extra_css %}
-<style>
-    .setup-card {
-        transition: all 0.2s ease-in-out;
-        border-left: 4px solid transparent;
-    }
-
-    .setup-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        border-left-color: var(--primary-500);
-    }
-
-    .setup-icon {
-        width: 40px;
-        height: 40px;
-        background: var(--primary-50);
-        color: var(--primary-600);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-    }
-</style>
-<link rel="stylesheet" href="{% static 'css/pages/settings.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="container-fluid p-4">
-    <header class="mb-4">
-        <h2 class="fw-bold">Setup</h2>
-        <p class="text-muted">Configure and customize your CRM instance.</p>
+<div class="animate-slide-up space-y-10">
+    <header>
+        <h1 class="text-3xl font-extrabold text-white tracking-tight mb-1">Setup Hub</h1>
+        <p class="text-gray-500 font-medium">Configure and customize your enterprise CRM instance.</p>
     </header>
 
-    <div class="row g-4">
-        <!-- General / Users & Control -->
-        <div class="col-12 col-xl-4 col-md-6">
-            <h5 class="fw-bold mb-3 mt-2 text-uppercase text-muted" style="font-size: 12px; letter-spacing: 0.5px;">
-                Users & Control</h5>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <a href="/team" class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3"><i data-lucide="users" size="20"></i></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Users & Control -->
+        <div class="space-y-4">
+            <h5 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Users & Control</h5>
+            <div class="space-y-3">
+                <a href="/team" class="flex items-center gap-4 p-4 bg-surface border border-white/5 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-all group">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                    </div>
                     <div>
-                        <h6 class="mb-0 fw-semibold">Users</h6><small class="text-muted">Manage active members and
-                            managers</small>
+                        <h6 class="text-sm font-bold text-white">Users</h6>
+                        <p class="text-[11px] text-gray-500 font-medium">Manage team members</p>
                     </div>
                 </a>
-            </div>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <a href="/roles" class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3"><i data-lucide="shield" size="20"></i></div>
+                <a href="/roles" class="flex items-center gap-4 p-4 bg-surface border border-white/5 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-all group">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
+                        <i data-lucide="shield" class="w-5 h-5"></i>
+                    </div>
                     <div>
-                        <h6 class="mb-0 fw-semibold">Security Roles</h6><small class="text-muted">Hierarchy-based data
-                            sharing restrictions</small>
+                        <h6 class="text-sm font-bold text-white">Security Roles</h6>
+                        <p class="text-[11px] text-gray-500 font-medium">Data sharing hierarchy</p>
                     </div>
                 </a>
-            </div>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <a href="/profiles" class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3"><i data-lucide="user-check" size="20"></i></div>
-                    <div>
-                        <h6 class="mb-0 fw-semibold">Security Profiles</h6><small class="text-muted">Module and
-                            Field-level access permissions</small>
+                <a href="/profiles" class="flex items-center gap-4 p-4 bg-surface border border-white/5 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-all group">
+                    <div class="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
+                        <i data-lucide="user-check" class="w-5 h-5"></i>
                     </div>
-                </a>
-            </div>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <a href="/territories" class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3"><i data-lucide="map" size="20"></i></div>
                     <div>
-                        <h6 class="mb-0 fw-semibold">Territories</h6><small class="text-muted">Geographical segment lead
-                            routing</small>
+                        <h6 class="text-sm font-bold text-white">Security Profiles</h6>
+                        <p class="text-[11px] text-gray-500 font-medium">Module permissions</p>
                     </div>
                 </a>
             </div>
         </div>
 
-        <!-- Automation -->
-        <div class="col-12 col-xl-4 col-md-6">
-            <h5 class="fw-bold mb-3 mt-2 text-uppercase text-muted" style="font-size: 12px; letter-spacing: 0.5px;">
-                Process Management</h5>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <a href="/blueprints" class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3"><i data-lucide="workflow" size="20"></i></div>
+        <!-- Process Management -->
+        <div class="space-y-4">
+            <h5 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Process Management</h5>
+            <div class="space-y-3">
+                <a href="/blueprints" class="flex items-center gap-4 p-4 bg-surface border border-white/5 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-all group">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <i data-lucide="workflow" class="w-5 h-5"></i>
+                    </div>
                     <div>
-                        <h6 class="mb-0 fw-semibold">Blueprints</h6><small class="text-muted">Enforce deal flows through
-                            state machines</small>
+                        <h6 class="text-sm font-bold text-white">Blueprints</h6>
+                        <p class="text-[11px] text-gray-500 font-medium">State-machine deal flows</p>
                     </div>
                 </a>
-            </div>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <a href="/workflows" class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3"><i data-lucide="git-branch" size="20"></i></div>
+                <a href="/workflows" class="flex items-center gap-4 p-4 bg-surface border border-white/5 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-all group">
+                    <div class="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center text-success group-hover:scale-110 transition-transform">
+                        <i data-lucide="git-branch" class="w-5 h-5"></i>
+                    </div>
                     <div>
-                        <h6 class="mb-0 fw-semibold">Workflow Rules</h6><small class="text-muted">Trigger emails,
-                            updates, webhooks instantly</small>
+                        <h6 class="text-sm font-bold text-white">Workflow Rules</h6>
+                        <p class="text-[11px] text-gray-500 font-medium">Automated triggers & webhooks</p>
                     </div>
                 </a>
-            </div>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <div class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3"><i data-lucide="list-checks" size="20"></i></div>
-                    <div>
-                        <h6 class="mb-0 fw-semibold">Assignment Rules</h6><small class="text-muted">Auto-assign webform
-                            leads sequentially</small>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <!-- Channels & Developer API -->
-        <div class="col-12 col-xl-4 col-md-6">
-            <h5 class="fw-bold mb-3 mt-2 text-uppercase text-muted" style="font-size: 12px; letter-spacing: 0.5px;">
-                Channels & APIs</h5>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <a href="/calls" class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3" style="background:#e0e7ff; color:#4f46e5;"><i data-lucide="phone"
-                            size="20"></i></div>
+        <!-- Channels & APIs -->
+        <div class="space-y-4">
+            <h5 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Channels & APIs</h5>
+            <div class="space-y-3">
+                <a href="/calls" class="flex items-center gap-4 p-4 bg-surface border border-white/5 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-all group">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <i data-lucide="phone" class="w-5 h-5"></i>
+                    </div>
                     <div>
-                        <h6 class="mb-0 fw-semibold">Telephony (Twilio)</h6><small class="text-muted">Configure
-                            cloud-pbx integrations</small>
+                        <h6 class="text-sm font-bold text-white">Telephony</h6>
+                        <p class="text-[11px] text-gray-500 font-medium">Twilio integration</p>
                     </div>
                 </a>
-            </div>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <a href="/emails" class="text-decoration-none text-dark d-flex p-3 align-items-center">
-                    <div class="setup-icon me-3" style="background:#e0e7ff; color:#4f46e5;"><i data-lucide="mail"
-                            size="20"></i></div>
+                <a href="/emails" class="flex items-center gap-4 p-4 bg-surface border border-white/5 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-all group">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                    </div>
                     <div>
-                        <h6 class="mb-0 fw-semibold">Email (IMAP) Sync</h6><small class="text-muted">Mirror emails
-                            natively as interactions</small>
+                        <h6 class="text-sm font-bold text-white">Email Sync</h6>
+                        <p class="text-[11px] text-gray-500 font-medium">Naitve IMAP mirroring</p>
                     </div>
                 </a>
-            </div>
-            <div class="card border-0 shadow-sm mb-3 setup-card">
-                <div class="text-decoration-none text-dark d-flex p-3 align-items-center" data-bs-toggle="modal"
-                    data-bs-target="#apiKeyModal" style="cursor: pointer;">
-                    <div class="setup-icon me-3" style="background:#fce7f3; color:#db2777;"><i data-lucide="key"
-                            size="20"></i></div>
+                <div class="flex items-center gap-4 p-4 bg-surface border border-white/5 rounded-2xl hover:bg-white/5 hover:border-white/10 transition-all group cursor-pointer" onclick="new bootstrap.Modal(document.getElementById('apiKeyModal')).show()">
+                    <div class="w-10 h-10 rounded-xl bg-danger/10 flex items-center justify-center text-danger group-hover:scale-110 transition-transform">
+                        <i data-lucide="key" class="w-5 h-5"></i>
+                    </div>
                     <div>
-                        <h6 class="mb-0 fw-semibold">API Credentials</h6><small class="text-muted">Generate access keys
-                            for integrations</small>
+                        <h6 class="text-sm font-bold text-white">API Credentials</h6>
+                        <p class="text-[11px] text-gray-500 font-medium">Headless integration keys</p>
                     </div>
                 </div>
             </div>
@@ -155,34 +109,34 @@
 <!-- API Key Modal -->
 <div class="modal fade" id="apiKeyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold">API Credentials</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content bg-surface border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+            <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                <h5 class="text-xl font-bold text-white">API Credentials</h5>
+                <button type="button" class="p-2 hover:bg-white/5 rounded-lg text-gray-500" data-bs-dismiss="modal"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="modal-body">
-                <div class="mb-4">
-                    <p class="text-muted text-sm">Use these API keys to authenticate headless integrations. Pass the key
-                        in the headers block as <code>Authorization: Api-Key sk_live_...</code></p>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0">Your Active Keys</h6>
-                        <button class="btn btn-primary btn-sm" onclick="createKey()">
-                            <i data-lucide="plus" size="14"></i> Generate New Key
+            <div class="p-6">
+                <div class="mb-8">
+                    <p class="text-sm text-gray-400 font-medium mb-6">Use these API keys to authenticate headless integrations. Pass the key in the headers block as <code class="bg-white/5 px-1.5 py-0.5 rounded text-primary">Authorization: Api-Key sk_live_...</code></p>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <h6 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Active Keys</h6>
+                        <button class="btn-premium-primary py-1.5 px-3 text-xs" onclick="createKey()">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Generate Key
                         </button>
                     </div>
-                    <!-- The JS populates this container -->
-                    <div id="apiKeyContainer">
-                        <div class="text-center py-4 text-muted">
-                            <div class="spinner-border spinner-border-sm"></div>
+
+                    <div id="apiKeyContainer" class="space-y-3">
+                        <div class="flex items-center justify-center py-10">
+                            <div class="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                         </div>
                     </div>
                 </div>
 
-                <div
-                    style="background: var(--gray-50); padding: 16px; border-radius: 8px; border: 1px dashed var(--gray-300);">
-                    <h6 class="fw-bold text-sm mb-2"><i data-lucide="terminal" size="14" class="me-1"></i> Quick Start
-                        (cURL)</h6>
-                    <pre class="mb-0" style="font-size: 11px; color: var(--gray-600); overflow-x: auto;"><code>curl -X GET {{ request.scheme }}://{{ request.get_host }}/api/v1/crm/contacts/ \
+                <div class="p-4 bg-white/[0.02] border border-white/5 rounded-xl">
+                    <h6 class="text-xs font-bold text-white mb-3 flex items-center gap-2">
+                        <i data-lucide="terminal" class="w-3.5 h-3.5 text-primary"></i> Quick Start (cURL)
+                    </h6>
+                    <pre class="text-[11px] text-gray-400 overflow-x-auto"><code>curl -X GET {{ request.scheme }}://{{ request.get_host }}/api/v1/crm/contacts/ \
   -H "Authorization: Api-Key your_api_key_here"</code></pre>
                 </div>
             </div>
