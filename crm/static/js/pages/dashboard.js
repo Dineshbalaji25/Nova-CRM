@@ -66,12 +66,46 @@ function updateKpi(id, value) {
     }
 }
 
+function updateKPI(id, value, trend, icon, suffix = '') {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.innerText = value;
+
+    // Update trend badge if exists in parent
+    const card = el.closest('.kpi-card-modern');
+    if (card) {
+        const badge = card.querySelector('.rounded-full');
+        if (badge) {
+            badge.classList.remove('animate-pulse');
+            badge.innerHTML = `<i data-lucide="${icon}" class="w-3 h-3"></i> ${Math.abs(trend)}${suffix ? ' ' + suffix : '%'}`;
+            // Toggle classes based on trend
+            if (trend >= 0) {
+                badge.classList.remove('bg-danger/10', 'border-danger/20', 'text-danger');
+                badge.classList.add('bg-success/10', 'border-success/20', 'text-success');
+            } else {
+                badge.classList.remove('bg-success/10', 'border-success/20', 'text-success');
+                badge.classList.add('bg-danger/10', 'border-danger/20', 'text-danger');
+            }
+        }
+    }
+    if (window.lucide) lucide.createIcons();
+}
+
 function renderActivities(activities) {
     const container = document.getElementById('activity-list');
     if (!container) return;
 
     if (activities.length === 0) {
-        container.innerHTML = '<div class="text-muted text-sm p-4 text-center">No recent activity to display.</div>';
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-10 text-center opacity-50">
+                <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-3">
+                    <i data-lucide="inbox" class="w-6 h-6"></i>
+                </div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500">No recent activity</p>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
         return;
     }
 
@@ -84,6 +118,7 @@ function renderActivities(activities) {
                 <div class="font-bold text-sm truncate">${act.subject}</div>
                 <div class="text-xs text-muted mt-1">${new Date(act.occurred_at || act.created_at).toLocaleTimeString()} • ${act.activity_type.toUpperCase()}</div>
             </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-700 group-hover:text-white transition-colors"></i>
         </div>
     `).join('');
 
@@ -95,7 +130,7 @@ function renderActivities(activities) {
 }
 
 function getActivityIcon(type) {
-    switch (type) {
+    switch (type.toLowerCase()) {
         case 'call': return 'phone';
         case 'email': return 'mail';
         case 'meeting': return 'calendar';
