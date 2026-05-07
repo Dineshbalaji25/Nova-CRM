@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -8,9 +8,8 @@
     <title>{% block title %}Nova CRM{% endblock %}</title>
     <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
 
-    <!-- 1. BOOTSTRAP & GLOBAL STYLES -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <!-- 1. TAILWIND & GLOBAL STYLES -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 
     <!-- 2. PAGE SPECIFIC CSS -->
     {% block extra_css %}{% endblock %}
@@ -19,76 +18,100 @@
     <link rel="stylesheet" href="{% static 'css/pages/command-palette.css' %}">
 
     <!-- 4. FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- 5. ICONS -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <style>
+        .nav-item-modern {
+            @apply flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 text-sm font-medium transition-all duration-200 hover:bg-white/5 hover:text-white;
+        }
+        .nav-item-modern.active {
+            @apply bg-primary/10 text-primary hover:bg-primary/20;
+        }
+    </style>
 </head>
 
-<body>
+<body class="bg-background text-gray-100">
     <div class="app-shell">
         <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <i data-lucide="zap" class="text-accent me-2"></i>
-                NOVA CRM
+        <aside class="sidebar w-64 border-r border-white/5 flex flex-col bg-gray-950/50 backdrop-blur-xl">
+            <div class="h-16 flex items-center px-6 border-b border-white/5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+                        <i data-lucide="zap" class="text-white w-5 h-5"></i>
+                    </div>
+                    <span class="font-bold tracking-tight text-white">NOVA CRM</span>
+                </div>
             </div>
-            <nav>
-                <div class="nav-category">Main Menu</div>
-                <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" id="nav-dashboard">
-                    <i data-lucide="layout-dashboard" size="18"></i> <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="/companies" class="nav-item {% if request.path == '/companies' %}active{% endif %}" id="nav-companies">
-                    <i data-lucide="building" size="18"></i> <span class="nav-text">Companies</span>
-                </a>
-                <a href="/contacts" class="nav-item {% if request.path == '/contacts' %}active{% endif %}" id="nav-contacts">
-                    <i data-lucide="users" size="18"></i> <span class="nav-text">Contacts</span>
-                </a>
-                <a href="/deals" class="nav-item {% if request.path == '/deals' %}active{% endif %}" id="nav-deals">
-                    <i data-lucide="bar-chart-2" size="18"></i> <span class="nav-text">Deals</span>
-                </a>
-                
-                <div class="nav-category">Sales & CPQ</div>
-                <a href="/products" class="nav-item {% if request.path == '/products' %}active{% endif %}" id="nav-products">
-                    <i data-lucide="package" size="18"></i> <span class="nav-text">Products</span>
-                </a>
-                <a href="/quotes" class="nav-item {% if request.path == '/quotes' %}active{% endif %}" id="nav-quotes">
-                    <i data-lucide="file-text" size="18"></i> <span class="nav-text">Quotes</span>
-                </a>
-                <a href="/sales-orders" class="nav-item {% if request.path == '/sales-orders' %}active{% endif %}" id="nav-sales-orders">
-                    <i data-lucide="shopping-cart" size="18"></i> <span class="nav-text">Orders</span>
-                </a>
 
-                <div class="nav-category">Omnichannel</div>
-                <a href="/calls" class="nav-item {% if request.path == '/calls' %}active{% endif %}" id="nav-calls">
-                    <i data-lucide="phone" size="18"></i> <span class="nav-text">Calls</span>
-                </a>
-                <a href="/emails" class="nav-item {% if request.path == '/emails' %}active{% endif %}" id="nav-emails">
-                    <i data-lucide="mail" size="18"></i> <span class="nav-text">Emails</span>
-                </a>
+            <div class="flex-1 overflow-y-auto py-6 px-3 space-y-8">
+                <!-- Main Menu -->
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Main Menu</p>
+                    <a href="/dashboard" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/dashboard' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                    </a>
+                    <a href="/companies" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/companies' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="building" class="w-4 h-4"></i> Companies
+                    </a>
+                    <a href="/contacts" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/contacts' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="users" class="w-4 h-4"></i> Contacts
+                    </a>
+                    <a href="/deals" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/deals' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Deals
+                    </a>
+                </div>
 
-                <div class="nav-category">System</div>
-                <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" id="nav-settings">
-                    <i data-lucide="settings" size="18"></i> <span class="nav-text">Settings</span>
-                </a>
-                <a href="/billing" class="nav-item {% if request.path == '/billing' %}active{% endif %}" id="nav-billing">
-                    <i data-lucide="credit-card" size="18"></i> <span class="nav-text">Billing</span>
-                </a>
-                <a href="/login" class="nav-item mt-4" id="nav-logout" style="color: var(--danger); opacity: 0.8;">
-                    <i data-lucide="log-out" size="18"></i> <span class="nav-text">Logout</span>
-                </a>
-            </nav>
+                <!-- Sales & CPQ -->
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Sales & CPQ</p>
+                    <a href="/products" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/products' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="package" class="w-4 h-4"></i> Products
+                    </a>
+                    <a href="/quotes" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/quotes' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> Quotes
+                    </a>
+                    <a href="/sales-orders" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/sales-orders' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i> Orders
+                    </a>
+                </div>
+
+                <!-- Omnichannel -->
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Omnichannel</p>
+                    <a href="/calls" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/calls' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="phone" class="w-4 h-4"></i> Calls
+                    </a>
+                    <a href="/emails" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/emails' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="mail" class="w-4 h-4"></i> Emails
+                    </a>
+                </div>
+
+                <!-- System -->
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">System</p>
+                    <a href="/settings" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/settings' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="settings" class="w-4 h-4"></i> Settings
+                    </a>
+                    <a href="/billing" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all {% if request.path == '/billing' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:bg-white/5 hover:text-white{% endif %}">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i> Billing
+                    </a>
+                </div>
+            </div>
 
             <!-- User Profile (Bottom) -->
-            <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-500), var(--accent-600)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--gray-900);" id="user-initials">
-                        JD</div>
-                    <div class="flex-column overflow-hidden">
-                        <div class="text-xs font-bold text-white truncate" id="user-full-name">John Doe</div>
-                        <div class="text-xs truncate" style="color: var(--gray-500);" id="user-org-name">Acme Corp</div>
+            <div class="p-4 border-t border-white/5 bg-white/[0.02]">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-gold rounded-lg flex items-center justify-center font-bold text-gray-900" id="user-initials">JD</div>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-xs font-bold text-white truncate" id="user-full-name">John Doe</span>
+                        <span class="text-[10px] text-gray-500 truncate" id="user-org-name">Acme Corp</span>
                     </div>
+                    <button class="ml-auto text-gray-500 hover:text-white transition-colors" id="nav-logout">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
         </aside>
@@ -97,25 +120,30 @@
         <div class="main-content">
             <!-- TOPBAR -->
             <header class="topbar">
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <button class="btn-icon d-md-none" id="mobile-menu-btn">
-                        <i data-lucide="menu" size="20"></i>
+                <div class="flex items-center gap-6">
+                    <button class="p-2 hover:bg-white/5 rounded-lg d-md-none" id="mobile-menu-btn">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
                     <!-- Search Trigger -->
-                    <div class="d-none d-sm-block" style="position: relative; width: 320px;" onclick="window.dispatchEvent(new KeyboardEvent('keydown', {'key': 'k', 'metaKey': true}))">
-                        <i data-lucide="search" size="16" style="position: absolute; left: 12px; top: 12px; color: var(--gray-400);"></i>
-                        <div style="height: 40px; padding-left: 40px; display: flex; align-items: center; background: var(--gray-100); border-radius: 10px; color: var(--gray-500); font-size: 13px; font-weight: 500; border: 1px solid transparent; transition: all 0.2s;">
-                            Search anything... <span style="margin-left: auto; margin-right: 12px; opacity: 0.5; font-size: 10px;">⌘K</span>
+                    <div class="hidden sm:flex relative group cursor-pointer" onclick="window.dispatchEvent(new KeyboardEvent('keydown', {'key': 'k', 'metaKey': true}))">
+                        <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-gray-500 group-hover:text-gray-300 transition-colors"></i>
+                        <div class="h-9 w-80 pl-10 pr-4 flex items-center bg-white/5 border border-white/10 rounded-lg text-gray-400 text-xs font-medium group-hover:bg-white/10 transition-all">
+                            Search anything... <span class="ml-auto text-[10px] opacity-50 bg-white/10 px-1.5 py-0.5 rounded">⌘K</span>
                         </div>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <button class="btn-icon"><i data-lucide="bell" size="18"></i></button>
-                    <button class="btn-icon"><i data-lucide="help-circle" size="18"></i></button>
-                    <div style="height: 24px; width: 1px; background: var(--gray-200); margin: 0 8px;"></div>
-                    <button class="btn btn-accent" onclick="openGenericModal('Contact', '/crm/contacts/', ['First Name', 'Last Name', 'Email'])">
-                        <i data-lucide="plus" size="16"></i> Create
+                <div class="flex items-center gap-2">
+                    <button class="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all relative">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-background"></span>
+                    </button>
+                    <button class="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                        <i data-lucide="help-circle" class="w-5 h-5"></i>
+                    </button>
+                    <div class="w-px h-6 bg-white/10 mx-2"></div>
+                    <button class="btn-premium-primary" onclick="openGenericModal('Contact', '/crm/contacts/', ['First Name', 'Last Name', 'Email'])">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Create
                     </button>
                 </div>
             </header>
@@ -127,31 +155,21 @@
                 <!-- GENERIC CREATE MODAL -->
                 <div class="modal fade" id="genericCreateModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content border-0 shadow-lg">
-                            <div class="modal-header border-0 pb-0">
-                                <h5 class="modal-title fw-bold" id="genericModalTitle">Create Record</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                        <div class="modal-content bg-surface border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+                            <div class="p-6 border-b border-white/5">
+                                <h5 class="text-xl font-bold text-white" id="genericModalTitle">Create Record</h5>
                             </div>
-                            <div class="modal-body">
+                            <div class="p-6">
                                 <form id="genericCreateForm">
-                                    <div id="genericModalFields">
+                                    <div id="genericModalFields" class="space-y-4">
                                         <!-- Fields dynamically injected -->
-                                        <div class="mb-3">
-                                            <label
-                                                class="form-label text-xs fw-bold text-muted text-uppercase">Name</label>
-                                            <input type="text" name="name" class="form-control" required
-                                                placeholder="Record Name">
-                                        </div>
                                     </div>
-                                    <div id="genericModalError" class="alert alert-danger d-none mt-3"
-                                        style="font-size: 13px;"></div>
+                                    <div id="genericModalError" class="hidden mt-4 p-3 bg-danger/10 border border-danger/20 text-danger text-xs rounded-lg"></div>
                                 </form>
                             </div>
-                            <div class="modal-footer border-0 pt-0">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary" onclick="submitGenericForm()">Save
-                                    Record</button>
+                            <div class="p-6 bg-white/[0.02] border-t border-white/5 flex justify-end gap-3">
+                                <button type="button" class="btn-premium-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn-premium-primary" onclick="submitGenericForm()">Save Record</button>
                             </div>
                         </div>
                     </div>
@@ -207,7 +225,7 @@
             fieldsContainer.innerHTML = ''; // reset
 
             const err = document.getElementById('genericModalError');
-            if (err) err.classList.add('d-none');
+            if (err) err.classList.add('hidden');
 
             document.getElementById('genericCreateForm').reset();
 
@@ -215,9 +233,9 @@
             (fields || ['name']).forEach(f => {
                 const isEmail = f.toLowerCase().includes('email');
                 fieldsContainer.innerHTML += `
-                    <div class="mb-3">
-                        <label class="form-label text-xs fw-bold text-muted text-uppercase">${f}</label>
-                        <input type="${isEmail ? 'email' : 'text'}" name="${f.toLowerCase().replace(/ /g, '_')}" class="form-control" placeholder="Enter ${f}" required>
+                    <div class="space-y-1.5">
+                        <label class="premium-label">${f}</label>
+                        <input type="${isEmail ? 'email' : 'text'}" name="${f.toLowerCase().replace(/ /g, '_')}" class="premium-input" placeholder="Enter ${f}" required>
                     </div>
                 `;
             });
@@ -236,7 +254,7 @@
             const formData = new FormData(form);
             const payload = Object.fromEntries(formData.entries());
             const errDiv = document.getElementById('genericModalError');
-            errDiv.classList.add('d-none');
+            errDiv.classList.add('hidden');
 
             try {
                 await api.post(currentCreateEndpoint, payload);
@@ -248,20 +266,20 @@
             } catch (err) {
                 console.error('Creation failed', err);
                 errDiv.textContent = err.data?.detail || JSON.stringify(err.data) || 'Failed to create record';
-                errDiv.classList.remove('d-none');
+                errDiv.classList.remove('hidden');
             }
         }
 
         // Setup Mobile Sidebar Interactivity
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.createElement('div');
-        overlay.className = 'sidebar-overlay d-md-none';
+        overlay.className = 'fixed inset-0 bg-background/80 backdrop-blur-sm z-[45] hidden';
         document.body.appendChild(overlay);
 
         function toggleMobileSidebar(force) {
-            const isOpen = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
-            sidebar.classList.toggle('open', isOpen);
-            overlay.classList.toggle('open', isOpen);
+            const isOpen = typeof force === 'boolean' ? force : sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', !isOpen);
+            overlay.classList.toggle('hidden', !isOpen);
         }
 
         // Attach to the hamburger button
@@ -271,12 +289,6 @@
             toggleMobileSidebar();
         });
 
-        sidebar.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768 && !sidebar.classList.contains('open')) {
-                toggleMobileSidebar(true);
-            }
-        });
-
         overlay.addEventListener('click', () => toggleMobileSidebar(false));
 
         sidebar.querySelectorAll('.nav-item').forEach(el => {
@@ -284,7 +296,7 @@
         });
     </script>
     {% block extra_js %}{% endblock %}
-    <!-- BOOTSTRAP JS -->
+    <!-- BOOTSTRAP JS (Required for Modals) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

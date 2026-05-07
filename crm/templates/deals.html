@@ -4,69 +4,86 @@
 {% block title %}Deals Pipeline - Nova CRM{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/pages/deals.css' %}">
+<style>
+    .kanban-board {
+        @apply flex gap-6 overflow-x-auto pb-6 -mx-8 px-8 min-h-[calc(100vh-280px)];
+        scrollbar-width: thin;
+    }
+    .kanban-column {
+        @apply flex-shrink-0 w-80 flex flex-col gap-4;
+    }
+    .kanban-card {
+        @apply bg-surface border border-white/5 rounded-xl p-4 shadow-lg hover:border-white/10 hover:shadow-2xl transition-all cursor-grab active:cursor-grabbing;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="animate-slide-up">
-    <header class="d-flex justify-content-between align-items-center mb-4">
+<div class="animate-slide-up space-y-8">
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold mb-1">Sales Pipeline</h1>
-            <p class="text-sm text-muted">Track and manage your deals through custom stages.</p>
+            <div class="flex items-center gap-3 mb-1">
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Sales Pipeline</h1>
+                <span class="px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary uppercase tracking-widest">Enterprise</span>
+            </div>
+            <p class="text-gray-500 font-medium">Track and manage your deals through custom stages.</p>
         </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-secondary"><i data-lucide="settings" size="16"></i> Pipeline Settings</button>
-            <button class="btn btn-accent" onclick="openAddDealModal()">
-                <i data-lucide="plus" size="16"></i> New Deal
+        <div class="flex items-center gap-3">
+            <button class="btn-premium-secondary"><i data-lucide="settings" class="w-4 h-4"></i> Pipeline Settings</button>
+            <button class="btn-premium-primary" onclick="openAddDealModal()">
+                <i data-lucide="plus" class="w-4 h-4"></i> New Deal
             </button>
         </div>
     </header>
 
-    <div class="kanban-container">
-        <div class="kanban-board" id="kanbanBoard">
-            <!-- Columns will be injected here -->
-            <div style="padding: 100px; text-align: center; width: 100%;">
-                <div class="spinner-border text-accent mb-3"></div>
-                <div class="text-muted">Orchestrating your pipeline...</div>
-            </div>
+    <div class="kanban-board" id="kanbanBoard">
+        <!-- Columns will be injected here -->
+        <div class="w-full flex flex-col items-center justify-center py-40 gap-4">
+            <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Orchestrating your pipeline...</p>
         </div>
     </div>
 </div>
 
 <!-- ADD DEAL MODAL -->
-<div id="addDealModal" class="cmd-overlay" style="display: none; align-items: center; padding-top: 0;">
-    <div class="cmd-modal" style="width: 450px;">
-        <div class="cmd-header">
-            <h3 class="text-lg">Create New Deal</h3>
-            <button class="btn-icon ms-auto" onclick="closeAddDealModal()"><i data-lucide="x" size="18"></i></button>
+<div id="addDealModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+    <div class="bg-surface border border-white/10 w-full max-w-md rounded-2xl shadow-2xl animate-slide-up">
+        <div class="p-6 border-b border-white/5 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white">Create New Deal</h3>
+            <button class="p-2 hover:bg-white/5 rounded-lg transition-colors" onclick="closeAddDealModal()">
+                <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
+            </button>
         </div>
-        <form id="addDealForm" style="padding: 24px;">
-            <div class="mb-3">
-                <label class="form-label">Deal Title</label>
-                <input type="text" name="title" class="form-input" placeholder="e.g. Enterprise Expansion" required>
+        <form id="addDealForm" class="p-6 space-y-5">
+            <div class="space-y-1.5">
+                <label class="premium-label">Deal Title</label>
+                <input type="text" name="title" class="premium-input" placeholder="e.g. Enterprise Expansion" required>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Amount</label>
-                    <input type="number" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="premium-label">Amount</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-gray-500 text-sm">$</span>
+                        <input type="number" name="amount" class="premium-input pl-7" placeholder="0.00" step="0.01" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Stage</label>
-                    <select id="stageSelect" name="stage" class="form-input" required>
+                <div class="space-y-1.5">
+                    <label class="premium-label">Stage</label>
+                    <select id="stageSelect" name="stage" class="premium-input appearance-none" required>
                         <!-- Stages will be loaded here -->
                     </select>
                 </div>
             </div>
-            <div class="mb-4">
-                <label class="form-label">Associated Company</label>
-                <select id="companySelect" name="company" class="form-input">
+            <div class="space-y-1.5">
+                <label class="premium-label">Associated Company</label>
+                <select id="companySelect" name="company" class="premium-input appearance-none">
                     <option value="">None</option>
                 </select>
             </div>
             <input type="hidden" id="pipelineId" name="pipeline">
-            <div class="d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-secondary" onclick="closeAddDealModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary">Create Deal</button>
+            <div class="pt-4 flex justify-end gap-3">
+                <button type="button" class="btn-premium-secondary" onclick="closeAddDealModal()">Cancel</button>
+                <button type="submit" class="btn-premium-primary">Create Deal</button>
             </div>
         </form>
     </div>

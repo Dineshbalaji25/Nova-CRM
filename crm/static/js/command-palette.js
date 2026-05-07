@@ -1,183 +1,145 @@
-// Command Palette - Standard JS implementation
+/**
+ * Nova CRM Command Palette
+ * Inspired by Linear (⌘K)
+ */
 
-// State
-var cmdIsOpen = false;
-var cmdSelectedIndex = 0;
-var cmdResults = [];
+class CommandPalette {
+    constructor() {
+        this.isOpen = false;
+        this.selectedIndex = 0;
+        this.commands = [
+            { id: 'dash', title: 'Go to Dashboard', icon: 'layout-dashboard', meta: 'Navigation', action: () => window.location.href = '/dashboard' },
+            { id: 'cont', title: 'Search Contacts', icon: 'users', meta: 'CRM', action: () => window.location.href = '/contacts' },
+            { id: 'comp', title: 'Search Companies', icon: 'building', meta: 'CRM', action: () => window.location.href = '/companies' },
+            { id: 'deal', title: 'Pipeline View', icon: 'bar-chart-2', meta: 'Sales', action: () => window.location.href = '/deals' },
+            { id: 'task', title: 'My Tasks', icon: 'check-square', meta: 'Productivity', action: () => window.location.href = '/tasks' },
+            { id: 'set', title: 'System Settings', icon: 'settings', meta: 'Admin', action: () => window.location.href = '/settings' },
+            { id: 'bill', title: 'Billing & Plans', icon: 'credit-card', meta: 'Admin', action: () => window.location.href = '/billing' },
+        ];
 
-// DOM Elements
-var cmdOverlay, cmdInput, cmdResultsContainer;
+        this.filteredCommands = [...this.commands];
+        this.init();
+    }
 
-// Data (Mock)
-var cmdStaticItems = [
-    { title: 'Dashboard', url: 'dashboard', icon: 'layout-dashboard', group: 'Navigation' },
-    { title: 'Deals Pipeline', url: 'deals', icon: 'bar-chart-2', group: 'Navigation' },
-    { title: 'Contacts', url: 'contacts', icon: 'users', group: 'Navigation' },
-    { title: 'Workflows', url: 'workflows', icon: 'git-branch', group: 'Navigation' },
-    { title: 'Settings', url: 'settings', icon: 'settings', group: 'Navigation' }
-];
+    init() {
+        this.createEl();
+        this.bindEvents();
+    }
 
-document.addEventListener('DOMContentLoaded', function () {
-    initCommandPalette();
+    createEl() {
+        this.overlay = document.createElement('div');
+        this.overlay.className = 'cmd-overlay';
+        this.overlay.innerHTML = `
+            <div class="cmd-modal">
+                <div class="cmd-input-wrapper">
+                    <i data-lucide="search" class="cmd-icon"></i>
+                    <input type="text" class="cmd-input" placeholder="Type a command or search..." spellcheck="false">
+                </div>
+                <div class="cmd-results">
+                    <div class="cmd-group-title">Suggestions</div>
+                    <div id="cmd-list"></div>
+                </div>
+                <div class="cmd-footer">
+                    <span><span class="kbd-shortcut">↑↓</span> to navigate</span>
+                    <span><span class="kbd-shortcut">↵</span> to select</span>
+                    <span><span class="kbd-shortcut">esc</span> to close</span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(this.overlay);
+        this.input = this.overlay.querySelector('.cmd-input');
+        this.listEl = this.overlay.querySelector('#cmd-list');
+
+        if (window.lucide) lucide.createIcons();
+    }
+
+    bindEvents() {
+        // Toggle with Cmd/Ctrl + K
+        window.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                this.toggle();
+            }
+            if (e.key === 'Escape' && this.isOpen) this.close();
+
+            if (this.isOpen) {
+                if (e.key === 'ArrowDown') { e.preventDefault(); this.moveSelection(1); }
+                if (e.key === 'ArrowUp') { e.preventDefault(); this.moveSelection(-1); }
+                if (e.key === 'Enter') { e.preventDefault(); this.executeSelected(); }
+            }
+        });
+
+        this.input.addEventListener('input', (e) => this.filter(e.target.value));
+
+        this.overlay.addEventListener('click', (e) => {
+            if (e.target === this.overlay) this.close();
+        });
+    }
+
+    toggle() {
+        this.isOpen ? this.close() : this.open();
+    }
+
+    open() {
+        this.isOpen = true;
+        this.overlay.classList.add('active');
+        this.input.value = '';
+        this.filter('');
+        setTimeout(() => this.input.focus(), 10);
+    }
+
+    close() {
+        this.isOpen = false;
+        this.overlay.classList.remove('active');
+    }
+
+    filter(query) {
+        const q = query.toLowerCase();
+        this.filteredCommands = this.commands.filter(c =>
+            c.title.toLowerCase().includes(q) || c.meta.toLowerCase().includes(q)
+        );
+        this.selectedIndex = 0;
+        this.render();
+    }
+
+    moveSelection(dir) {
+        this.selectedIndex += dir;
+        if (this.selectedIndex < 0) this.selectedIndex = this.filteredCommands.length - 1;
+        if (this.selectedIndex >= this.filteredCommands.length) this.selectedIndex = 0;
+        this.render();
+    }
+
+    executeSelected() {
+        const cmd = this.filteredCommands[this.selectedIndex];
+        if (cmd) {
+            cmd.action();
+            this.close();
+        }
+    }
+
+    render() {
+        this.listEl.innerHTML = this.filteredCommands.map((cmd, i) => `
+            <div class="cmd-item ${i === this.selectedIndex ? 'selected' : ''}" data-index="${i}">
+                <div class="cmd-item-icon">
+                    <i data-lucide="${cmd.icon}"></i>
+                </div>
+                <div class="cmd-item-text">${cmd.title}</div>
+                <div class="cmd-item-meta">${cmd.meta}</div>
+            </div>
+        `).join('');
+
+        if (window.lucide) lucide.createIcons();
+
+        this.listEl.querySelectorAll('.cmd-item').forEach(el => {
+            el.addEventListener('click', () => {
+                this.selectedIndex = parseInt(el.dataset.index);
+                this.executeSelected();
+            });
+        });
+    }
+}
+
+// Initialize on Load
+document.addEventListener('DOMContentLoaded', () => {
+    window.cmdPalette = new CommandPalette();
 });
-
-function initCommandPalette() {
-    // 1. Inject HTML Overlay
-    var html = `
-    <div id="cmd-overlay" class="cmd-overlay">
-        <div class="cmd-modal">
-            <div class="cmd-input-wrapper">
-                <i data-lucide="search" class="cmd-icon"></i>
-                <input type="text" id="cmd-input" class="cmd-input" placeholder="Search pages, deals, contacts..." autocomplete="off">
-                <span class="kbd-shortcut">Esc</span>
-            </div>
-            <div id="cmd-results" class="cmd-results"></div>
-            <div class="cmd-footer">
-                <span><span class="kbd-shortcut">↑</span> <span class="kbd-shortcut">↓</span> to navigate</span>
-                <span><span class="kbd-shortcut">Enter</span> to select</span>
-            </div>
-        </div>
-    </div>`;
-
-    document.body.insertAdjacentHTML('beforeend', html);
-
-    // 2. Cache Elements
-    cmdOverlay = document.getElementById('cmd-overlay');
-    cmdInput = document.getElementById('cmd-input');
-    cmdResultsContainer = document.getElementById('cmd-results');
-
-    // 3. Bind Events
-    document.addEventListener('keydown', function (e) {
-        // Toggle Cmd+K / Ctrl+K
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-            e.preventDefault();
-            toggleCommandPalette();
-        }
-        // Close on Esc
-        if (e.key === 'Escape' && cmdIsOpen) {
-            closeCommandPalette();
-        }
-    });
-
-    cmdInput.addEventListener('input', handleCmdInput);
-    cmdInput.addEventListener('keydown', handleCmdNavigation);
-
-    cmdOverlay.addEventListener('click', function (e) {
-        if (e.target === cmdOverlay) closeCommandPalette();
-    });
-
-    if (window.lucide) window.lucide.createIcons();
-}
-
-function toggleCommandPalette() {
-    if (cmdIsOpen) closeCommandPalette();
-    else openCommandPalette();
-}
-
-function openCommandPalette() {
-    cmdIsOpen = true;
-    cmdOverlay.classList.add('active');
-    cmdInput.value = '';
-    cmdInput.focus();
-    renderCmdResults(cmdStaticItems); // Show default
-    if (window.lucide) window.lucide.createIcons();
-}
-
-function closeCommandPalette() {
-    cmdIsOpen = false;
-    cmdOverlay.classList.remove('active');
-}
-
-function handleCmdInput(e) {
-    var query = e.target.value.toLowerCase().trim();
-
-    if (query === '') {
-        renderCmdResults(cmdStaticItems);
-        return;
-    }
-
-    // Simple filter
-    var filtered = cmdStaticItems.filter(function (item) {
-        return item.title.toLowerCase().includes(query);
-    });
-
-    // Mock "Remote" Results
-    if (query.length > 2) {
-        if ('alice'.includes(query)) filtered.push({ title: 'Alice Smith (Contact)', url: 'contacts.html?id=1', icon: 'user', group: 'Contacts' });
-        if ('acme'.includes(query)) filtered.push({ title: 'Acme Corp (Company)', url: 'companies.html?id=2', icon: 'building', group: 'Companies' });
-    }
-
-    renderCmdResults(filtered);
-}
-
-function renderCmdResults(items) {
-    cmdResults = items;
-    cmdSelectedIndex = 0;
-
-    if (items.length === 0) {
-        cmdResultsContainer.innerHTML = '<div style="padding:12px;text-align:center;color:#94a3b8;">No results found</div>';
-        return;
-    }
-
-    var html = '';
-    var lastGroup = '';
-
-    items.forEach(function (item, index) {
-        if (item.group && item.group !== lastGroup) {
-            html += `<div class="cmd-group-title">${item.group}</div>`;
-            lastGroup = item.group;
-        }
-
-        var activeClass = index === 0 ? 'selected' : '';
-        html += `
-        <div class="cmd-item ${activeClass}" data-index="${index}" onclick="cmdSelectItem(${index})">
-            <div class="cmd-item-icon"><i data-lucide="${item.icon}" width="18"></i></div>
-            <div class="cmd-item-text">${item.title}</div>
-            ${index === 0 ? '<i data-lucide="corner-down-left" width="14" style="opacity:0.5"></i>' : ''}
-        </div>`;
-    });
-
-    cmdResultsContainer.innerHTML = html;
-
-    // Re-run icons for new content
-    if (window.lucide) window.lucide.createIcons();
-}
-
-function handleCmdNavigation(e) {
-    if (!cmdResults.length) return;
-
-    if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        cmdSelectedIndex = (cmdSelectedIndex + 1) % cmdResults.length;
-        updateCmdSelection();
-    } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        cmdSelectedIndex = (cmdSelectedIndex - 1 + cmdResults.length) % cmdResults.length;
-        updateCmdSelection();
-    } else if (e.key === 'Enter') {
-        e.preventDefault();
-        cmdSelectItem(cmdSelectedIndex);
-    }
-}
-
-function updateCmdSelection() {
-    var items = cmdResultsContainer.querySelectorAll('.cmd-item');
-    items.forEach(function (el) { el.classList.remove('selected'); });
-
-    var selected = items[cmdSelectedIndex];
-    if (selected) {
-        selected.classList.add('selected');
-        selected.scrollIntoView({ block: 'nearest' });
-    }
-}
-
-function cmdSelectItem(index) {
-    var item = cmdResults[index];
-    if (item) {
-        window.location.href = item.url;
-        closeCommandPalette();
-    }
-}
-
-// Make global
-window.openCommandPalette = openCommandPalette;
