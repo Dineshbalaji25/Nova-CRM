@@ -1,43 +1,41 @@
-# Nova CRM — Next-Gen Multi-Tenant CRM
+# Nova CRM — World-Class Enterprise CRM
 
 ![Nova CRM Dashboard](crm/static/img/auth-bg.png)
 
-Nova CRM is a premium, high-performance CRM platform designed for modern, high-growth teams. Built with **Django** and **Vanilla JavaScript**, it offers a seamless, vibrant user experience with "Royal Indigo" and "Vibrant Gold" aesthetics.
+Nova CRM is a premium, production-grade CRM platform engineered for high-performance teams. Inspired by industry leaders like **Linear**, **Stripe**, and **Attio**, it delivers a modern, dark-first SaaS experience that is fast, elegant, and enterprise-ready.
 
-## 🚀 Features
+## ✨ Premium UI/UX
+
+Nova CRM has been transformed with a world-class design system:
+- **Modern Dark-First UI**: A sophisticated palette using `#111827` background and `#4F46E5` primary accents.
+- **Glassmorphism & Depth**: Layered surfaces with subtle blurs and elegant spacing.
+- **Micro-interactions**: Smooth 150ms-250ms transitions and animated active states.
+- **Responsive Layout**: A floating, collapsible modern sidebar and a clean, data-focused content area.
+
+## 🚀 Key Features
 
 ### Core CRM Modules
-- **Companies & Contacts**: Manage your business relationships with a clean, searchable interface.
-- **Deals Pipeline**: A drag-and-drop Kanban board for tracking your sales lifecycle.
-- **Tasks & Activities**: Organize your workflow with interactive task lists and activity feeds.
+- **Advanced Lead Management**: Modern Kanban boards with drag-and-drop feel and pipeline visualization.
+- **Relationship Intelligence**: Manage Companies and Contacts with high-performance, sticky-header data tables.
+- **Customer Profiles**: Deep-dive into customer data with an elegant, activity-centric profile view.
 
-### Advanced Analytics
-- **Dynamic Dashboards**: Create custom visualizations with multiple chart types (Bar, Pie, Line, Metric).
-- **Report Engine**: Powerful data aggregation for sales and customer insights.
+### Command & Control
+- **Command Palette (Ctrl + K)**: A global search and action hub for lightning-fast navigation.
+- **Global Search**: Instantly find leads, deals, and tasks from anywhere.
+- **Quick Actions**: Streamlined workflows for creating records and logging activities.
 
-### AI-Powered Insights
-- **OpenRouter Integration**: Leverages state-of-the-art LLMs for smart suggestions and automated data entry.
-- **Sentiment Analysis**: Understand customer needs through omnichannel communication logs.
-
-### Enterprise Infrastructure
-- **Multi-Tenancy**: Secure organization-level data isolation.
-- **Omnichannel Support**: Integration points for email, calls, and webforms.
-- **Workflows & Blueprints**: Automate complex business processes with a flexible node-based engine.
-
-## 🎨 Design System
-
-Nova CRM uses a custom-built design system defined in `global.css`, featuring:
-- **Royal Indigo Palette**: Professional and trustworthy base colors.
-- **Vibrant Gold (#EABF32)**: High-contrast accents for primary actions.
-- **Glassmorphism**: Translucent card effects and blur filters for depth.
-- **Smooth Animations**: 60fps transitions and entry effects.
+### Intelligence & Automation
+- **AI-Powered Insights**: Integrated with OpenRouter to provide smart suggestions and automated data entry.
+- **Activity Timelines**: A visually polished timeline of all customer interactions.
+- **Real-time Analytics**: Beautifully animated charts and KPI cards for data-driven decisions.
 
 ## 🛠️ Tech Stack
 
 - **Backend**: Django (Python)
-- **Frontend**: Vanilla JavaScript + Lucide Icons
-- **Database**: PostgreSQL / SQLite (Development)
-- **Styling**: Modern CSS3 (Variables, Grid, Flexbox)
+- **Frontend**: Tailwind CSS + Vanilla JavaScript (Optimized Build)
+- **Icons**: Lucide Icons
+- **Animations**: CSS Transitions + JavaScript Micro-interactions
+- **Database**: PostgreSQL / SQLite
 - **AI**: OpenRouter API
 
 ## 🚦 Getting Started
@@ -57,17 +55,27 @@ Nova CRM uses a custom-built design system defined in `global.css`, featuring:
 3. **Install Dependencies**:
    ```bash
    pip install -r requirements.txt
+   npm install
    ```
 
-4. **Run Migrations**:
+4. **Build Styles**:
+   ```bash
+   npm run build
+   ```
+
+5. **Run Migrations**:
    ```bash
    python manage.py migrate
    ```
 
-5. **Start Development Server**:
+6. **Start Development Server**:
    ```bash
    python manage.py runserver
    ```
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 Built with ❤️ for high-performance teams.
