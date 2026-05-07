@@ -3,224 +3,72 @@
 
 {% block title %}Blueprints - Nova CRM{% endblock %}
 
-{% block extra_css %}
-<style>
-    /* Blueprint Layout - Similar to Workflows for consistency */
-    .bp-container {
-        display: flex;
-        height: calc(100vh - 60px);
-        overflow: hidden;
-        background: #f8fafc;
-    }
-
-    .bp-sidebar {
-        width: 300px;
-        background: white;
-        border-right: 1px solid var(--gray-200);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .bp-sidebar-header {
-        padding: 20px;
-        border-bottom: 1px solid var(--gray-200);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .bp-list {
-        flex: 1;
-        overflow-y: auto;
-        padding: 12px;
-    }
-
-    .bp-item {
-        padding: 12px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-        border: 1px solid transparent;
-        margin-bottom: 8px;
-    }
-
-    .bp-item:hover { background: var(--gray-50); }
-    .bp-item.active {
-        background: var(--primary-50);
-        border-color: var(--primary-200);
-    }
-
-    .bp-main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
-
-    .bp-header {
-        height: 64px;
-        background: white;
-        border-bottom: 1px solid var(--gray-200);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 24px;
-        z-index: 10;
-    }
-
-    .bp-canvas {
-        flex: 1;
-        overflow-y: auto;
-        padding: 40px;
-    }
-
-    /* States & Transitions List Style */
-    .state-card {
-        background: white;
-        border: 1px solid var(--gray-200);
-        border-radius: 8px;
-        margin-bottom: 24px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        overflow: hidden;
-    }
-
-    .state-header {
-        background: var(--gray-50);
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--gray-200);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .transition-list {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-    }
-
-    .transition-item {
-        padding: 12px 20px;
-        border-bottom: 1px solid var(--gray-100);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor: pointer;
-    }
-
-    .transition-item:last-child { border-bottom: none; }
-    .transition-item:hover { background: #fdfdfd; }
-
-    .transition-badge {
-        background: var(--accent-100);
-        color: var(--accent-700);
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    /* Side Drawer */
-    .bp-drawer {
-        position: absolute;
-        top: 0;
-        right: -500px;
-        width: 500px;
-        height: 100%;
-        background: white;
-        border-left: 1px solid var(--gray-200);
-        box-shadow: -4px 0 15px rgba(0,0,0,0.05);
-        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 20;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .bp-drawer.open { right: 0; }
-    
-    .bp-drawer-header {
-        padding: 20px;
-        border-bottom: 1px solid var(--gray-200);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .bp-drawer-body {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-    }
-
-    .bp-drawer-footer {
-        padding: 20px;
-        border-top: 1px solid var(--gray-200);
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="bp-container">
-    <!-- Sidebar -->
-    <div class="bp-sidebar">
-        <div class="bp-sidebar-header">
-            <h2 class="text-lg font-bold mb-0">Blueprints</h2>
-            <button class="btn btn-sm btn-primary" onclick="openCreateModal()">
-                <i data-lucide="plus" size="16"></i> New
+<div class="flex h-[calc(100vh-160px)] -mx-8 -my-8 overflow-hidden">
+    <!-- Blueprint Sidebar -->
+    <div class="w-80 flex flex-col border-r border-white/5 bg-gray-950/20 backdrop-blur-xl">
+        <div class="p-6 border-b border-white/5 flex items-center justify-between">
+            <h2 class="text-xl font-bold text-white tracking-tight">Blueprints</h2>
+            <button class="btn-premium-primary py-1.5 px-3 text-xs" onclick="openCreateModal()">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> New
             </button>
         </div>
-        <div class="bp-list" id="bpListContainer">
-            <div class="p-4 text-center text-muted">Loading...</div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-thin" id="bpListContainer">
+            <div class="p-10 text-center space-y-4">
+                <div class="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Syncing Blueprints...</p>
+            </div>
         </div>
     </div>
 
-    <!-- Main -->
-    <div class="bp-main">
-        <div id="emptyState" class="d-flex flex-column align-items-center justify-content-center h-100">
-            <div style="width: 64px; height: 64px; background: var(--gray-100); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--gray-400);">
-                <i data-lucide="workflow" size="32"></i>
+    <!-- Main Builder Area -->
+    <div class="flex-1 flex flex-col bg-background/50 relative overflow-hidden">
+        <!-- Empty State -->
+        <div id="emptyState" class="flex-1 flex flex-col items-center justify-center p-12 text-center animate-fade-in">
+            <div class="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-2xl shadow-primary/20">
+                <i data-lucide="workflow" class="w-10 h-10"></i>
             </div>
-            <h3 class="text-lg font-bold mb-2">Select or Create a Blueprint</h3>
-            <p class="text-muted text-sm max-w-md text-center">Enforce strict state machine transitions for your records.</p>
+            <h3 class="text-2xl font-bold text-white mb-2">Select or Create a Blueprint</h3>
+            <p class="text-gray-500 max-w-sm font-medium">Enforce strict state machine transitions and business logic for your records.</p>
         </div>
 
-        <div id="activeArea" style="display: none; flex-direction: column; height: 100%;">
-            <div class="bp-header">
+        <!-- Active Area -->
+        <div id="activeArea" class="hidden flex-1 flex-col overflow-hidden animate-slide-up">
+            <div class="p-6 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
                 <div>
-                    <h3 class="text-lg font-bold mb-0" id="activeName">Blueprint Name</h3>
-                    <div class="text-xs text-muted" id="activeTarget">Module: ...</div>
+                    <h3 class="text-xl font-extrabold text-white tracking-tight" id="activeName">Blueprint Name</h3>
+                    <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1" id="activeTarget">Module: ...</div>
                 </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary btn-sm" onclick="openAddState()"><i data-lucide="plus" size="14"></i> Add State</button>
-                    <button class="btn btn-primary btn-sm" onclick="saveBlueprint()">Save Blueprint</button>
+                <div class="flex gap-3">
+                    <button class="btn-premium-secondary py-1.5 px-3 text-xs" onclick="openAddState()">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add State
+                    </button>
+                    <button class="btn-premium-primary py-1.5 px-3 text-xs" onclick="saveBlueprint()">
+                        <i data-lucide="save" class="w-3.5 h-3.5"></i> Save Blueprint
+                    </button>
                 </div>
             </div>
-            <div class="bp-canvas" id="canvas">
+
+            <div class="flex-1 overflow-y-auto p-12 scrollbar-thin" id="canvas">
                 <!-- States and Transitions populated here -->
             </div>
         </div>
 
-        <!-- Drawer -->
-        <div class="bp-drawer" id="configDrawer">
-            <div class="bp-drawer-header">
-                <h4 class="text-md font-bold mb-0" id="drawerTitle">Configure</h4>
-                <button class="btn-icon" onclick="closeDrawer()">
-                    <i data-lucide="x" size="20"></i>
+        <!-- Side Drawer -->
+        <div class="absolute top-0 right-0 h-full w-[500px] bg-surface border-l border-white/10 shadow-2xl translate-x-full transition-transform duration-300 z-50 flex flex-col" id="configDrawer">
+            <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                <h4 class="text-lg font-bold text-white" id="drawerTitle">Configure</h4>
+                <button class="p-2 hover:bg-white/5 rounded-lg text-gray-500" onclick="closeDrawer()">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="bp-drawer-body" id="drawerBody">
+            <div class="flex-1 overflow-y-auto p-6 scrollbar-thin" id="drawerBody">
                 <!-- Form injected dynamically -->
             </div>
-            <div class="bp-drawer-footer">
-                <button class="btn btn-outline-danger btn-sm" id="btnDelete" style="margin-right: auto; display: none;" onclick="deleteActiveItem()">Delete</button>
-                <button class="btn btn-secondary btn-sm" onclick="closeDrawer()">Cancel</button>
-                <button class="btn btn-primary btn-sm" onclick="saveDrawerConfig()">Apply</button>
+            <div class="p-6 bg-white/[0.02] border-t border-white/5 flex justify-end gap-3">
+                <button class="btn-premium-secondary py-1.5 px-3 text-xs mr-auto text-danger border-danger/20 hover:bg-danger/10" id="btnDelete" style="display: none;" onclick="deleteActiveItem()">Delete Item</button>
+                <button class="btn-premium-secondary py-1.5 px-3 text-xs" onclick="closeDrawer()">Cancel</button>
+                <button class="btn-premium-primary py-1.5 px-3 text-xs" onclick="saveDrawerConfig()">Apply Configuration</button>
             </div>
         </div>
     </div>
@@ -229,20 +77,20 @@
 <!-- Create Blueprint Modal -->
 <div class="modal fade" id="createBlueprintModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold">Create Blueprint</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content bg-surface border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+            <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                <h5 class="text-xl font-bold text-white">Create Blueprint</h5>
+                <button type="button" class="p-2 hover:bg-white/5 rounded-lg text-gray-500" data-bs-dismiss="modal"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="modal-body">
-                <form id="createBlueprintForm">
-                    <div class="mb-3">
-                        <label class="form-label text-xs fw-bold text-muted text-uppercase">Blueprint Name</label>
-                        <input type="text" id="newBpName" class="form-control" required placeholder="e.g., Enterprise Deal Flow">
+            <div class="p-6">
+                <form id="createBlueprintForm" class="space-y-5">
+                    <div class="space-y-1.5">
+                        <label class="premium-label">Blueprint Name</label>
+                        <input type="text" id="newBpName" class="premium-input" required placeholder="e.g., Enterprise Deal Flow">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label text-xs fw-bold text-muted text-uppercase">Target Module</label>
-                        <select id="newBpModule" class="form-select">
+                    <div class="space-y-1.5">
+                        <label class="premium-label">Target Module</label>
+                        <select id="newBpModule" class="premium-input appearance-none">
                             <option value="deal">Deal</option>
                             <option value="lead">Lead</option>
                             <option value="invoice">Invoice</option>
@@ -250,14 +98,19 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="submitNewBlueprint()">Create</button>
+            <div class="p-6 bg-white/[0.02] border-t border-white/5 flex justify-end gap-3">
+                <button type="button" class="btn-premium-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-premium-primary" onclick="submitNewBlueprint()">Create Blueprint</button>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    #configDrawer.open {
+        transform: translateX(0);
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}
