@@ -129,3 +129,13 @@ class EmailMessage(TenantAwareModel):
     deal = models.ForeignKey(Deal, on_delete=models.SET_NULL, null=True, blank=True, related_name='emails')
     
     is_read = models.BooleanField(default=False)
+
+# -----------------------------------------------------------------------------
+# Live Support Chat
+# -----------------------------------------------------------------------------
+
+class SupportChatMessage(TenantAwareModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='support_chats')
+    is_from_support = models.BooleanField(default=False)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)

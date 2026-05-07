@@ -88,6 +88,32 @@
         </form>
     </div>
 </div>
+
+<!-- PIPELINE SETTINGS MODAL -->
+<div id="pipelineSettingsModal" class="cmd-overlay" style="display: none; align-items: center; padding-top: 0;">
+    <div class="cmd-modal" style="width: 600px;">
+        <div class="cmd-header">
+            <h3 class="text-lg">Pipeline Configuration</h3>
+            <button class="btn-icon ms-auto" onclick="closePipelineSettings()"><i data-lucide="x" size="18"></i></button>
+        </div>
+        <div style="padding: 24px;">
+            <div class="mb-4">
+                <h4 class="text-sm font-bold text-muted text-uppercase mb-3">Stages</h4>
+                <div id="stagesList" class="d-grid gap-2">
+                    <!-- Stages will be listed here -->
+                </div>
+            </div>
+            <div class="mb-4">
+                <button class="btn btn-secondary w-100" onclick="alert('Stage addition coming soon in Phase 6!')">
+                    <i data-lucide="plus" size="16"></i> Add Stage
+                </button>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-primary" onclick="closePipelineSettings()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
