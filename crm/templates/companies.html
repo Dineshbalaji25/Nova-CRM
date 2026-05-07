@@ -15,12 +15,20 @@
             <p class="text-sm text-muted">Manage your organization's business relationships.</p>
         </div>
         <div class="d-flex gap-2">
-            <button class="btn btn-secondary"><i data-lucide="download" size="16"></i> Export</button>
             <button class="btn btn-accent" onclick="openAddCompanyModal()">
                 <i data-lucide="plus" size="16"></i> Add Company
             </button>
         </div>
     </header>
+
+    <div class="glass-card mb-4 p-3 d-flex gap-3 align-items-center">
+        <div class="flex-grow-1 position-relative">
+            <i data-lucide="search" size="16" class="position-absolute" style="left: 12px; top: 12px; color: var(--gray-400);"></i>
+            <input type="text" id="companySearch" class="form-input ps-5" placeholder="Search by name or industry...">
+        </div>
+        <button class="btn btn-secondary"><i data-lucide="filter" size="16"></i> Filter</button>
+        <button class="btn btn-secondary"><i data-lucide="download" size="16"></i> Export</button>
+    </div>
 
     <div class="glass-card p-0 overflow-hidden">
         <div class="data-table-container border-0">

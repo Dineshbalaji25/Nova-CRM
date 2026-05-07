@@ -2,12 +2,12 @@
  * Companies Page Logic
  */
 
-async function fetchCompanies() {
+async function fetchCompanies(url = '/crm/companies/') {
     const tbody = document.getElementById('companiesTableBody');
     if (!tbody) return;
 
     try {
-        const data = await api.get('/crm/companies/');
+        const data = await api.get(url);
         const results = data.results || [];
 
         if (results.length === 0) {
@@ -54,6 +54,16 @@ function closeAddCompanyModal() {
     const modal = document.getElementById('addCompanyModal');
     if (modal) modal.style.display = 'none';
 }
+
+// Search handling
+let searchTimeout;
+document.getElementById('companySearch')?.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    const query = e.target.value;
+    searchTimeout = setTimeout(() => {
+        fetchCompanies(`/crm/companies/?search=${query}`);
+    }, 400); // 400ms debounce
+});
 
 document.getElementById('addCompanyForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();

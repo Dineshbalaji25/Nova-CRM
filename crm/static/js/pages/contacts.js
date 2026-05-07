@@ -53,10 +53,26 @@ async function fetchContacts(url = '/crm/contacts/') {
             </tr>
         `).join('');
 
+        // Populate Company Select
+        fetchCompanyList();
+
         if (window.lucide) lucide.createIcons();
     } catch (err) {
         console.error('Fetch failed:', err);
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--danger);">Failed to load contacts. Check console.</td></tr>';
+    }
+}
+
+async function fetchCompanyList() {
+    const select = document.getElementById('companySelect');
+    if (!select) return;
+    try {
+        const data = await api.get('/crm/companies/');
+        const companies = data.results || [];
+        select.innerHTML = '<option value="">Select Company</option>' + 
+            companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    } catch (err) {
+        console.error('Failed to fetch companies:', err);
     }
 }
 
@@ -110,6 +126,16 @@ document.getElementById('csvImportInput')?.addEventListener('change', async (e) 
         alert('Import failed: ' + (err.data?.error || err.message));
         e.target.value = '';
     }
+});
+
+// Search handling
+let searchTimeout;
+document.getElementById('contactSearch')?.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    const query = e.target.value;
+    searchTimeout = setTimeout(() => {
+        fetchContacts(`/crm/contacts/?search=${query}`);
+    }, 400); // 400ms debounce
 });
 
 // Pagination handling

@@ -233,6 +233,31 @@ button {
     letter-spacing: -0.04em;
     background: rgba(255,255,255,0.03);
     color: var(--accent-500);
+    flex-shrink: 0;
+}
+
+.sidebar nav {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 24px;
+}
+
+/* Custom Scrollbar for Sidebar */
+.sidebar nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.sidebar nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .nav-item {
@@ -261,7 +286,7 @@ button {
 }
 
 .nav-category {
-    padding: 24px 24px 8px;
+    padding: 20px 24px 8px;
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;

@@ -35,21 +35,26 @@
                 NOVA CRM
             </div>
             <nav>
-                <div class="nav-category">Main Menu</div>
+                <div class="nav-category">Main</div>
                 <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" id="nav-dashboard">
                     <i data-lucide="layout-dashboard" size="18"></i> <span class="nav-text">Dashboard</span>
                 </a>
+                <a href="/tasks" class="nav-item {% if request.path == '/tasks' %}active{% endif %}" id="nav-tasks">
+                    <i data-lucide="check-square" size="18"></i> <span class="nav-text">Tasks</span>
+                </a>
+
+                <div class="nav-category">CRM</div>
                 <a href="/companies" class="nav-item {% if request.path == '/companies' %}active{% endif %}" id="nav-companies">
                     <i data-lucide="building" size="18"></i> <span class="nav-text">Companies</span>
                 </a>
                 <a href="/contacts" class="nav-item {% if request.path == '/contacts' %}active{% endif %}" id="nav-contacts">
                     <i data-lucide="users" size="18"></i> <span class="nav-text">Contacts</span>
                 </a>
+                
+                <div class="nav-category">Sales & CPQ</div>
                 <a href="/deals" class="nav-item {% if request.path == '/deals' %}active{% endif %}" id="nav-deals">
                     <i data-lucide="bar-chart-2" size="18"></i> <span class="nav-text">Deals</span>
                 </a>
-                
-                <div class="nav-category">Sales & CPQ</div>
                 <a href="/products" class="nav-item {% if request.path == '/products' %}active{% endif %}" id="nav-products">
                     <i data-lucide="package" size="18"></i> <span class="nav-text">Products</span>
                 </a>
@@ -58,6 +63,36 @@
                 </a>
                 <a href="/sales-orders" class="nav-item {% if request.path == '/sales-orders' %}active{% endif %}" id="nav-sales-orders">
                     <i data-lucide="shopping-cart" size="18"></i> <span class="nav-text">Orders</span>
+                </a>
+                <a href="/invoices" class="nav-item {% if request.path == '/invoices' %}active{% endif %}" id="nav-invoices">
+                    <i data-lucide="receipt" size="18"></i> <span class="nav-text">Invoices</span>
+                </a>
+
+                <div class="nav-category">Marketing</div>
+                <a href="/campaigns" class="nav-item {% if request.path == '/campaigns' %}active{% endif %}" id="nav-campaigns">
+                    <i data-lucide="megaphone" size="18"></i> <span class="nav-text">Campaigns</span>
+                </a>
+                <a href="/webforms" class="nav-item {% if request.path == '/webforms' %}active{% endif %}" id="nav-webforms">
+                    <i data-lucide="form-input" size="18"></i> <span class="nav-text">Webforms</span>
+                </a>
+
+                <div class="nav-category">Automation</div>
+                <a href="/workflows" class="nav-item {% if request.path == '/workflows' %}active{% endif %}" id="nav-workflows">
+                    <i data-lucide="git-branch" size="18"></i> <span class="nav-text">Workflows</span>
+                </a>
+                <a href="/blueprints" class="nav-item {% if request.path == '/blueprints' %}active{% endif %}" id="nav-blueprints">
+                    <i data-lucide="map" size="18"></i> <span class="nav-text">Blueprints</span>
+                </a>
+                <a href="/scoring-rules" class="nav-item {% if request.path == '/scoring-rules' %}active{% endif %}" id="nav-scoring-rules">
+                    <i data-lucide="star" size="18"></i> <span class="nav-text">Scoring Rules</span>
+                </a>
+
+                <div class="nav-category">Analytics</div>
+                <a href="/dashboards" class="nav-item {% if request.path == '/dashboards' %}active{% endif %}" id="nav-dashboards">
+                    <i data-lucide="layout" size="18"></i> <span class="nav-text">Dashboards</span>
+                </a>
+                <a href="/reports" class="nav-item {% if request.path == '/reports' %}active{% endif %}" id="nav-reports">
+                    <i data-lucide="file-bar-chart" size="18"></i> <span class="nav-text">Reports</span>
                 </a>
 
                 <div class="nav-category">Omnichannel</div>
@@ -68,7 +103,19 @@
                     <i data-lucide="mail" size="18"></i> <span class="nav-text">Emails</span>
                 </a>
 
-                <div class="nav-category">System</div>
+                <div class="nav-category">Admin</div>
+                <a href="/team" class="nav-item {% if request.path == '/team' %}active{% endif %}" id="nav-team">
+                    <i data-lucide="users-2" size="18"></i> <span class="nav-text">Team</span>
+                </a>
+                <a href="/territories" class="nav-item {% if request.path == '/territories' %}active{% endif %}" id="nav-territories">
+                    <i data-lucide="globe" size="18"></i> <span class="nav-text">Territories</span>
+                </a>
+                <a href="/portals" class="nav-item {% if request.path == '/portals' %}active{% endif %}" id="nav-portals">
+                    <i data-lucide="portal" size="18"></i> <span class="nav-text">Portals</span>
+                </a>
+                <a href="/audit" class="nav-item {% if request.path == '/audit' %}active{% endif %}" id="nav-audit">
+                    <i data-lucide="clipboard-list" size="18"></i> <span class="nav-text">Audit Logs</span>
+                </a>
                 <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" id="nav-settings">
                     <i data-lucide="settings" size="18"></i> <span class="nav-text">Settings</span>
                 </a>
@@ -111,8 +158,15 @@
                 </div>
 
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button class="btn-icon"><i data-lucide="bell" size="18"></i></button>
-                    <button class="btn-icon"><i data-lucide="help-circle" size="18"></i></button>
+                    <button class="btn-icon position-relative" data-bs-toggle="offcanvas" data-bs-target="#notificationsOffcanvas">
+                        <i data-lucide="bell" size="18"></i>
+                        <span id="notification-dot" class="position-absolute p-1 bg-danger border border-white rounded-circle" style="width: 10px; height: 10px; top: 4px; right: 4px; display: none;">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    </button>
+                    <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#helpModal">
+                        <i data-lucide="help-circle" size="18"></i>
+                    </button>
                     <div style="height: 24px; width: 1px; background: var(--gray-200); margin: 0 8px;"></div>
                     <button class="btn btn-accent" onclick="openGenericModal('Contact', '/crm/contacts/', ['First Name', 'Last Name', 'Email'])">
                         <i data-lucide="plus" size="16"></i> Create
@@ -156,8 +210,92 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- NOTIFICATIONS OFFCANVAS -->
+                <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="notificationsOffcanvas" aria-labelledby="notificationsOffcanvasLabel" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                    <div class="offcanvas-header border-bottom border-light">
+                        <h5 class="offcanvas-title fw-bold" id="notificationsOffcanvasLabel"><i data-lucide="bell" class="me-2 text-accent"></i>Notifications</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body p-0">
+                        <div class="list-group list-group-flush" id="notification-list">
+                            <!-- JS Dynamic Content -->
+                            <div class="p-4 text-center text-muted">
+                                <i data-lucide="loader-2" class="mb-2" size="24"></i>
+                                <p class="mb-0" style="font-size: 0.85rem;">Loading notifications...</p>
+                            </div>
+                        </div>
+                        <div class="p-3 text-center border-top border-light">
+                            <button class="btn btn-sm btn-outline-secondary w-100" style="font-size: 0.8rem;">Mark all as read</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HELP MODAL -->
+                <div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border-radius: 16px;">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title fw-bold"><i data-lucide="help-circle" class="me-2 text-primary"></i>Help Center</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-muted mb-4" style="font-size: 0.9rem;">Need assistance? We're here to help you get the most out of Nova CRM.</p>
+                                
+                                <div class="d-grid gap-3">
+                                    <a href="/docs/deals-api/" class="btn btn-light d-flex align-items-center justify-content-start p-3 shadow-sm border-0" style="border-radius: 12px; transition: all 0.2s;">
+                                        <div class="bg-primary bg-opacity-10 text-primary p-2 rounded me-3">
+                                            <i data-lucide="book" size="20"></i>
+                                        </div>
+                                        <div class="text-start">
+                                            <h6 class="mb-0 fw-bold">API Documentation</h6>
+                                            <small class="text-muted" style="font-size: 0.75rem;">Read guides and technical docs</small>
+                                        </div>
+                                    </a>
+                                    
+                                    <button class="btn btn-light d-flex align-items-center justify-content-start p-3 shadow-sm border-0" style="border-radius: 12px; transition: all 0.2s;" onclick="toggleChatWindow(); bootstrap.Modal.getInstance(document.getElementById('helpModal')).hide();">
+                                        <div class="bg-success bg-opacity-10 text-success p-2 rounded me-3">
+                                            <i data-lucide="message-square" size="20"></i>
+                                        </div>
+                                        <div class="text-start">
+                                            <h6 class="mb-0 fw-bold">Live Support Chat</h6>
+                                            <small class="text-muted" style="font-size: 0.75rem;">Talk to our success team</small>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+    </div>
+
+    <!-- LIVE CHAT WIDGET -->
+    <div id="chat-widget-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 1050; display: flex; flex-direction: column; align-items: flex-end;">
+        <!-- Chat Window -->
+        <div id="chat-window" class="shadow-lg mb-3" style="width: 340px; height: 450px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(0,0,0,0.05); display: none; flex-direction: column; overflow: hidden; transition: all 0.3s ease;">
+            <div class="bg-primary text-white p-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) !important;">
+                <h6 class="mb-0 fw-bold d-flex align-items-center"><i data-lucide="headphones" size="18" class="me-2"></i> Nova Live Support</h6>
+                <button class="btn-close btn-close-white" onclick="toggleChatWindow()" style="font-size: 0.8rem;"></button>
+            </div>
+            <div id="chat-messages" class="p-3 flex-grow-1" style="overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: var(--gray-50);">
+                <div class="d-flex w-100">
+                    <div class="bg-white border p-2 text-dark shadow-sm" style="max-width: 85%; font-size: 0.85rem; border-radius: 2px 12px 12px 12px;">
+                        Hi there! 👋 Welcome to Nova CRM. How can we help you today?
+                    </div>
+                </div>
+            </div>
+            <div class="p-2 bg-white border-top d-flex align-items-center">
+                <input type="text" id="chat-input" class="form-control me-2" placeholder="Write a reply..." style="border-radius: 20px; font-size: 0.85rem;" onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                <button class="btn btn-primary rounded-circle p-2 shadow-sm" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;" onclick="sendChatMessage()"><i data-lucide="send" size="16"></i></button>
+            </div>
+        </div>
+        <!-- Floating Button -->
+        <button id="chat-toggle-btn" class="btn rounded-circle shadow-lg" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); border: none;" onclick="toggleChatWindow()">
+            <i data-lucide="message-circle" size="26" class="text-white"></i>
+        </button>
     </div>
 
     <!-- GLOBAL SCRIPTS -->
@@ -241,9 +379,14 @@
             try {
                 await api.post(currentCreateEndpoint, payload);
                 genericModalInstance.hide();
-                // Check if the current page has a fetchData() or initPipeline() function to reload nicely
+                
+                // Robust reload logic: call the specific page's refresh function if it exists
                 if (typeof fetchData === 'function') fetchData();
+                else if (typeof fetchCompanies === 'function') fetchCompanies();
+                else if (typeof fetchContacts === 'function') fetchContacts();
+                else if (typeof fetchTasks === 'function') fetchTasks();
                 else if (typeof initPipeline === 'function') initPipeline();
+                else if (typeof initDashboard === 'function') initDashboard();
                 else window.location.reload();
             } catch (err) {
                 console.error('Creation failed', err);
@@ -286,6 +429,125 @@
     {% block extra_js %}{% endblock %}
     <!-- BOOTSTRAP JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Live Chat Logic
+        let chatPollInterval = null;
+
+        function toggleChatWindow() {
+            const win = document.getElementById('chat-window');
+            const isOpening = win.style.display === 'none';
+            win.style.display = isOpening ? 'flex' : 'none';
+            
+            if (isOpening) {
+                fetchChatMessages();
+                // Poll every 3 seconds when open
+                chatPollInterval = setInterval(fetchChatMessages, 3000);
+            } else {
+                clearInterval(chatPollInterval);
+            }
+        }
+
+        async function fetchChatMessages() {
+            try {
+                if(typeof apiClient === 'undefined') return;
+                const res = await apiClient.get('/omnichannel/support-chat/');
+                if(res && res.results) {
+                    const container = document.getElementById('chat-messages');
+                    // Save scroll position
+                    const wasAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 10;
+                    
+                    container.innerHTML = '';
+                    res.results.forEach(msg => {
+                        const div = document.createElement('div');
+                        if (msg.is_from_support) {
+                            div.className = 'd-flex w-100';
+                            div.innerHTML = `<div class="bg-white border p-2 text-dark shadow-sm" style="max-width: 85%; font-size: 0.85rem; border-radius: 2px 12px 12px 12px;">${msg.message}</div>`;
+                        } else {
+                            div.className = 'd-flex w-100 justify-content-end';
+                            div.innerHTML = `<div class="bg-primary text-white p-2 shadow-sm" style="max-width: 85%; font-size: 0.85rem; border-radius: 12px 2px 12px 12px;">${msg.message}</div>`;
+                        }
+                        container.appendChild(div);
+                    });
+                    
+                    if (wasAtBottom) {
+                        container.scrollTop = container.scrollHeight;
+                    }
+                }
+            } catch(err) {
+                console.error("Failed to fetch chat messages:", err);
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+            
+            try {
+                if(typeof apiClient === 'undefined') return;
+                await apiClient.post('/omnichannel/support-chat/', { message: msg });
+                input.value = '';
+                fetchChatMessages();
+            } catch(err) {
+                console.error("Failed to send message:", err);
+            }
+        }
+
+        // Dynamic Notifications Fetcher
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchDynamicNotifications();
+            // Poll every 30 seconds
+            setInterval(fetchDynamicNotifications, 30000);
+        });
+
+        async function fetchDynamicNotifications() {
+            try {
+                // Ensure apiClient exists before calling
+                if(typeof apiClient === 'undefined') return;
+                
+                const res = await apiClient.get('/crm/activities/');
+                if(res && res.results) {
+                    const listGroup = document.getElementById('notification-list');
+                    const dot = document.getElementById('notification-dot');
+                    if(!listGroup || !dot) return;
+                    
+                    if(res.results.length > 0) {
+                        dot.style.display = 'block'; // Show red dot inside bell
+                        listGroup.innerHTML = ''; // clear loading
+                        
+                        res.results.slice(0, 5).forEach(activity => {
+                            const date = new Date(activity.occurred_at || activity.created_at).toLocaleDateString();
+                            const typeIcon = activity.activity_type === 'call' ? 'phone' : activity.activity_type === 'email' ? 'mail' : 'check-square';
+                            
+                            const item = document.createElement('a');
+                            item.href = '#';
+                            item.className = 'list-group-item list-group-item-action p-3 border-bottom border-light';
+                            item.style.background = 'transparent';
+                            item.innerHTML = `
+                                <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">
+                                        <i data-lucide="${typeIcon}" size="14" class="me-1 text-muted"></i>
+                                        ${activity.subject || activity.activity_type.toUpperCase()}
+                                    </h6>
+                                    <small class="text-muted" style="font-size: 0.75rem;">${date}</small>
+                                </div>
+                                <p class="mb-1 text-muted text-truncate" style="font-size: 0.8rem; max-width: 250px;">${activity.body || 'New CRM activity logged.'}</p>
+                            `;
+                            listGroup.appendChild(item);
+                        });
+                        // Initialize new lucide icons injected
+                        lucide.createIcons();
+                    } else {
+                        dot.style.display = 'none'; // Hide red dot if no notifications
+                        listGroup.innerHTML = `<div class="p-4 text-center text-muted"><i data-lucide="bell-off" class="mb-2" size="24"></i><p class="mb-0" style="font-size: 0.85rem;">You're all caught up!</p></div>`;
+                        lucide.createIcons();
+                    }
+                }
+            } catch(err) {
+                console.error("Failed to fetch notifications:", err);
+            }
+        }
+    </script>
 </body>
 
 </html>

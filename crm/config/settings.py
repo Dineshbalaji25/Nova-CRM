@@ -12,6 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-change-me-in-prod')
+JWT_SECRET_KEY = env('JWT_SECRET_KEY', default=SECRET_KEY)
 DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
@@ -29,6 +30,21 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     
+    # Wagtail and its dependencies
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail',
+    'modelcluster',
+    'taggit',
+
     # Local Apps
     'apps.core',
     'apps.users',
@@ -43,6 +59,7 @@ INSTALLED_APPS = [
     'apps.omnichannel',
     'apps.portals',
     'encrypted_model_fields',
+    'docs',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +75,7 @@ MIDDLEWARE = [
     # Custom Middleware
     'apps.core.middleware.TenantContextMiddleware',
     'apps.audit.middleware.AuditMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -124,6 +142,11 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
+SIMPLE_JWT = {
+    'SIGNING_KEY': JWT_SECRET_KEY,
+    'ALGORITHM': 'HS256',
+}
+
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
@@ -183,3 +206,7 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(hour=2, minute=0),
     },
 }
+
+WAGTAIL_SITE_NAME = 'Nova CRM Documentation'
+WAGTAILADMIN_BASE_URL = 'http://localhost:8000'
+
