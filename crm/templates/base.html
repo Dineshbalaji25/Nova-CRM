@@ -19,6 +19,7 @@
 
     <!-- 4. FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- 5. ICONS -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -134,11 +135,15 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button class="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all relative">
+                    <button class="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all relative"
+                        type="button" data-bs-toggle="offcanvas" data-bs-target="#notificationsOffcanvas"
+                        aria-controls="notificationsOffcanvas" aria-label="Open notifications">
                         <i data-lucide="bell" class="w-5 h-5"></i>
                         <span class="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-background"></span>
                     </button>
-                    <button class="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                    <button class="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                        type="button" data-bs-toggle="modal" data-bs-target="#helpModal"
+                        aria-controls="helpModal" aria-label="Open help center">
                         <i data-lucide="help-circle" class="w-5 h-5"></i>
                     </button>
                     <div class="w-px h-6 bg-white/10 mx-2"></div>
@@ -217,7 +222,7 @@
                                         </div>
                                     </a>
                                     
-                                    <button class="btn btn-light d-flex align-items-center justify-content-start p-3 shadow-sm border-0" style="border-radius: 12px; transition: all 0.2s;" onclick="toggleChatWindow(); bootstrap.Modal.getInstance(document.getElementById('helpModal')).hide();">
+                                    <button class="btn btn-light d-flex align-items-center justify-content-start p-3 shadow-sm border-0" style="border-radius: 12px; transition: all 0.2s;" onclick="openChatFromHelpCenter();">
                                         <div class="bg-success bg-opacity-10 text-success p-2 rounded me-3">
                                             <i data-lucide="message-square" size="20"></i>
                                         </div>
@@ -391,18 +396,34 @@
         // Live Chat Logic
         let chatPollInterval = null;
 
+        function openChatWindow() {
+            const win = document.getElementById('chat-window');
+            if (win.style.display === 'flex') return;
+            win.style.display = 'flex';
+            fetchChatMessages();
+            clearInterval(chatPollInterval);
+            chatPollInterval = setInterval(fetchChatMessages, 3000);
+        }
+
+        function closeChatWindow() {
+            const win = document.getElementById('chat-window');
+            win.style.display = 'none';
+            clearInterval(chatPollInterval);
+            chatPollInterval = null;
+        }
+
         function toggleChatWindow() {
             const win = document.getElementById('chat-window');
-            const isOpening = win.style.display === 'none';
-            win.style.display = isOpening ? 'flex' : 'none';
-            
-            if (isOpening) {
-                fetchChatMessages();
-                // Poll every 3 seconds when open
-                chatPollInterval = setInterval(fetchChatMessages, 3000);
-            } else {
-                clearInterval(chatPollInterval);
-            }
+            const isClosed = win.style.display === 'none' || win.style.display === '';
+            if (isClosed) openChatWindow();
+            else closeChatWindow();
+        }
+
+        function openChatFromHelpCenter() {
+            openChatWindow();
+            const helpModalEl = document.getElementById('helpModal');
+            const helpModal = bootstrap.Modal.getOrCreateInstance(helpModalEl);
+            helpModal.hide();
         }
 
         async function fetchChatMessages() {
