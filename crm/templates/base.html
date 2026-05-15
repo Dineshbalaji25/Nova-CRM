@@ -398,10 +398,15 @@
 
         function openChatWindow() {
             const win = document.getElementById('chat-window');
-            if (win.style.display === 'flex' && chatPollInterval) return;
+            if (win.style.display === 'flex') {
+                if (!chatPollInterval) {
+                    chatPollInterval = setInterval(fetchChatMessages, 3000);
+                }
+                return;
+            }
             win.style.display = 'flex';
             fetchChatMessages();
-            clearInterval(chatPollInterval);
+            if (chatPollInterval) clearInterval(chatPollInterval);
             chatPollInterval = setInterval(fetchChatMessages, 3000);
         }
 
