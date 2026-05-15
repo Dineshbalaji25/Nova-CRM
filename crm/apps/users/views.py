@@ -146,6 +146,11 @@ class GoogleAuthView(APIView):
         organization_name = (request.data.get('organization_name') or '').strip()
         if not id_token:
             return Response({'error': 'id_token is required'}, status=status.HTTP_400_BAD_REQUEST)
+        if not settings.GOOGLE_CLIENT_ID:
+            return Response(
+                {'error': 'Google login is not configured'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
 
         try:
             token_info_response = requests.get(
@@ -162,12 +167,13 @@ class GoogleAuthView(APIView):
         token_info = token_info_response.json()
         email = token_info.get('email')
         audience = token_info.get('aud')
-        email_verified = str(token_info.get('email_verified', '')).lower() == 'true'
+        raw_email_verified = token_info.get('email_verified', False)
+        email_verified = raw_email_verified is True or str(raw_email_verified).lower() == 'true'
 
         if not email or not email_verified:
             return Response({'error': 'Google account email must be verified'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if settings.GOOGLE_CLIENT_ID and audience != settings.GOOGLE_CLIENT_ID:
+        if audience != settings.GOOGLE_CLIENT_ID:
             return Response({'error': 'Invalid Google token audience'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.filter(email=email).first()
