@@ -98,6 +98,13 @@
                     </button>
                 </form>
 
+                <div class="my-6 flex items-center gap-3">
+                    <div class="h-px bg-white/10 flex-1"></div>
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">or continue with</span>
+                    <div class="h-px bg-white/10 flex-1"></div>
+                </div>
+                <div id="googleRegisterButton" class="flex justify-center"></div>
+
                 <div class="mt-8 text-center">
                     <p class="text-gray-500 text-sm font-medium">
                         Already have an account? <a href="/login" class="text-primary font-bold hover:underline underline-offset-4">Sign In</a>
@@ -108,7 +115,69 @@
     </div>
 
     <script src="{% static 'js/core.js' %}"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
+        const googleClientId = '{{ GOOGLE_CLIENT_ID|default:"" }}';
+
+        async function handleGoogleRegister(response) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            const organizationName = document.getElementById('organization_name').value.trim();
+            if (!organizationName) {
+                errorDiv.textContent = 'Organization name is required for Google registration.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/v1/auth/google/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_token: response.credential,
+                        organization_name: organizationName
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    const error = new Error(data?.error || 'Request failed');
+                    error.data = data;
+                    throw error;
+                }
+
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                if (data.tenant_id) localStorage.setItem('tenant_id', data.tenant_id);
+                if (data.user) localStorage.setItem('user_full_name', data.user.full_name || data.user.email);
+                if (data.organization_name) localStorage.setItem('organization_name', data.organization_name);
+
+                window.location.href = '/dashboard';
+            } catch (err) {
+                errorDiv.textContent = err.data?.error || 'Google registration failed. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        function initGoogleRegisterButton() {
+            const googleButtonContainer = document.getElementById('googleRegisterButton');
+            if (!googleClientId || !window.google?.accounts?.id) {
+                console.warn('Google registration unavailable: missing GOOGLE_CLIENT_ID or Google SDK.');
+                googleButtonContainer.innerHTML = '<span class="text-xs text-gray-500">Google sign-up is currently unavailable.</span>';
+                return;
+            }
+            google.accounts.id.initialize({
+                client_id: googleClientId,
+                callback: handleGoogleRegister
+            });
+            google.accounts.id.renderButton(
+                googleButtonContainer,
+                { type: 'standard', theme: 'outline', size: 'large', text: 'signup_with', width: 360, shape: 'pill' }
+            );
+        }
+
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
@@ -158,6 +227,8 @@
                 btn.disabled = false;
             }
         });
+
+        window.addEventListener('load', initGoogleRegisterButton);
     </script>
 </body>
 
