@@ -398,7 +398,7 @@
 
         function openChatWindow() {
             const win = document.getElementById('chat-window');
-            if (win.style.display === 'flex') return;
+            if (win.style.display === 'flex' && chatPollInterval) return;
             win.style.display = 'flex';
             fetchChatMessages();
             clearInterval(chatPollInterval);
@@ -414,7 +414,7 @@
 
         function toggleChatWindow() {
             const win = document.getElementById('chat-window');
-            const isClosed = win.style.display === 'none' || win.style.display === '';
+            const isClosed = win.style.display !== 'flex';
             if (isClosed) openChatWindow();
             else closeChatWindow();
         }
