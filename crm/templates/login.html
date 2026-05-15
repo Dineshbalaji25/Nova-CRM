@@ -137,13 +137,18 @@
         }
 
         function initGoogleLoginButton() {
-            if (!googleClientId || !window.google?.accounts?.id) return;
+            const googleButtonContainer = document.getElementById('googleLoginButton');
+            if (!googleClientId || !window.google?.accounts?.id) {
+                console.warn('Google login unavailable: missing GOOGLE_CLIENT_ID or Google SDK.');
+                googleButtonContainer.innerHTML = '<span class="text-xs text-gray-500">Google sign-in is currently unavailable.</span>';
+                return;
+            }
             google.accounts.id.initialize({
                 client_id: googleClientId,
                 callback: handleGoogleLogin
             });
             google.accounts.id.renderButton(
-                document.getElementById('googleLoginButton'),
+                googleButtonContainer,
                 { type: 'standard', theme: 'outline', size: 'large', text: 'signin_with', width: 360, shape: 'pill' }
             );
         }

@@ -194,7 +194,6 @@ class GoogleAuthView(APIView):
             if user is None:
                 user = User.objects.create_user(
                     email=email,
-                    password=None,
                     full_name=full_name
                 )
                 _create_organization_for_user(user, organization_name)

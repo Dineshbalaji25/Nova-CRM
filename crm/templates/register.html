@@ -162,13 +162,18 @@
         }
 
         function initGoogleRegisterButton() {
-            if (!googleClientId || !window.google?.accounts?.id) return;
+            const googleButtonContainer = document.getElementById('googleRegisterButton');
+            if (!googleClientId || !window.google?.accounts?.id) {
+                console.warn('Google registration unavailable: missing GOOGLE_CLIENT_ID or Google SDK.');
+                googleButtonContainer.innerHTML = '<span class="text-xs text-gray-500">Google sign-up is currently unavailable.</span>';
+                return;
+            }
             google.accounts.id.initialize({
                 client_id: googleClientId,
                 callback: handleGoogleRegister
             });
             google.accounts.id.renderButton(
-                document.getElementById('googleRegisterButton'),
+                googleButtonContainer,
                 { type: 'standard', theme: 'outline', size: 'large', text: 'signup_with', width: 360, shape: 'pill' }
             );
         }
