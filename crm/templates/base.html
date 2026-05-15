@@ -400,6 +400,7 @@
             const win = document.getElementById('chat-window');
             if (win.style.display === 'flex') {
                 if (!chatPollInterval) {
+                    fetchChatMessages();
                     chatPollInterval = setInterval(fetchChatMessages, 3000);
                 }
                 return;
