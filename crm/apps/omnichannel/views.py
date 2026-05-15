@@ -1,10 +1,9 @@
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import PhoneIntegration, CallLog, EmailIntegration, EmailMessage, SupportChatMessage
+from .models import PhoneIntegration, CallLog, EmailIntegration, EmailMessage
 from .serializers import (
     PhoneIntegrationSerializer, CallLogSerializer, 
-    EmailIntegrationSerializer, EmailMessageSerializer,
-    SupportChatMessageSerializer
+    EmailIntegrationSerializer, EmailMessageSerializer
 )
 from apps.crm.views import BaseTenantViewSet
 from .services import EmailProcessor, OmnichannelService
@@ -85,14 +84,3 @@ class UnifiedTimelineView(APIView):
             return Response(timeline)
         except Exception as e:
             return Response({"error": str(e)}, status=400)
-
-class SupportChatMessageViewSet(BaseTenantViewSet):
-    queryset = SupportChatMessage.objects.all()
-    serializer_class = SupportChatMessageSerializer
-
-    def get_queryset(self):
-        # Only fetch user's messages for the current tenant
-        return self.queryset.filter(tenant_id=self.request.tenant_id, user=self.request.user).order_by('created_at')
-
-    def perform_create(self, serializer):
-        serializer.save(tenant_id=self.request.tenant_id, user=self.request.user, is_from_support=False)

@@ -7,9 +7,11 @@ def get_user_field_permissions(user, organization_id):
     Cached per user+org for 5 minutes.
     """
     cache_key = f"fls:{user.id}:{organization_id}"
-    cached = cache.get(cache_key)
-    if cached is not None:
-        return cached
+    try:
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached
+    except Exception: pass
 
     from apps.users.models import OrganizationMember
     try:
@@ -24,7 +26,9 @@ def get_user_field_permissions(user, organization_id):
     except OrganizationMember.DoesNotExist:
         perms = {}
 
-    cache.set(cache_key, perms, 300)
+    try:
+        cache.set(cache_key, perms, 300)
+    except Exception: pass
     return perms
 
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PhoneIntegration, CallLog, EmailIntegration, EmailMessage, SupportChatMessage
+from .models import PhoneIntegration, CallLog, EmailIntegration, EmailMessage
 
 class PhoneIntegrationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,9 +27,3 @@ class EmailMessageSerializer(serializers.ModelSerializer):
         model = EmailMessage
         fields = '__all__'
         read_only_fields = ('tenant', 'created_at', 'updated_at', 'received_at')
-
-class SupportChatMessageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SupportChatMessage
-        fields = ('id', 'user', 'is_from_support', 'message', 'is_read', 'created_at')
-        read_only_fields = ('id', 'user', 'created_at', 'tenant')

@@ -12,9 +12,13 @@ def get_visible_user_ids(user, organization_id):
       - Admins and owners (OrganizationMember.role in ['admin', 'owner']) see everything.
     """
     cache_key = f"rbac_visible:{user.id}:{organization_id}"
-    cached = cache.get(cache_key)
-    if cached is not None:
-        return cached
+    try:
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached
+    except Exception:
+        # Fallback if Redis is down
+        pass
 
     from apps.users.models import OrganizationMember, Role
 
@@ -24,18 +28,24 @@ def get_visible_user_ids(user, organization_id):
 
     if not membership:
         result = {user.id}
-        cache.set(cache_key, result, 120)
+        try:
+            cache.set(cache_key, result, 120)
+        except Exception: pass
         return result
 
     # Admins and owners see everything — return None as a signal for "no filter"
     if membership.role in ('admin', 'owner'):
-        cache.set(cache_key, None, 120)
+        try:
+            cache.set(cache_key, None, 120)
+        except Exception: pass
         return None  # None means: no owner filter, show all tenant records
 
     user_role = membership.rbac_role
     if not user_role:
         result = {user.id}
-        cache.set(cache_key, result, 120)
+        try:
+            cache.set(cache_key, result, 120)
+        except Exception: pass
         return result
 
     # Collect all subordinate role IDs via BFS on the role adjacency list
@@ -68,5 +78,7 @@ def get_visible_user_ids(user, organization_id):
     )
     visible_user_ids.add(user.id)  # Always include self
 
-    cache.set(cache_key, visible_user_ids, 120)
+    try:
+        cache.set(cache_key, visible_user_ids, 120)
+    except Exception: pass
     return visible_user_ids

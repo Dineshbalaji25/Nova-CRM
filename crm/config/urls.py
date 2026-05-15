@@ -6,10 +6,6 @@ from django.views.generic import TemplateView
 from django.views.static import serve
 import os
 
-from wagtail.admin import urls as wagtailadmin_urls
-from wagtail import urls as wagtail_urls
-from wagtail.documents import urls as wagtaildocs_urls
-
 # Frontend page view
 class FrontendPageView(TemplateView):
     def get_template_names(self):
@@ -21,11 +17,6 @@ urlpatterns = [
     # Backend routes
     path('admin/', admin.site.urls),
     path('api/v1/', include('apps.api.urls')),
-    
-    # Wagtail routes
-    path('cms/', include(wagtailadmin_urls)),
-    path('documents/', include(wagtaildocs_urls)),
-    path('docs/', include(wagtail_urls)),
     
     # Frontend routes - Landing page
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
@@ -57,6 +48,7 @@ urlpatterns = [
     path('portals', TemplateView.as_view(template_name='portals.html'), name='portals'),
     path('calls', TemplateView.as_view(template_name='calls.html'), name='calls'),
     path('emails', TemplateView.as_view(template_name='emails.html'), name='emails'),
+    path('support', TemplateView.as_view(template_name='support.html'), name='support'),
     path('login', TemplateView.as_view(template_name='login.html'), name='login'),
     path('register', TemplateView.as_view(template_name='register.html'), name='register'),
 ]
