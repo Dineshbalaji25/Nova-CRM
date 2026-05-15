@@ -1,10 +1,13 @@
+import requests
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import transaction
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
+from django.utils.text import slugify
 
 from .models import Organization, OrganizationMember, APIKey, Profile, Role
 from .serializers import (
@@ -55,6 +58,45 @@ class APIKeyViewSet(viewsets.ModelViewSet):
 
 User = get_user_model()
 
+
+def _create_organization_for_user(user, organization_name):
+    base_slug = slugify(organization_name) or 'organization'
+    org = Organization.objects.create(
+        name=organization_name,
+        slug=f"{base_slug}-{user.id.hex[:4]}"
+    )
+    OrganizationMember.objects.create(
+        user=user,
+        organization=org,
+        role='owner'
+    )
+    user.default_organization = org
+    user.save(update_fields=['default_organization'])
+    return org
+
+
+def _auth_response_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    response_data = {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+        'user': {
+            'email': user.email,
+            'full_name': user.full_name,
+        }
+    }
+
+    if user.default_organization:
+        response_data['tenant_id'] = str(user.default_organization.id)
+        response_data['organization_name'] = user.default_organization.name
+    else:
+        first_membership = user.memberships.filter(is_active=True).first()
+        if first_membership:
+            response_data['tenant_id'] = str(first_membership.organization.id)
+            response_data['organization_name'] = first_membership.organization.name
+
+    return response_data
+
 class RegisterView(APIView):
     """
     Onboarding: Registers a User AND creates their first Organization (Tenant).
@@ -78,23 +120,7 @@ class RegisterView(APIView):
                 )
 
                 # 2. Create Organization
-                from django.utils.text import slugify
-                base_slug = slugify(data['organization_name'])
-                # Simple slug uniqueness for MVP
-                org = Organization.objects.create(
-                    name=data['organization_name'],
-                    slug=f"{base_slug}-{user.id.hex[:4]}"
-                )
-
-                # 3. Link them as Owner
-                OrganizationMember.objects.create(
-                    user=user,
-                    organization=org,
-                    role='owner'
-                )
-                
-                user.default_organization = org
-                user.save()
+                org = _create_organization_for_user(user, data['organization_name'])
 
             # 4. Generate Tokens
             refresh = RefreshToken.for_user(user)
@@ -110,6 +136,76 @@ class RegisterView(APIView):
             }, status=status.HTTP_201_CREATED)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GoogleAuthView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        id_token = request.data.get('id_token')
+        organization_name = (request.data.get('organization_name') or '').strip()
+        if not id_token:
+            return Response({'error': 'id_token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            token_info_response = requests.get(
+                'https://oauth2.googleapis.com/tokeninfo',
+                params={'id_token': id_token},
+                timeout=5
+            )
+        except requests.RequestException:
+            return Response({'error': 'Unable to verify Google token'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        if token_info_response.status_code != 200:
+            return Response({'error': 'Invalid Google token'}, status=status.HTTP_400_BAD_REQUEST)
+
+        token_info = token_info_response.json()
+        email = token_info.get('email')
+        audience = token_info.get('aud')
+        email_verified = str(token_info.get('email_verified', '')).lower() == 'true'
+
+        if not email or not email_verified:
+            return Response({'error': 'Google account email must be verified'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if settings.GOOGLE_CLIENT_ID and audience != settings.GOOGLE_CLIENT_ID:
+            return Response({'error': 'Invalid Google token audience'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.filter(email=email).first()
+        if user is None and not organization_name:
+            return Response(
+                {'error': 'organization_name is required to register with Google'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        full_name = (token_info.get('name') or '').strip()
+        if not full_name:
+            given_name = (token_info.get('given_name') or '').strip()
+            family_name = (token_info.get('family_name') or '').strip()
+            full_name = f'{given_name} {family_name}'.strip()
+
+        created = False
+        with transaction.atomic():
+            if user is None:
+                user = User.objects.create_user(
+                    email=email,
+                    password=None,
+                    full_name=full_name
+                )
+                _create_organization_for_user(user, organization_name)
+                created = True
+            elif full_name and not user.full_name:
+                user.full_name = full_name
+                user.save(update_fields=['full_name'])
+
+            if not user.default_organization:
+                first_membership = user.memberships.filter(is_active=True).first()
+                if first_membership:
+                    user.default_organization = first_membership.organization
+                    user.save(update_fields=['default_organization'])
+
+        auth_data = _auth_response_for_user(user)
+        auth_data['created'] = created
+        return Response(auth_data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 class MyOrganizationsView(generics.ListAPIView):
     """

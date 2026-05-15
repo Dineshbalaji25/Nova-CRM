@@ -28,12 +28,13 @@ router.register(r'api-keys', APIKeyViewSet, basename='api-keys')
 router.register(r'profiles', ProfileViewSet, basename='profiles')
 router.register(r'roles', RoleViewSet, basename='roles')
 
-from .views import RegisterView
+from .views import RegisterView, GoogleAuthView
 
 urlpatterns = [
     path('auth/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/login/', CustomTokenObtainPairView.as_view(), name='token_login'), # Alias for frontend
     path('auth/register/', RegisterView.as_view(), name='register'),
+    path('auth/google/', GoogleAuthView.as_view(), name='google_auth'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/check/', auth_check, name='auth_check'),
     path('', include(router.urls)),
