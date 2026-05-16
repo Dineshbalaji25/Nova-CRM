@@ -122,7 +122,7 @@
             <!-- TOPBAR -->
             <header class="topbar">
                 <div class="flex items-center gap-6">
-                    <button class="p-2 hover:bg-white/5 rounded-lg d-md-none" id="mobile-menu-btn">
+                    <button class="p-2 hover:bg-white/5 rounded-lg d-md-none" id="mobile-menu-btn" aria-controls="mobile-sidebar" aria-expanded="false" aria-label="Toggle navigation menu">
                         <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
                     <!-- Search Trigger -->
@@ -367,28 +367,47 @@
 
         // Setup Mobile Sidebar Interactivity
         const sidebar = document.querySelector('.sidebar');
-        const overlay = document.createElement('div');
-        overlay.className = 'fixed inset-0 bg-background/80 backdrop-blur-sm z-[45] hidden';
-        document.body.appendChild(overlay);
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        if (sidebar) {
+            sidebar.id = 'mobile-sidebar';
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-background/80 backdrop-blur-sm z-[45] hidden md:hidden';
+            document.body.appendChild(overlay);
 
-        function toggleMobileSidebar(force) {
-            const isOpen = typeof force === 'boolean' ? force : sidebar.classList.contains('-translate-x-full');
-            sidebar.classList.toggle('-translate-x-full', !isOpen);
-            overlay.classList.toggle('hidden', !isOpen);
+            const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
+
+            const setMobileSidebarState = (isOpen) => {
+                if (!isMobileViewport()) {
+                    sidebar.classList.remove('is-open');
+                    overlay.classList.add('hidden');
+                    if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                    return;
+                }
+                sidebar.classList.toggle('is-open', isOpen);
+                overlay.classList.toggle('hidden', !isOpen);
+                if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+            };
+
+            mobileMenuBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const isOpen = sidebar.classList.contains('is-open');
+                setMobileSidebarState(!isOpen);
+            });
+
+            overlay.addEventListener('click', () => setMobileSidebarState(false));
+
+            sidebar.querySelectorAll('a[href]').forEach((el) => {
+                el.addEventListener('click', () => setMobileSidebarState(false));
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') setMobileSidebarState(false);
+            });
+
+            window.addEventListener('resize', () => setMobileSidebarState(false));
+            setMobileSidebarState(false);
         }
-
-        // Attach to the hamburger button
-        document.getElementById('mobile-menu-btn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleMobileSidebar();
-        });
-
-        overlay.addEventListener('click', () => toggleMobileSidebar(false));
-
-        sidebar.querySelectorAll('.nav-item').forEach(el => {
-            el.addEventListener('click', () => toggleMobileSidebar(false));
-        });
     </script>
     {% block extra_js %}{% endblock %}
     <!-- BOOTSTRAP JS (Required for Modals) -->

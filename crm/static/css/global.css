@@ -166,6 +166,58 @@
     @apply flex-1 overflow-y-auto p-8 scroll-smooth;
 }
 
+/* Responsive Shell */
+.main-content {
+    min-width: 0;
+}
+
+@media (max-width: 767px) {
+    .app-shell {
+        height: 100dvh;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: min(260px, 86vw);
+        transform: translateX(-100%);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .sidebar.is-open {
+        transform: translateX(0);
+    }
+
+    .topbar {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .page-body {
+        padding: 1rem;
+    }
+
+    #chat-widget-container {
+        right: 16px !important;
+        bottom: 16px !important;
+    }
+
+    #chat-window {
+        width: min(340px, calc(100vw - 32px)) !important;
+        height: min(450px, 70vh) !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        position: relative;
+        transform: none !important;
+        box-shadow: none;
+    }
+}
+
 /* Scrollbar Styles */
 ::-webkit-scrollbar {
     width: 6px;
