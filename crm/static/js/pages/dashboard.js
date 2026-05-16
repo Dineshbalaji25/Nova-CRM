@@ -8,11 +8,15 @@ let dashboardPollInterval = null;
 async function initDashboard() {
     console.log("Initializing Enhanced Dashboard with Polling...");
     try {
-        // 1. Fetch Static User Info (only once)
-        const profile = await api.get('/users/profile/');
-        if (profile) {
+        // 1. Fetch User Info (using the correct auth/check endpoint)
+        const authData = await api.get('/auth/check/');
+        if (authData && authData.user) {
             const welcomeEl = document.getElementById('welcome-name');
-            if (welcomeEl) welcomeEl.innerText = profile.first_name || 'Explorer';
+            if (welcomeEl) {
+                // Use first name if available, else 'Explorer'
+                const firstName = authData.user.full_name ? authData.user.full_name.split(' ')[0] : 'Explorer';
+                welcomeEl.innerText = firstName;
+            }
         }
 
         // 2. Fetch Initial Dynamic Data

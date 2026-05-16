@@ -37,5 +37,6 @@ urlpatterns = [
     path('auth/google/', GoogleAuthView.as_view(), name='google_auth'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/check/', auth_check, name='auth_check'),
+    path('users/profile/', auth_check, name='legacy_profile_alias'), # Support legacy calls
     path('', include(router.urls)),
 ]

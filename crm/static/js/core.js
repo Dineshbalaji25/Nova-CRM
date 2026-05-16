@@ -11,6 +11,7 @@ const CONFIG = {
 class APIClient {
     constructor() {
         this.updateConfig();
+        this._refreshPromise = null;
     }
 
     updateConfig() {
@@ -35,6 +36,13 @@ class APIClient {
 
     async request(endpoint, options = {}) {
         const url = endpoint.startsWith('http') ? endpoint : `${CONFIG.API_BASE}${endpoint}`;
+
+        // Proactive Refresh: If token is likely expired, refresh BEFORE making the request
+        // This avoids the 'Unauthorized' log noise on the server
+        if (this.accessToken && this.isTokenExpired(this.accessToken)) {
+            console.log('Token proactively determined to be expired. Refreshing...');
+            await this.refreshTokens();
+        }
 
         const headers = { ...this.getHeaders(options.body), ...options.headers };
 
@@ -86,24 +94,41 @@ class APIClient {
     }
 
     async refreshTokens() {
-        if (!this.refreshToken) return false;
-        try {
-            const response = await fetch(`${CONFIG.API_BASE}/auth/token/refresh/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refresh: this.refreshToken })
-            });
+        if (this._refreshPromise) return this._refreshPromise;
 
-            if (response.ok) {
-                const data = await response.json();
-                this.accessToken = data.access;
-                localStorage.setItem('access_token', data.access);
-                return true;
+        this._refreshPromise = (async () => {
+            if (!this.refreshToken) {
+                console.warn('No refresh token available');
+                return false;
             }
-        } catch (e) {
-            console.error('Token Refresh Failed', e);
-        }
-        return false;
+
+            try {
+                console.log('Attempting token refresh...');
+                const response = await fetch(`${CONFIG.API_BASE}/auth/token/refresh/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh: this.refreshToken })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.accessToken = data.access;
+                    localStorage.setItem('access_token', data.access);
+                    console.log('Token refreshed successfully');
+                    return true;
+                } else {
+                    console.error('Refresh token invalid or expired');
+                    return false;
+                }
+            } catch (e) {
+                console.error('Token Refresh Network Error', e);
+                return false;
+            } finally {
+                this._refreshPromise = null;
+            }
+        })();
+
+        return this._refreshPromise;
     }
 
     async login(email, password) {
@@ -155,7 +180,27 @@ class APIClient {
         });
     }
 
-    delete(url) { return this.request(url, { method: 'DELETE' }); }
+    // --- Utilities ---
+    isTokenExpired(token) {
+        try {
+            if (!token) return true;
+            const base64Url = token.split('.')[1];
+            if (!base64Url) return true;
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            
+            const payload = JSON.parse(jsonPayload);
+            const now = Math.floor(Date.now() / 1000);
+            // Aggressive Buffer: Refresh if token has less than 60s left
+            // This ensures we never hit the server with an expired token
+            return payload.exp < (now + 60);
+        } catch (e) {
+            console.warn('Failed to parse JWT for expiration check', e);
+            return true; // Assume expired if unparseable
+        }
+    }
 }
 
 const api = new APIClient();

@@ -22,8 +22,18 @@ class BaseTenantViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 
     def get_queryset(self):
-        qs = self.queryset.filter(tenant_id=self.request.tenant_id, is_deleted=False)
         model = self.queryset.model
+        kwargs = {}
+        
+        # Check if model supports tenant scoping
+        if hasattr(model, 'tenant_id') or hasattr(model, 'tenant'):
+            kwargs['tenant_id'] = self.request.tenant_id
+            
+        # Check if model supports soft delete
+        if hasattr(model, 'is_deleted'):
+            kwargs['is_deleted'] = False
+            
+        qs = self.queryset.filter(**kwargs)
         if hasattr(model, 'owner'):
             visible_ids = get_visible_user_ids(self.request.user, self.request.tenant_id)
             if visible_ids is not None:
