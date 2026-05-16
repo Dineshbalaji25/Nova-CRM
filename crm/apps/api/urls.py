@@ -19,5 +19,6 @@ urlpatterns = [
     path('stats/', include('apps.analytics.stats_urls')),
     path('omnichannel/', include('apps.omnichannel.urls')),
     path('portal/', include('apps.portals.urls')),
+    path('integrations/', include('apps.integrations.urls')),
     path('', include(router.urls)),
 ]

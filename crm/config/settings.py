@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'apps.analytics',
     'apps.omnichannel',
     'apps.portals',
+    'apps.integrations',
     'encrypted_model_fields',
     'docs',
 ]

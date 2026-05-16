@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}API Integrations - Nova CRM{% endblock %}
+
+{% block content %}
+<div class="animate-slide-up space-y-8">
+    <header class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight mb-1">API Integrations</h1>
+            <p class="text-gray-500 font-medium">Connect external platforms and sync your data in real-time.</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="/settings" class="btn-premium-secondary py-2 px-4 text-sm flex items-center gap-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Settings
+            </a>
+        </div>
+    </header>
+
+    <!-- Active Integrations -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- TalesTimeline -->
+        <div class="p-6 bg-surface border border-primary/20 rounded-2xl shadow-xl shadow-primary/5 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4">
+                <span class="px-2 py-1 rounded bg-success/10 text-success text-[10px] font-bold uppercase tracking-wider">Connected</span>
+            </div>
+            
+            <div class="flex items-start gap-5 mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <i data-lucide="blocks" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-1">TalesTimeline</h3>
+                    <p class="text-sm text-gray-500">E-commerce Marketplace Sync</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                    <span class="text-xs font-medium text-gray-400">Webhook Status</span>
+                    <span class="text-xs font-bold text-white flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span> Receiving Events
+                    </span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                    <span class="text-xs font-medium text-gray-400">Total Sync Events</span>
+                    <span class="text-xs font-bold text-white">1,248</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button class="btn-premium-primary flex-1 py-2.5 text-sm font-bold">Manage</button>
+                <button class="p-2.5 rounded-xl bg-white/5 border border-white/5 text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Zoho CRM -->
+        <div class="p-6 bg-surface border border-white/5 rounded-2xl opacity-60 hover:opacity-100 transition-opacity relative grayscale hover:grayscale-0">
+            <div class="absolute top-0 right-0 p-4">
+                <span class="px-2 py-1 rounded bg-white/10 text-gray-400 text-[10px] font-bold uppercase tracking-wider">Coming Soon</span>
+            </div>
+            
+            <div class="flex items-start gap-5 mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                    <i data-lucide="refresh-cw" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-1">Zoho CRM</h3>
+                    <p class="text-sm text-gray-500">Bi-directional Sync</p>
+                </div>
+            </div>
+
+            <p class="text-sm text-gray-500 mb-8 font-medium">Sync contacts, potentials, and tasks between Zoho CRM and Nova CRM seamlessly.</p>
+
+            <button class="w-full py-2.5 rounded-xl border border-white/10 text-sm font-bold text-gray-400 cursor-not-allowed">Enable Integration</button>
+        </div>
+    </div>
+
+    <!-- Sync Logs -->
+    <div class="space-y-4">
+        <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Recent Sync Events</h5>
+        <div class="bg-surface border border-white/5 rounded-2xl overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-white/5 border-b border-white/5">
+                    <tr>
+                        <th class="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Event</th>
+                        <th class="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Source</th>
+                        <th class="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Status</th>
+                        <th class="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Time</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded-lg bg-success/10 text-success">
+                                    <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-sm font-bold text-white">order.completed</h6>
+                                    <p class="text-[10px] text-gray-500 font-medium">Deal created for #ORD-9921</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-xs font-medium text-gray-400">TalesTimeline</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-bold">Success</span>
+                        </td>
+                        <td class="px-6 py-4 text-xs font-medium text-gray-500">2 mins ago</td>
+                    </tr>
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-sm font-bold text-white">contact.created</h6>
+                                    <p class="text-[10px] text-gray-500 font-medium">New contact: Sarah Miller</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-xs font-medium text-gray-400">TalesTimeline</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-bold">Success</span>
+                        </td>
+                        <td class="px-6 py-4 text-xs font-medium text-gray-500">15 mins ago</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

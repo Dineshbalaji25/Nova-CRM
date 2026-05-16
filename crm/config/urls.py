@@ -57,6 +57,7 @@ urlpatterns = [
     path('portals', TemplateView.as_view(template_name='portals.html'), name='portals'),
     path('calls', TemplateView.as_view(template_name='calls.html'), name='calls'),
     path('emails', TemplateView.as_view(template_name='emails.html'), name='emails'),
+    path('integrations', __import__('apps.integrations.views', fromlist=['integrations_dashboard']).integrations_dashboard, name='integrations'),
     path('login', TemplateView.as_view(template_name='login.html'), name='login'),
     path('register', TemplateView.as_view(template_name='register.html'), name='register'),
 ]
