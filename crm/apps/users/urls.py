@@ -24,7 +24,7 @@ from rest_framework.routers import DefaultRouter
 from .views import APIKeyViewSet, ProfileViewSet, RoleViewSet
 from .views import (
     RegisterView, GoogleAuthView, MyOrganizationsView, SwitchTenantView,
-    ProfileViewSet, RoleViewSet, APIKeyViewSet, OAuthApplicationViewSet, TokenExchangeView
+    ProfileViewSet, RoleViewSet, APIKeyViewSet, OAuthApplicationViewSet, TokenExchangeView, OAuthScopeListView
 )
 
 router = DefaultRouter()
@@ -42,5 +42,6 @@ urlpatterns = [
     path('auth/check/', auth_check, name='auth_check'),
     path('users/profile/', auth_check, name='legacy_profile_alias'), # Support legacy calls
     path('oauth/token/', TokenExchangeView.as_view(), name='oauth_token_exchange'),
+    path('oauth/scopes/', OAuthScopeListView.as_view(), name='oauth_scopes'),
     path('', include(router.urls)),
 ]

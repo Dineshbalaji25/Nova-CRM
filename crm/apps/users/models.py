@@ -4,6 +4,23 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from apps.core.models import BaseModel, SoftDeleteModel
 
+OAUTH_SCOPE_CHOICES = (
+    "NovaCRM.modules.ALL",
+    "NovaCRM.modules.READ",
+    "NovaCRM.modules.WRITE",
+    "NovaCRM.modules.contacts.READ",
+    "NovaCRM.modules.contacts.WRITE",
+    "NovaCRM.modules.deals.READ",
+    "NovaCRM.modules.deals.WRITE",
+    "NovaCRM.settings.READ",
+    "NovaCRM.settings.WRITE",
+    "NovaCRM.users.READ",
+)
+
+
+def default_oauth_scopes():
+    return ["NovaCRM.modules.ALL"]
+
 class Organization(SoftDeleteModel):
     """
     The Tenant entity. Represents a Company/Team.
@@ -170,6 +187,7 @@ class OAuthApplication(BaseModel):
     client_id = models.CharField(max_length=100, unique=True, db_index=True)
     client_secret = models.CharField(max_length=100)
     redirect_uri = models.URLField(max_length=500, blank=True)
+    allowed_scopes = models.JSONField(default=default_oauth_scopes, blank=True)
     
     is_active = models.BooleanField(default=True)
 

@@ -65,6 +65,8 @@ function copyKey(key) {
 // Run Init
 document.getElementById('settingOrgName').value = localStorage.getItem('organization_name') || '';
 fetchAPIKeys();
+let availableOAuthScopes = [];
+fetchOAuthScopes();
 fetchOAuthApps();
 
 async function fetchOAuthApps() {
@@ -89,6 +91,10 @@ async function fetchOAuthApps() {
                     </div>
                     <button class="text-danger hover:bg-danger/10 p-1.5 rounded" onclick="deleteOAuthApp('${a.id}')"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 </div>
+                <div class="bg-black/20 p-2 rounded border border-white/5">
+                    <label class="text-[9px] uppercase text-gray-500 font-bold block mb-1">Redirect URI</label>
+                    <p class="font-mono text-[11px] text-gray-300 break-all">${a.redirect_uri || 'Not set'}</p>
+                </div>
                 <div class="grid grid-cols-1 gap-2">
                     <div class="bg-black/20 p-2 rounded border border-white/5">
                         <label class="text-[9px] uppercase text-gray-500 font-bold block mb-1">Client Secret</label>
@@ -96,6 +102,10 @@ async function fetchOAuthApps() {
                             <span class="font-mono text-[11px] text-primary truncate">${a.client_secret}</span>
                             <button class="text-gray-400 hover:text-white" onclick="copyKey('${a.client_secret}')"><i data-lucide="copy" class="w-3 h-3"></i></button>
                         </div>
+                    </div>
+                    <div class="bg-black/20 p-2 rounded border border-white/5">
+                        <label class="text-[9px] uppercase text-gray-500 font-bold block mb-1">Allowed Scopes</label>
+                        <p class="text-[11px] text-primary break-words">${(a.allowed_scopes || []).join(', ') || 'NovaCRM.modules.ALL'}</p>
                     </div>
                 </div>
             </div>
@@ -106,15 +116,57 @@ async function fetchOAuthApps() {
     }
 }
 
-async function createOAuthApp() {
-    const name = prompt("Application Name (e.g. TalesTimeline):", "New Integration");
-    if (!name) return;
+async function fetchOAuthScopes() {
+    const scopeContainer = document.getElementById('oauthScopeOptions');
+    if (!scopeContainer) return;
 
     try {
-        await api.post('/oauth-apps/', { name });
+        const data = await api.get('/oauth/scopes/');
+        availableOAuthScopes = data.scopes || [];
+    } catch (err) {
+        console.error('Failed to fetch OAuth scopes:', err);
+        availableOAuthScopes = ['NovaCRM.modules.ALL'];
+    }
+
+    if (availableOAuthScopes.length === 0) {
+        availableOAuthScopes = ['NovaCRM.modules.ALL'];
+    }
+
+    scopeContainer.innerHTML = availableOAuthScopes.map(scope => `
+        <label class="flex items-center gap-2 text-xs text-gray-300">
+            <input type="checkbox" value="${scope}" class="oauth-scope-checkbox accent-primary" ${scope === 'NovaCRM.modules.ALL' ? 'checked' : ''}/>
+            <span class="font-mono">${scope}</span>
+        </label>
+    `).join('');
+}
+
+async function createOAuthApp() {
+    const nameInput = document.getElementById('oauthAppName');
+    const redirectInput = document.getElementById('oauthRedirectUri');
+    const selectedScopes = Array.from(document.querySelectorAll('.oauth-scope-checkbox:checked')).map(cb => cb.value);
+    const name = (nameInput?.value || '').trim();
+    const redirect_uri = (redirectInput?.value || '').trim();
+
+    if (!name) {
+        alert('Application name is required');
+        return;
+    }
+    if (selectedScopes.length === 0) {
+        alert('Select at least one scope');
+        return;
+    }
+
+    try {
+        await api.post('/oauth-apps/', { name, redirect_uri, allowed_scopes: selectedScopes });
+        nameInput.value = '';
+        redirectInput.value = '';
+        document.querySelectorAll('.oauth-scope-checkbox').forEach(cb => {
+            cb.checked = cb.value === 'NovaCRM.modules.ALL';
+        });
         fetchOAuthApps();
     } catch (err) {
-        alert('Failed to register application');
+        const message = err?.data?.allowed_scopes?.[0] || err?.data?.detail || 'Failed to register application';
+        alert(message);
     }
 }
 

@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
 
 from .models import Organization, OrganizationMember, APIKey, Profile, Role, OAuthApplication, OAuthToken
+from .models import OAUTH_SCOPE_CHOICES, default_oauth_scopes
 from .serializers import (
     UserSerializer, 
     RegisterRequestSerializer, 
@@ -70,6 +71,20 @@ class OAuthApplicationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(organization_id=self.request.tenant_id)
 
+
+def _parse_scope_list(scope_value):
+    if not scope_value:
+        return []
+    normalized = str(scope_value).replace(",", " ").split()
+    return list(dict.fromkeys(scope for scope in normalized if scope))
+
+
+class OAuthScopeListView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response({"scopes": list(OAUTH_SCOPE_CHOICES)})
+
 class TokenExchangeView(APIView):
     """
     Zoho-style Token Exchange Endpoint.
@@ -81,8 +96,10 @@ class TokenExchangeView(APIView):
         grant_type = request.data.get('grant_type')
         client_id = request.data.get('client_id')
         client_secret = request.data.get('client_secret')
+        requested_scopes = _parse_scope_list(request.data.get('scope'))
 
         app = get_object_or_404(OAuthApplication, client_id=client_id, client_secret=client_secret, is_active=True)
+        app_scopes = app.allowed_scopes or default_oauth_scopes()
 
         if grant_type == 'authorization_code':
             code = request.data.get('code')
@@ -90,18 +107,39 @@ class TokenExchangeView(APIView):
             # In a real app, you'd have an OAuthCode model.
             # Here we assume the 'code' was generated for the user.
             user = get_object_or_404(User, id=code)
-            
-            return self._generate_tokens(app, user)
+            if requested_scopes:
+                forbidden_scopes = [scope for scope in requested_scopes if scope not in app_scopes]
+                if forbidden_scopes:
+                    return Response(
+                        {"error": "invalid_scope", "details": f"Scopes not allowed: {', '.join(forbidden_scopes)}"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                token_scopes = requested_scopes
+            else:
+                token_scopes = app_scopes
+
+            return self._generate_tokens(app, user, token_scopes)
 
         elif grant_type == 'refresh_token':
             refresh_token = request.data.get('refresh_token')
             token_obj = get_object_or_404(OAuthToken, refresh_token=refresh_token, application=app, is_revoked=False)
-            
-            return self._generate_tokens(app, token_obj.user)
+            existing_scopes = _parse_scope_list(token_obj.scopes)
+            if requested_scopes:
+                invalid_refresh_scopes = [scope for scope in requested_scopes if scope not in existing_scopes or scope not in app_scopes]
+                if invalid_refresh_scopes:
+                    return Response(
+                        {"error": "invalid_scope", "details": f"Refresh token cannot be used for: {', '.join(invalid_refresh_scopes)}"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                token_scopes = requested_scopes
+            else:
+                token_scopes = existing_scopes or app_scopes
+
+            return self._generate_tokens(app, token_obj.user, token_scopes)
 
         return Response({"error": "invalid_grant_type"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def _generate_tokens(self, app, user):
+    def _generate_tokens(self, app, user, scopes):
         import uuid
         from django.utils import timezone
         from datetime import timedelta
@@ -116,13 +154,14 @@ class TokenExchangeView(APIView):
             access_token=access_token,
             refresh_token=refresh_token,
             expires_at=expires_at,
-            scopes=app.organization.name # Default scope
+            scopes=", ".join(scopes)
         )
 
         return Response({
             "access_token": access_token,
             "refresh_token": refresh_token,
             "expires_in": 3600,
+            "scope": token_obj.scopes,
             "api_domain": settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else "localhost:8000",
             "token_type": "Bearer"
         })
