@@ -1,6 +1,16 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Organization, OrganizationMember, APIKey, Profile, Role, OAuthApplication, OAuthToken
+from .models import (
+    Organization,
+    OrganizationMember,
+    APIKey,
+    Profile,
+    Role,
+    OAuthApplication,
+    OAuthToken,
+    OAUTH_SCOPE_CHOICES,
+    default_oauth_scopes,
+)
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,10 +30,37 @@ class APIKeySerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'key', 'last_used_at', 'created_at')
 
 class OAuthApplicationSerializer(serializers.ModelSerializer):
+    allowed_scopes = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=False,
+    )
+
     class Meta:
         model = OAuthApplication
-        fields = ('id', 'name', 'client_id', 'client_secret', 'redirect_uri', 'is_active', 'created_at')
+        fields = (
+            'id',
+            'name',
+            'client_id',
+            'client_secret',
+            'redirect_uri',
+            'allowed_scopes',
+            'is_active',
+            'created_at'
+        )
         read_only_fields = ('id', 'client_id', 'client_secret', 'created_at')
+
+    def validate_allowed_scopes(self, value):
+        invalid_scopes = [scope for scope in value if scope not in OAUTH_SCOPE_CHOICES]
+        if invalid_scopes:
+            raise serializers.ValidationError(f"Invalid scopes: {', '.join(invalid_scopes)}")
+        return list(dict.fromkeys(value))
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if 'allowed_scopes' not in attrs and self.instance is None:
+            attrs['allowed_scopes'] = default_oauth_scopes()
+        return attrs
 
 class OAuthTokenSerializer(serializers.ModelSerializer):
     class Meta:
