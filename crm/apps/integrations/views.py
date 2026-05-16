@@ -7,7 +7,7 @@ from .models import IntegrationProvider, IntegrationLog
 from .services import TalesTimelineSyncService
 import json
 
-@login_required
+@login_required(login_url='/login')
 def integrations_dashboard(request):
     """
     Renders the integrations dashboard with real-time data.
