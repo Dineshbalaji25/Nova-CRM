@@ -159,3 +159,49 @@ class APIKey(BaseModel):
 
     def __str__(self):
         return f"{self.name} ({self.organization.name})"
+
+class OAuthApplication(BaseModel):
+    """
+    Represents an external integration (e.g., TalesTimeline).
+    Matches Zoho CRM v8's 'Client Credentials' concept.
+    """
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='oauth_apps')
+    name = models.CharField(max_length=255)
+    client_id = models.CharField(max_length=100, unique=True, db_index=True)
+    client_secret = models.CharField(max_length=100)
+    redirect_uri = models.URLField(max_length=500, blank=True)
+    
+    is_active = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.client_id:
+            self.client_id = f"client_{uuid.uuid4().hex[:16]}"
+        if not self.client_secret:
+            self.client_secret = f"secret_{uuid.uuid4().hex}{uuid.uuid4().hex}"[:64]
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} ({self.organization.name})"
+
+class OAuthToken(BaseModel):
+    """
+    Persistent tokens for OAuth applications.
+    """
+    application = models.ForeignKey(OAuthApplication, on_delete=models.CASCADE, related_name='tokens')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='oauth_tokens')
+    
+    access_token = models.CharField(max_length=255, unique=True)
+    refresh_token = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    
+    expires_at = models.DateTimeField()
+    # Scopes: e.g. "NovaCRM.modules.ALL, NovaCRM.settings.READ"
+    scopes = models.TextField(default="NovaCRM.modules.ALL")
+    
+    is_revoked = models.BooleanField(default=False)
+
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() >= self.expires_at
+
+    def __str__(self):
+        return f"Token for {self.application.name} ({self.user.email})"

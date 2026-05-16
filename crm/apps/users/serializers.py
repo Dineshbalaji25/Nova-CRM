@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Organization, OrganizationMember, APIKey, Profile, Role
+from .models import Organization, OrganizationMember, APIKey, Profile, Role, OAuthApplication, OAuthToken
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,6 +18,18 @@ class APIKeySerializer(serializers.ModelSerializer):
         model = APIKey
         fields = ('id', 'name', 'key', 'is_active', 'last_used_at', 'created_at')
         read_only_fields = ('id', 'key', 'last_used_at', 'created_at')
+
+class OAuthApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OAuthApplication
+        fields = ('id', 'name', 'client_id', 'client_secret', 'redirect_uri', 'is_active', 'created_at')
+        read_only_fields = ('id', 'client_id', 'client_secret', 'created_at')
+
+class OAuthTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OAuthToken
+        fields = ('id', 'application', 'access_token', 'refresh_token', 'expires_at', 'scopes', 'is_revoked')
+        read_only_fields = ('id', 'access_token', 'refresh_token', 'expires_at')
 
 User = get_user_model()
 

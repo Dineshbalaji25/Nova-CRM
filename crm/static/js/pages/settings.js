@@ -65,3 +65,70 @@ function copyKey(key) {
 // Run Init
 document.getElementById('settingOrgName').value = localStorage.getItem('organization_name') || '';
 fetchAPIKeys();
+fetchOAuthApps();
+
+async function fetchOAuthApps() {
+    const container = document.getElementById('oauthAppContainer');
+    if (!container) return;
+
+    try {
+        const data = await api.get('/oauth-apps/');
+        const apps = data.results || [];
+
+        if (apps.length === 0) {
+            container.innerHTML = '<div class="text-muted text-sm" style="padding: 12px; border: 1px dashed var(--white-10); border-radius: 8px; text-align: center;">No OAuth applications registered.</div>';
+            return;
+        }
+
+        container.innerHTML = apps.map(a => `
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h6 class="text-white font-bold text-sm">${a.name}</h6>
+                        <p class="text-gray-500 text-[10px]">ID: ${a.client_id}</p>
+                    </div>
+                    <button class="text-danger hover:bg-danger/10 p-1.5 rounded" onclick="deleteOAuthApp('${a.id}')"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </div>
+                <div class="grid grid-cols-1 gap-2">
+                    <div class="bg-black/20 p-2 rounded border border-white/5">
+                        <label class="text-[9px] uppercase text-gray-500 font-bold block mb-1">Client Secret</label>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="font-mono text-[11px] text-primary truncate">${a.client_secret}</span>
+                            <button class="text-gray-400 hover:text-white" onclick="copyKey('${a.client_secret}')"><i data-lucide="copy" class="w-3 h-3"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        if (window.lucide) lucide.createIcons();
+    } catch (err) {
+        console.error('Failed to fetch OAuth apps:', err);
+    }
+}
+
+async function createOAuthApp() {
+    const name = prompt("Application Name (e.g. TalesTimeline):", "New Integration");
+    if (!name) return;
+
+    try {
+        await api.post('/oauth-apps/', { name });
+        fetchOAuthApps();
+    } catch (err) {
+        alert('Failed to register application');
+    }
+}
+
+async function deleteOAuthApp(id) {
+    if (!confirm('Are you sure? This will immediately invalidate all Client Secrets and Tokens for this app.')) return;
+    try {
+        await api.delete(`/oauth-apps/${id}/`);
+        fetchOAuthApps();
+    } catch (err) {
+        alert('Failed to delete app');
+    }
+}
+
+function openOAuthModal() {
+    const modal = new bootstrap.Modal(document.getElementById('oauthAppModal'));
+    modal.show();
+}

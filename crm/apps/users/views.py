@@ -9,14 +9,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
 
-from .models import Organization, OrganizationMember, APIKey, Profile, Role
+from .models import Organization, OrganizationMember, APIKey, Profile, Role, OAuthApplication, OAuthToken
 from .serializers import (
     UserSerializer, 
     RegisterRequestSerializer, 
     OrganizationSerializer,
     APIKeySerializer,
     ProfileSerializer,
-    RoleSerializer
+    RoleSerializer,
+    OAuthApplicationSerializer,
+    OAuthTokenSerializer
 )
 from rest_framework import viewsets
 
@@ -55,6 +57,75 @@ class APIKeyViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(organization_id=self.request.tenant_id)
+
+class OAuthApplicationViewSet(viewsets.ModelViewSet):
+    serializer_class = OAuthApplicationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if not hasattr(self.request, 'tenant_id') or not self.request.tenant_id:
+            return OAuthApplication.objects.none()
+        return OAuthApplication.objects.filter(organization_id=self.request.tenant_id)
+
+    def perform_create(self, serializer):
+        serializer.save(organization_id=self.request.tenant_id)
+
+class TokenExchangeView(APIView):
+    """
+    Zoho-style Token Exchange Endpoint.
+    Supports grant_type=authorization_code and grant_type=refresh_token.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        grant_type = request.data.get('grant_type')
+        client_id = request.data.get('client_id')
+        client_secret = request.data.get('client_secret')
+
+        app = get_object_or_404(OAuthApplication, client_id=client_id, client_secret=client_secret, is_active=True)
+
+        if grant_type == 'authorization_code':
+            code = request.data.get('code')
+            # For simplicity in this demo, 'code' is just a valid User ID or a special temporary token.
+            # In a real app, you'd have an OAuthCode model.
+            # Here we assume the 'code' was generated for the user.
+            user = get_object_or_404(User, id=code)
+            
+            return self._generate_tokens(app, user)
+
+        elif grant_type == 'refresh_token':
+            refresh_token = request.data.get('refresh_token')
+            token_obj = get_object_or_404(OAuthToken, refresh_token=refresh_token, application=app, is_revoked=False)
+            
+            return self._generate_tokens(app, token_obj.user)
+
+        return Response({"error": "invalid_grant_type"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def _generate_tokens(self, app, user):
+        import uuid
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        access_token = f"at_{uuid.uuid4().hex}"
+        refresh_token = f"rt_{uuid.uuid4().hex}"
+        expires_at = timezone.now() + timedelta(hours=1)
+
+        token_obj = OAuthToken.objects.create(
+            application=app,
+            user=user,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_at=expires_at,
+            scopes=app.organization.name # Default scope
+        )
+
+        return Response({
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "expires_in": 3600,
+            "api_domain": settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else "localhost:8000",
+            "token_type": "Bearer"
+        })
 
 User = get_user_model()
 
