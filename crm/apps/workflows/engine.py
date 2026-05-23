@@ -100,22 +100,57 @@ def action_create_task(context, config):
     config = {"title": "Call {{ contact.first_name }}", "assigned_to": "{{ deal.owner_id }}"}
     """
     try:
-        Task = apps.get_model('crm', 'Task')
+        Activity = apps.get_model('crm', 'Activity')
         
         # Simple string replacement for title/description
         title = config.get('title', 'Automated Task')
+        description = config.get('description', '')
         for key in context.keys():
             if isinstance(context[key], dict):
                 for subkey, subval in context[key].items():
                     placeholder = f"{{{{ {key}.{subkey} }}}}"
                     if placeholder in title:
                         title = title.replace(placeholder, str(subval))
+                    if placeholder in description:
+                        description = description.replace(placeholder, str(subval))
                         
-        task = Task.objects.create(
-            title=title,
-            description=config.get('description', ''),
-            # ... other fields mapped here
-        )
+        kwargs = {
+            "activity_type": "task",
+            "subject": title,
+            "body": description,
+        }
+        
+        # Try to resolve relation fields (deal, contact, company) from config/context
+        model_name = config.get('model')
+        raw_id = config.get('id', '')
+        record_id = resolve_variable(context, raw_id) if '{{' in raw_id else raw_id
+        
+        if model_name and record_id:
+            fk_field = f"{model_name}_id"
+            kwargs[fk_field] = record_id
+        else:
+            # Fallback: look at context keys to see if any matches contact, deal, company
+            for model_key in ['contact', 'deal', 'company']:
+                if model_key in context and isinstance(context[model_key], dict) and 'id' in context[model_key]:
+                    kwargs[f"{model_key}_id"] = context[model_key]['id']
+        
+        # Set tenant_id
+        tenant_id = context.get('tenant_id')
+        if not tenant_id:
+            for key, val in context.items():
+                if isinstance(val, dict) and 'tenant_id' in val:
+                    tenant_id = val['tenant_id']
+                    break
+        if tenant_id:
+            kwargs['tenant_id'] = tenant_id
+            
+        # Try to resolve completed_by/owner
+        assigned_to_str = config.get('assigned_to', '')
+        assigned_to_id = resolve_variable(context, assigned_to_str) if '{{' in assigned_to_str else assigned_to_str
+        if assigned_to_id:
+            kwargs['completed_by_id'] = assigned_to_id
+            
+        task = Activity.objects.create(**kwargs)
         return {"created": True, "task_id": str(task.id)}
     except Exception as e:
         logger.error(f"Error creating task: {str(e)}")
@@ -189,6 +224,26 @@ def action_create_note(context, config):
         fk_field = f"{model_name}_id"
         kwargs[fk_field] = record_id
         
+        # Set tenant_id
+        tenant_id = context.get('tenant_id')
+        if not tenant_id:
+            for key, val in context.items():
+                if isinstance(val, dict) and 'tenant_id' in val:
+                    tenant_id = val['tenant_id']
+                    break
+        if tenant_id:
+            kwargs['tenant_id'] = tenant_id
+            
+        # Try to resolve author
+        author_id = context.get('author_id')
+        if not author_id:
+            for key, val in context.items():
+                if isinstance(val, dict) and 'owner_id' in val:
+                    author_id = val['owner_id']
+                    break
+        if author_id:
+            kwargs['author_id'] = author_id
+            
         note = Note.objects.create(**kwargs)
         return {"created": True, "note_id": str(note.id)}
     except Exception as e:

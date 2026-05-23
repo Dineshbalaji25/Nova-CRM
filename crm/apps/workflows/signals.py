@@ -23,13 +23,23 @@ def trigger_workflow(sender, instance, created, **kwargs):
     
     for wf in workflows:
         # Serialize primitive context
+        obj_context = {}
+        for field in instance._meta.fields:
+            val = getattr(instance, field.name)
+            if isinstance(val, (str, int, float, bool)) or val is None:
+                obj_context[field.name] = val
+            else:
+                # UUID, Decimal, datetime, etc.
+                obj_context[field.name] = str(val)
+            
+            # Also ensure ForeignKey id is explicitly set
+            if field.is_relation and val:
+                obj_context[f"{field.name}_id"] = str(val.id)
+                
         context = {
-            model_name: {
-                # Add important primitive fields
-                field.name: getattr(instance, field.name) for field in instance._meta.fields if isinstance(getattr(instance, field.name), (str, int, float, bool)) or getattr(instance, field.name) is None
-            }
+            model_name: obj_context,
+            "tenant_id": str(instance.tenant_id)
         }
-        context[model_name]["id"] = str(instance.id)
 
         # 2. Check filters in trigger_config
         filters = wf.trigger_config.get('filters', [])
@@ -50,8 +60,12 @@ def trigger_workflow(sender, instance, created, **kwargs):
             trigger_context=context
         )
         
-        # 4. Start First Node
-        first_node = wf.nodes.first() # Need robust "Start Node" logic
+        # 4. Start First Node (DAG root resolution)
+        all_nodes = list(wf.nodes.all())
+        target_ids = {n.next_node_id for n in all_nodes if n.next_node_id} | {n.false_next_node_id for n in all_nodes if n.false_next_node_id}
+        start_nodes = [n for n in all_nodes if n.id not in target_ids]
+        first_node = start_nodes[0] if start_nodes else (all_nodes[0] if all_nodes else None)
+        
         if first_node:
             execution.current_node = first_node
             execution.save()
