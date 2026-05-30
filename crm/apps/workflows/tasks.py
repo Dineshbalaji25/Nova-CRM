@@ -29,3 +29,37 @@ def evaluate_scheduled_workflows():
             execution.current_node = first_node
             execution.save()
             process_workflow_step.delay(execution.id, first_node.id)
+
+@shared_task(queue='default')
+def trigger_workflow_event(event_name, model_name, record_id, tenant_id):
+    from .models import Workflow, WorkflowExecution
+    from django.apps import apps
+    from django.core.serializers.json import DjangoJSONEncoder
+    import json
+    
+    workflows = Workflow.objects.filter(
+        is_active=True, 
+        trigger_type='event',
+        tenant_id=tenant_id
+    )
+    
+    for wf in workflows:
+        if wf.trigger_config.get('event') == event_name:
+            Model = apps.get_model('crm', model_name)
+            record = Model.objects.filter(id=record_id).values().first()
+            if not record:
+                continue
+            
+            # Serialize dates properly
+            record_dict = json.loads(json.dumps(record, cls=DjangoJSONEncoder))
+                
+            execution = WorkflowExecution.objects.create(
+                workflow=wf,
+                trigger_context={"event": event_name, model_name: record_dict, "tenant_id": tenant_id}
+            )
+            # Find root node
+            first_node = wf.nodes.filter(previous_nodes__isnull=True).first()
+            if first_node:
+                execution.current_node = first_node
+                execution.save()
+                process_workflow_step.delay(execution.id, first_node.id)

@@ -86,8 +86,8 @@ def transcribe_call_task(call_log_id):
         
         call.transcript = transcript_text
         call.sentiment = analysis.get('sentiment', 'neutral')
-        call.keywords = analysis.get('keywords', [])
-        call.summary = analysis.get('summary', '')
+        call.key_topics = analysis.get('keywords', [])
+        call.call_summary = analysis.get('summary', '')
         call.save()
         
         return f"Successfully processed call {call_log_id}"

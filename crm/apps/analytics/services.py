@@ -33,7 +33,7 @@ class ReportExecutor:
         
         # 2. Apply Filters
         # Ex: [{"field": "status", "operator": "eq", "value": "won"}]
-        filters = report.filter_config
+        filters = report.filters
         if isinstance(filters, list):
             for f in filters:
                 field = f.get('field')
@@ -59,30 +59,26 @@ class ReportExecutor:
                     qs = qs.filter(**{f"{field}__icontains": val})
                     
         # 3. Apply Grouping / Aggregation
-        # Ex: {"group_by": "stage_id", "aggregations": [{"type": "sum", "field": "amount"}]}
-        agg_config = report.aggregation_config
-        if isinstance(agg_config, dict) and agg_config:
-            group_by = agg_config.get('group_by')
-            aggs = agg_config.get('aggregations', [])
-            
+        group_by = report.group_by
+        aggs_dict = report.aggregate_functions
+        
+        if group_by or aggs_dict:
             if group_by:
                 qs = qs.values(group_by)
                 
             annotate_args = {}
-            for agg in aggs:
-                agg_type = agg.get('type')
-                field = agg.get('field')
-                if agg_type in cls.AGGREGATION_MAP and field:
-                    # e.g. amount_sum = Sum('amount')
-                    alias = f"{field}_{agg_type}"
-                    annotate_args[alias] = cls.AGGREGATION_MAP[agg_type](field)
+            if isinstance(aggs_dict, dict):
+                for field, agg_type in aggs_dict.items():
+                    if agg_type in cls.AGGREGATION_MAP and field:
+                        alias = f"{field}_{agg_type}"
+                        annotate_args[alias] = cls.AGGREGATION_MAP[agg_type](field)
                     
             if annotate_args:
                 qs = qs.annotate(**annotate_args)
                 
         # 4. Limit/Ordering (MVP: default ordering if grouped, else limit 1000)
         # If it's a list of records, limit to 1000 to prevent massive payloads.
-        if not (isinstance(agg_config, dict) and agg_config.get('group_by')):
+        if not group_by:
             qs = qs[:1000]
             
         return list(qs)

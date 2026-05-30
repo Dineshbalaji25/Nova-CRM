@@ -103,10 +103,15 @@ class TokenExchangeView(APIView):
 
         if grant_type == 'authorization_code':
             code = request.data.get('code')
-            # For simplicity in this demo, 'code' is just a valid User ID or a special temporary token.
-            # In a real app, you'd have an OAuthCode model.
-            # Here we assume the 'code' was generated for the user.
-            user = get_object_or_404(User, id=code)
+            from django.core.cache import cache
+            user_id = cache.get(f"oauth_code_{code}")
+            if not user_id:
+                return Response(
+                    {"error": "invalid_grant", "details": "Code is invalid or expired"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            user = get_object_or_404(User, id=user_id)
+            cache.delete(f"oauth_code_{code}")
             if requested_scopes:
                 forbidden_scopes = [scope for scope in requested_scopes if scope not in app_scopes]
                 if forbidden_scopes:

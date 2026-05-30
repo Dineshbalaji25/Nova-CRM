@@ -1,7 +1,9 @@
 import json
-from django.http import HttpResponse
+import stripe
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.conf import settings
 from .models import Subscription
 
 @csrf_exempt
@@ -10,8 +12,16 @@ def stripe_webhook(request):
     Handlers events from Stripe (invoice.paid, customer.subscription.updated)
     """
     payload = request.body
-    # Verify Signature (skipped for MVP)
-    event = json.loads(payload)
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        return HttpResponseBadRequest()
+    except stripe.error.SignatureVerificationError as e:
+        return HttpResponseBadRequest()
     
     evt_type = event.get('type')
     data = event.get('data', {}).get('object', {})

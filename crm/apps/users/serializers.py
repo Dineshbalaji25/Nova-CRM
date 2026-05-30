@@ -104,6 +104,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
         # Add extra info to response
         data['user'] = {
+            'id': str(self.user.id),
             'email': self.user.email,
             'full_name': self.user.full_name,
         }

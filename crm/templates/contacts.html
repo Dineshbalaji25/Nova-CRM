@@ -11,8 +11,8 @@
             <p class="text-gray-500 font-medium">Keep track of your individual business connections.</p>
         </div>
         <div class="flex items-center gap-3">
-            <button class="btn-premium-secondary"><i data-lucide="filter" class="w-4 h-4"></i> Filter</button>
-            <button class="btn-premium-secondary"><i data-lucide="download" class="w-4 h-4"></i> Export</button>
+            <button class="btn-premium-secondary" id="filterBtn"><i data-lucide="filter" class="w-4 h-4"></i> Filter</button>
+            <button class="btn-premium-secondary" id="exportBtn"><i data-lucide="download" class="w-4 h-4"></i> Export</button>
             <button class="btn-premium-primary" onclick="openAddContactModal()">
                 <i data-lucide="plus" class="w-4 h-4"></i> Add Contact
             </button>
@@ -102,6 +102,38 @@
             </div>
         </form>
     </div>
+</div>
+
+<!-- Filter Drawer -->
+<div id="filterDrawerOverlay" class="drawer-overlay"></div>
+<div id="filterDrawer" class="drawer">
+    <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="sliders-horizontal" class="w-5 h-5 text-primary"></i> Filter Contacts
+        </h3>
+        <button class="p-2 hover:bg-white/5 rounded-lg transition-colors" id="closeFilterBtn">
+            <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
+        </button>
+    </div>
+    <form id="filterForm" class="p-6 space-y-6 flex-1 overflow-y-auto">
+        <div class="space-y-2">
+            <label class="premium-label">Company</label>
+            <select name="company" id="filterCompany" class="premium-input appearance-none">
+                <option value="">All Companies</option>
+            </select>
+        </div>
+        <div class="space-y-2">
+            <label class="premium-label">Ownership</label>
+            <select name="owner" id="filterOwner" class="premium-input appearance-none">
+                <option value="">All Owners</option>
+                <option value="me">My Contacts</option>
+            </select>
+        </div>
+        <div class="pt-6 border-t border-white/5 flex gap-3">
+            <button type="button" id="clearFilterBtn" class="btn-premium-secondary flex-1">Clear All</button>
+            <button type="submit" class="btn-premium-primary flex-1">Apply Filters</button>
+        </div>
+    </form>
 </div>
 {% endblock %}
 

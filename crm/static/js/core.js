@@ -141,7 +141,10 @@ class APIClient {
         localStorage.setItem('access_token', data.access);
         localStorage.setItem('refresh_token', data.refresh);
         if (data.tenant_id) localStorage.setItem('tenant_id', data.tenant_id);
-        if (data.user) localStorage.setItem('user_full_name', data.user.full_name || data.user.email);
+        if (data.user) {
+            localStorage.setItem('user_full_name', data.user.full_name || data.user.email);
+            if (data.user.id) localStorage.setItem('user_id', data.user.id);
+        }
         if (data.organization_name) localStorage.setItem('organization_name', data.organization_name);
 
         this.updateConfig();
@@ -180,6 +183,10 @@ class APIClient {
         });
     }
 
+    delete(url) {
+        return this.request(url, { method: 'DELETE' });
+    }
+
     // --- Utilities ---
     isTokenExpired(token) {
         try {
@@ -206,3 +213,67 @@ class APIClient {
 const api = new APIClient();
 window.api = api;
 window.apiClient = api; // For backward compatibility with login.html
+
+// --- Global UI Helpers ---
+
+// Dynamic positioning of dropdown action menu to prevent scroll clipping
+window.showActionMenu = function(button, items) {
+    document.querySelectorAll('.action-dropdown-menu-container').forEach(el => el.remove());
+
+    const rect = button.getBoundingClientRect();
+    const menu = document.createElement('div');
+    menu.className = 'action-dropdown-menu-container fixed bg-surface border border-white/10 rounded-xl shadow-2xl py-1.5 backdrop-blur-md min-w-[140px] z-[9999] animate-fade-in flex flex-col';
+    
+    // Position menu based on target element's bounding rect
+    menu.style.top = `${rect.bottom + window.scrollY}px`;
+    menu.style.left = `${Math.min(window.innerWidth - 150, rect.right + window.scrollX - 140)}px`;
+
+    items.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-2 transition-all';
+        btn.innerHTML = `${item.icon ? `<i data-lucide="${item.icon}" class="w-3.5 h-3.5"></i>` : ''} ${item.label}`;
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            menu.remove();
+            item.onClick();
+        };
+        menu.appendChild(btn);
+    });
+
+    document.body.appendChild(menu);
+    if (window.lucide) lucide.createIcons();
+
+    // Close listener on click outside
+    const closeHandler = (e) => {
+        if (!menu.contains(e.target) && !button.contains(e.target)) {
+            menu.remove();
+            document.removeEventListener('click', closeHandler);
+        }
+    };
+    setTimeout(() => document.addEventListener('click', closeHandler), 0);
+};
+
+// Client-side CSV Exporter
+window.exportToCSV = function(filename, headers, rows, dataExtractor) {
+    const csvRows = [];
+    csvRows.push(headers.join(","));
+    
+    rows.forEach(row => {
+        const values = dataExtractor(row).map(val => {
+            const cleanVal = (val === null || val === undefined) ? '' : String(val).replace(/"/g, '""');
+            return `"${cleanVal}"`;
+        });
+        csvRows.push(values.join(","));
+    });
+    
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};

@@ -1,5 +1,6 @@
 from django.db import transaction
-from .models import Lead, Contact, Company, Deal
+from .models import Lead, Contact, Company, Deal, ScoringRule, AppliedScoringRule, AssignmentRule
+from apps.workflows.engine import evaluate_condition
 
 class LeadConversionService:
     @classmethod
@@ -8,7 +9,7 @@ class LeadConversionService:
         """
         Converts a Lead into a Contact, and optionally a Company and Deal.
         """
-        if lead.status == 'qualified':
+        if lead.converted_contact is not None:
             raise ValueError("Lead is already qualified/converted.")
 
         # 1. Create or Find Company
@@ -63,18 +64,42 @@ class ScoringEngine:
     @classmethod
     def process_record(cls, instance, model_name):
         """
-        Stub for scoring logic.
+        Evaluates scoring rules and applies points.
         """
-        # In a real implementation, this would fetch ScoringRules
-        # and update instance.score
-        pass
+        rules = ScoringRule.objects.filter(target_model=model_name, is_active=True, tenant_id=instance.tenant_id)
+        
+        # Build context for evaluator
+        context = {model_name: instance.__dict__}
+        
+        for rule in rules:
+            # Check if already applied
+            if AppliedScoringRule.objects.filter(rule=rule, record_model=model_name, record_id=instance.id).exists():
+                continue
+                
+            if evaluate_condition(context, rule.criteria):
+                instance.score += rule.score_change
+                instance.save(update_fields=['score'])
+                AppliedScoringRule.objects.create(rule=rule, record_model=model_name, record_id=instance.id)
 
 class TerritoryEngine:
     @classmethod
     def process_record(cls, instance, model_name):
         """
-        Stub for territory assignment logic.
+        Evaluates territory assignment rules.
         """
-        # In a real implementation, this would fetch AssignmentRules
-        # and update instance.territories
-        pass
+        rules = AssignmentRule.objects.filter(target_model=model_name, is_active=True, tenant_id=instance.tenant_id).order_by('position')
+        
+        context = {model_name: instance.__dict__}
+        
+        for rule in rules:
+            if evaluate_condition(context, rule.criteria):
+                if rule.assign_to_user and hasattr(instance, 'owner'):
+                    instance.owner = rule.assign_to_user
+                    instance.save(update_fields=['owner'])
+                    
+                if rule.assign_to_territory and hasattr(instance, 'territories'):
+                    instance.territories.add(rule.assign_to_territory)
+                    
+                # If rule matches, do we stop? Usually yes for assignment, but since it's territories we can just apply all matches or first match.
+                # Standard CRM usually stops at first match for Owner, but can add multiple territories. Let's not break loop to allow multiple unless specified.
+                pass

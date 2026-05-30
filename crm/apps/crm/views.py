@@ -76,6 +76,11 @@ class PipelineViewSet(BaseTenantViewSet):
     queryset = Pipeline.objects.all()
     serializer_class = PipelineSerializer
 
+class StageViewSet(BaseTenantViewSet):
+    queryset = Stage.objects.all()
+    serializer_class = StageSerializer
+    filterset_fields = ['pipeline']
+
 class TagViewSet(BaseTenantViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -93,7 +98,7 @@ class CompanyViewSet(BaseTenantViewSet):
     queryset = Company.objects.select_related('owner').prefetch_related('tags', 'territories', 'contacts', 'deals')
     serializer_class = CompanySerializer
     search_fields = ['name', 'domain']
-    filterset_fields = ['owner']
+    filterset_fields = ['owner', 'industry']
 
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -170,7 +175,7 @@ class NoteViewSet(BaseTenantViewSet):
 class ActivityViewSet(BaseTenantViewSet):
     queryset = Activity.objects.select_related('contact', 'company', 'deal', 'completed_by')
     serializer_class = ActivitySerializer
-    filterset_fields = ['contact', 'deal', 'company', 'activity_type']
+    filterset_fields = ['contact', 'deal', 'company', 'activity_type', 'is_completed']
 
 # -----------------------------------------------------------------------------
 # Territory & Assignment ViewSets

@@ -20,8 +20,9 @@ class FeatureEnforcementMiddleware(MiddlewareMixin):
             
             # Check for hard lock (Post-dunning)
             if sub.status in ['unpaid', 'canceled']:
-                # Allow billing pages only (TODO: implement URL check)
-                pass 
+                if not request.path.startswith('/api/v1/billing/'):
+                    from django.http import JsonResponse
+                    return JsonResponse({"error": "Payment required. Subscription unpaid or canceled."}, status=402)
                 
         except Subscription.DoesNotExist:
             request.subscription = None

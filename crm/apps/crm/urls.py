@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 from .views import (
-    PipelineViewSet, TagViewSet, CustomFieldDefinitionViewSet,
+    PipelineViewSet, StageViewSet, TagViewSet, CustomFieldDefinitionViewSet,
     CompanyViewSet, ContactViewSet, LeadViewSet, DealViewSet,
     NoteViewSet, ActivityViewSet, TerritoryViewSet, AssignmentRuleViewSet,
     ScoringRuleViewSet, ScoreBreakdownView
@@ -10,6 +10,7 @@ router = DefaultRouter()
 
 # Meta
 router.register(r'pipelines', PipelineViewSet)
+router.register(r'stages', StageViewSet)
 router.register(r'tags', TagViewSet)
 router.register(r'custom-fields', CustomFieldDefinitionViewSet)
 

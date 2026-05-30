@@ -9,6 +9,7 @@ def auth_check(request):
         return JsonResponse({
             'authenticated': True,
             'user': {
+                'id': str(request.user.id),
                 'email': request.user.email,
                 'full_name': getattr(request.user, 'full_name', ''),
             }
@@ -43,5 +44,7 @@ urlpatterns = [
     path('users/profile/', auth_check, name='legacy_profile_alias'), # Support legacy calls
     path('oauth/token/', TokenExchangeView.as_view(), name='oauth_token_exchange'),
     path('oauth/scopes/', OAuthScopeListView.as_view(), name='oauth_scopes'),
+    path('my-organizations/', MyOrganizationsView.as_view(), name='my-organizations'),
+    path('switch-tenant/', SwitchTenantView.as_view(), name='switch-tenant'),
     path('', include(router.urls)),
 ]
