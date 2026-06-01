@@ -142,7 +142,26 @@ class TokenExchangeView(APIView):
 
             return self._generate_tokens(app, token_obj.user, token_scopes)
 
-        return Response({"error": "invalid_grant_type"}, status=status.HTTP_400_BAD_REQUEST)
+        elif grant_type == 'client_credentials':
+            # For Server-to-Server integrations. Assign the token to the Organization's owner.
+            owner_member = app.organization.memberships.filter(role='owner', is_active=True).first()
+            if not owner_member:
+                return Response({"error": "invalid_client", "details": "Organization has no active owner to assign the token to."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if requested_scopes:
+                forbidden_scopes = [scope for scope in requested_scopes if scope not in app_scopes]
+                if forbidden_scopes:
+                    return Response(
+                        {"error": "invalid_scope", "details": f"Scopes not allowed: {', '.join(forbidden_scopes)}"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                token_scopes = requested_scopes
+            else:
+                token_scopes = app_scopes
+
+            return self._generate_tokens(app, owner_member.user, token_scopes)
+
+        return Response({"error": "invalid_grant_type", "details": f"Grant type '{grant_type}' is not supported."}, status=status.HTTP_400_BAD_REQUEST)
 
     def _generate_tokens(self, app, user, scopes):
         import uuid

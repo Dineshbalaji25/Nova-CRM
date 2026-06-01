@@ -63,7 +63,10 @@ function copyKey(key) {
 }
 
 // Run Init
-document.getElementById('settingOrgName').value = localStorage.getItem('organization_name') || '';
+const settingOrgNameEl = document.getElementById('settingOrgName');
+if (settingOrgNameEl) {
+    settingOrgNameEl.value = localStorage.getItem('organization_name') || '';
+}
 fetchAPIKeys();
 let availableOAuthScopes = [];
 fetchOAuthScopes();
