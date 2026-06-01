@@ -143,10 +143,13 @@ class TokenExchangeView(APIView):
             return self._generate_tokens(app, token_obj.user, token_scopes)
 
         elif grant_type == 'client_credentials':
-            # For Server-to-Server integrations. Assign the token to the Organization's owner.
+            # For Server-to-Server integrations. Assign the token to the Organization's owner or any active admin/member.
             owner_member = app.organization.memberships.filter(role='owner', is_active=True).first()
             if not owner_member:
-                return Response({"error": "invalid_client", "details": "Organization has no active owner to assign the token to."}, status=status.HTTP_400_BAD_REQUEST)
+                owner_member = app.organization.memberships.filter(is_active=True).order_by('id').first()
+                
+            if not owner_member:
+                return Response({"error": "invalid_client", "details": "Organization has no active members to assign the token to."}, status=status.HTTP_400_BAD_REQUEST)
             
             if requested_scopes:
                 forbidden_scopes = [scope for scope in requested_scopes if scope not in app_scopes]
