@@ -130,6 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # DRF Config
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'apps.users.authentication.OAuthTokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'apps.users.authentication.APIKeyAuthentication',
         'rest_framework.authentication.SessionAuthentication',
