@@ -69,11 +69,35 @@ class LeadSerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
 class DealSerializer(FieldLevelSecurityMixin, serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.name', read_only=True)
     stage_name = serializers.CharField(source='stage.name', read_only=True)
+    pipeline = serializers.PrimaryKeyRelatedField(queryset=Pipeline.objects.all(), required=False)
+    stage = serializers.PrimaryKeyRelatedField(queryset=Stage.objects.all(), required=False)
 
     class Meta:
         model = Deal
         fields = '__all__'
         read_only_fields = ('tenant', 'created_at', 'updated_at')
+
+    def validate(self, attrs):
+        # Auto-assign default pipeline and stage if not provided
+        if not attrs.get('pipeline') or not attrs.get('stage'):
+            request = self.context.get('request')
+            tenant_id = getattr(request, 'tenant_id', None) if request else None
+            
+            pipeline = attrs.get('pipeline')
+            if not pipeline:
+                if tenant_id:
+                    pipeline = Pipeline.objects.filter(tenant_id=tenant_id).first()
+                if not pipeline:
+                    pipeline = Pipeline.objects.first()
+                attrs['pipeline'] = pipeline
+            
+            if not attrs.get('stage') and pipeline:
+                stage = Stage.objects.filter(pipeline=pipeline).first()
+                if not stage:
+                    stage = Stage.objects.first()
+                attrs['stage'] = stage
+                
+        return attrs
 
 class NoteSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source='author.full_name', read_only=True)

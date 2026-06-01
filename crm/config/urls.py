@@ -32,6 +32,7 @@ urlpatterns = [
     
     # Dashboard and app pages
     path('dashboard', TemplateView.as_view(template_name='dashboard.html'), name='dashboard'),
+    path('leads', TemplateView.as_view(template_name='leads.html'), name='leads'),
     path('contacts', TemplateView.as_view(template_name='contacts.html'), name='contacts'),
     path('companies', TemplateView.as_view(template_name='companies.html'), name='companies'),
     path('deals', TemplateView.as_view(template_name='deals.html'), name='deals'),
