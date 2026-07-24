@@ -130,4 +130,83 @@ class OAuthTokenAuthenticationTest(TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data["code"], "token_not_valid")
 
+from unittest.mock import patch
+from rest_framework import status
 
+class GoogleAuthTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = '/api/v1/auth/google/'
+        # Ensure GOOGLE_CLIENT_ID is set during tests
+        from django.conf import settings
+        settings.GOOGLE_CLIENT_ID = 'test-google-client-id'
+    
+    @patch('apps.users.views.requests.get')
+    def test_google_auth_new_user(self, mock_get):
+        # Mock Google Token Info response
+        mock_response = mock_get.return_value
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'email': 'newgoogleuser@example.com',
+            'aud': 'test-google-client-id',
+            'email_verified': True,
+            'name': 'Google User',
+            'given_name': 'Google',
+            'family_name': 'User'
+        }
+        
+        # Test Registration without organization_name (should fail)
+        response = self.client.post(self.url, {'id_token': 'dummy_token'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'organization_name is required to register with Google')
+
+        # Test Registration with organization_name (should succeed)
+        response = self.client.post(self.url, {
+            'id_token': 'dummy_token',
+            'organization_name': 'Google Org'
+        }, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data['created'])
+        self.assertIn('access', response.data)
+        self.assertIn('tenant_id', response.data)
+        
+        # Verify user was created with auth_provider='google'
+        user = User.objects.get(email='newgoogleuser@example.com')
+        self.assertEqual(user.auth_provider, 'google')
+        self.assertEqual(user.full_name, 'Google User')
+        
+    @patch('apps.users.views.requests.get')
+    def test_google_auth_existing_user(self, mock_get):
+        # Create user manually first (as if they registered via email)
+        user = User.objects.create_user(email='existing@example.com', full_name='Existing User')
+        org = Organization.objects.create(name='Existing Org', slug='existing-org')
+        OrganizationMember.objects.create(user=user, organization=org, role='owner')
+        user.default_organization = org
+        user.save()
+
+        # Mock Google Token Info response matching existing user
+        mock_response = mock_get.return_value
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'email': 'existing@example.com',
+            'aud': 'test-google-client-id',
+            'email_verified': True,
+            'name': 'Existing Google User'
+        }
+        
+        # Test Login (no organization_name needed)
+        response = self.client.post(self.url, {'id_token': 'dummy_token'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['created'])
+        self.assertIn('access', response.data)
+        self.assertEqual(response.data['tenant_id'], str(org.id))
+
+    @patch('apps.users.views.requests.get')
+    def test_google_auth_invalid_token(self, mock_get):
+        mock_response = mock_get.return_value
+        mock_response.status_code = 400
+        
+        response = self.client.post(self.url, {'id_token': 'invalid_token'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'Invalid Google token')

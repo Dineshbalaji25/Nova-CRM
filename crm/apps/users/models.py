@@ -67,6 +67,15 @@ class User(AbstractUser, BaseModel):
     full_name = models.CharField(max_length=255, blank=True)
     phone_number = models.CharField(max_length=50, blank=True, null=True)
     
+    # Auth provider tracking
+    AUTH_PROVIDER_CHOICES = (
+        ('email', 'Email/Password'),
+        ('google', 'Google'),
+    )
+    auth_provider = models.CharField(
+        max_length=20, choices=AUTH_PROVIDER_CHOICES, default='email'
+    )
+    
     # Global settings
     default_organization = models.ForeignKey(
         Organization, 

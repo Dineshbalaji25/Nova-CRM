@@ -141,7 +141,7 @@ class ContactViewSet(BaseTenantViewSet):
             return Response({'error': str(e)}, status=400)
 
 class LeadViewSet(BaseTenantViewSet):
-    queryset = Lead.objects.select_related('owner', 'converted_contact').prefetch_related('tags', 'territories')
+    queryset = Lead.objects.select_related('owner', 'converted_contact').prefetch_related('territories')
     serializer_class = LeadSerializer
     search_fields = ['first_name', 'last_name', 'company_name']
     filterset_fields = ['status', 'owner']

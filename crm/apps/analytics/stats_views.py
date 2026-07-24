@@ -15,18 +15,18 @@ class DashboardStatsView(APIView):
 
         # 1. Revenue & Deals
         deals = Deal.objects.filter(tenant_id=tenant_id, is_deleted=False)
-        total_revenue = deals.aggregate(Sum('amount'))['amount__sum'] or 0
-        active_deals = deals.exclude(status__in=['closed_won', 'closed_lost']).count()
+        total_revenue = deals.filter(stage__win_probability=100).aggregate(Sum('amount'))['amount__sum'] or 0
+        active_deals = deals.exclude(stage__win_probability__in=[0, 100]).count()
 
         # 2. Leads & Conversion
         leads = Lead.objects.filter(tenant_id=tenant_id, is_deleted=False)
         total_leads = leads.count()
-        converted_leads = leads.filter(status='converted').count()
+        converted_leads = leads.filter(converted_contact__isnull=False).count()
         conversion_rate = (converted_leads / total_leads * 100) if total_leads > 0 else 0
 
         # 3. Win Rate
-        closed_deals = deals.filter(status__in=['closed_won', 'closed_lost']).count()
-        won_deals = deals.filter(status='closed_won').count()
+        closed_deals = deals.filter(stage__win_probability__in=[0, 100]).count()
+        won_deals = deals.filter(stage__win_probability=100).count()
         win_rate = (won_deals / closed_deals * 100) if closed_deals > 0 else 0
 
         # 4. Recent Activity (Already exists in ActivityViewSet, but we can aggregate here if needed)
@@ -40,7 +40,8 @@ class DashboardStatsView(APIView):
                 "conversion_rate": round(conversion_rate, 1),
                 "win_rate": round(win_rate, 1),
                 "revenue_growth": 12.5, # Placeholder for trend analysis
-                "deals_today": leads.filter(created_at__date=timezone.now().date()).count(),
+                "deals_today": deals.filter(created_at__date=timezone.now().date()).count(),
+                "deals_trend": 8.2, # Placeholder
                 "leads_trend": -2.4, # Placeholder
                 "win_rate_trend": 5.0 # Placeholder
             },

@@ -21,7 +21,8 @@ class AssignmentRuleSerializer(serializers.ModelSerializer):
 class StageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stage
-        fields = ('id', 'name', 'position', 'win_probability')
+        fields = ('id', 'pipeline', 'name', 'position', 'win_probability')
+        read_only_fields = ('tenant',)
 
 class PipelineSerializer(serializers.ModelSerializer):
     stages = StageSerializer(many=True, read_only=True)

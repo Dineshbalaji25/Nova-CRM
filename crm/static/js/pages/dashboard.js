@@ -34,17 +34,30 @@ async function refreshDashboardData() {
     try {
         // console.log("Refreshing Dashboard Data...");
         
-        // Fetch Deals for KPIs
-        const dealsResponse = await api.get('/crm/deals/');
-        const deals = dealsResponse.results || [];
+        // Fetch stats from backend view
+        const statsResponse = await api.get('/stats/dashboard/');
+        const kpis = statsResponse.kpis || {};
+        const aiInsights = statsResponse.ai_insights || [];
 
-        // Calculate KPIs
-        const totalRevenue = deals.reduce((sum, d) => sum + parseFloat(d.amount || 0), 0);
-        const activeDeals = deals.filter(d => d.status !== 'closed').length;
+        // Update KPI UI with smooth transition and trend badges
+        const revenueVal = `$${parseFloat(kpis.total_revenue || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+        updateKPI('kpi-revenue', revenueVal, kpis.revenue_growth, kpis.revenue_growth >= 0 ? 'arrow-up' : 'arrow-down');
+        
+        updateKPI('kpi-deals', kpis.active_deals, kpis.deals_trend, kpis.deals_trend >= 0 ? 'arrow-up' : 'arrow-down');
+        
+        updateKPI('kpi-leads', kpis.leads_converted, kpis.leads_trend, kpis.leads_trend >= 0 ? 'arrow-up' : 'arrow-down');
+        
+        const winRateVal = `${parseFloat(kpis.win_rate || 0).toFixed(1)}%`;
+        updateKPI('kpi-winrate', winRateVal, kpis.win_rate_trend, kpis.win_rate_trend >= 0 ? 'arrow-up' : 'arrow-down');
 
-        // Update KPI UI with smooth transition
-        updateKpi('kpi-revenue', `$${totalRevenue.toLocaleString()}`);
-        updateKpi('kpi-deals', activeDeals);
+        // Update AI Insights count in welcome section
+        const aiCountEl = document.getElementById('ai-insight-count');
+        if (aiCountEl && aiCountEl.innerText != aiInsights.length) {
+            aiCountEl.innerText = aiInsights.length;
+        }
+
+        // Render AI Insights
+        renderAIInsights(aiInsights);
 
         // Fetch Recent Activity
         const activitiesResponse = await api.get('/crm/activities/');
@@ -56,11 +69,11 @@ async function refreshDashboardData() {
     }
 }
 
-function updateKpi(id, value) {
+function updateKPI(id, value, trend, icon, suffix = '') {
     const el = document.getElementById(id);
     if (!el) return;
-    
-    // Only update if value changed to avoid unnecessary re-renders
+
+    // Smooth transition opacity effect
     if (el.innerText != value) {
         el.style.opacity = '0.5';
         setTimeout(() => {
@@ -68,22 +81,18 @@ function updateKpi(id, value) {
             el.style.opacity = '1';
         }, 150);
     }
-}
 
-function updateKPI(id, value, trend, icon, suffix = '') {
-    const el = document.getElementById(id);
-    if (!el) return;
-
-    el.innerText = value;
-
-    // Update trend badge if exists in parent
+    // Update trend badge if exists in parent card
     const card = el.closest('.kpi-card-modern');
     if (card) {
         const badge = card.querySelector('.rounded-full');
         if (badge) {
             badge.classList.remove('animate-pulse');
-            badge.innerHTML = `<i data-lucide="${icon}" class="w-3 h-3"></i> ${Math.abs(trend)}${suffix ? ' ' + suffix : '%'}`;
-            // Toggle classes based on trend
+            
+            const trendSign = trend >= 0 ? '+' : '';
+            badge.innerHTML = `<i data-lucide="${icon}" class="w-3 h-3"></i> ${trendSign}${trend}${suffix ? ' ' + suffix : '%'}`;
+            
+            // Toggle classes based on trend direction
             if (trend >= 0) {
                 badge.classList.remove('bg-danger/10', 'border-danger/20', 'text-danger');
                 badge.classList.add('bg-success/10', 'border-success/20', 'text-success');
@@ -94,6 +103,38 @@ function updateKPI(id, value, trend, icon, suffix = '') {
         }
     }
     if (window.lucide) lucide.createIcons();
+}
+
+function renderAIInsights(insights) {
+    const container = document.getElementById('ai-insight-preview');
+    if (!container) return;
+
+    if (insights.length === 0) {
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-6 text-center opacity-50">
+                <p class="text-xs text-gray-400 font-medium">No active insights at the moment</p>
+            </div>
+        `;
+        return;
+    }
+
+    const html = insights.map(insight => `
+        <div class="p-4 rounded-xl bg-white/5 border border-white/5 flex gap-3 items-start hover:bg-white/10 transition-colors" style="border-radius: 14px;">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${insight.type === 'warning' ? 'bg-danger/10 text-danger' : 'bg-primary/10 text-primary'}">
+                <i data-lucide="${insight.type === 'warning' ? 'alert-triangle' : 'sparkles'}" class="w-4 h-4"></i>
+            </div>
+            <div class="overflow-hidden">
+                <h4 class="text-sm font-bold text-white mb-1 truncate">${insight.title}</h4>
+                <p class="text-xs text-gray-400 font-medium leading-relaxed">${insight.description}</p>
+            </div>
+        </div>
+    `).join('');
+
+    // Only update if HTML changed
+    if (container.innerHTML !== html) {
+        container.innerHTML = html;
+        if (window.lucide) lucide.createIcons();
+    }
 }
 
 function renderActivities(activities) {

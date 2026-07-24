@@ -1,12 +1,16 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import permissions
 
-def auth_check(request):
-    """Simple endpoint to check if user is authenticated"""
-    if request.user.is_authenticated:
-        return JsonResponse({
+class AuthCheckView(APIView):
+    """Check if user is authenticated via JWT."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response({
             'authenticated': True,
             'user': {
                 'id': str(request.user.id),
@@ -14,7 +18,6 @@ def auth_check(request):
                 'full_name': getattr(request.user, 'full_name', ''),
             }
         })
-    return JsonResponse({'authenticated': False}, status=401)
 
 from .serializers import CustomTokenObtainPairSerializer
 
@@ -40,8 +43,8 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('auth/google/', GoogleAuthView.as_view(), name='google_auth'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('auth/check/', auth_check, name='auth_check'),
-    path('users/profile/', auth_check, name='legacy_profile_alias'), # Support legacy calls
+    path('auth/check/', AuthCheckView.as_view(), name='auth_check'),
+    path('users/profile/', AuthCheckView.as_view(), name='legacy_profile_alias'), # Support legacy calls
     path('oauth/token/', TokenExchangeView.as_view(), name='oauth_token_exchange'),
     path('oauth/scopes/', OAuthScopeListView.as_view(), name='oauth_scopes'),
     path('my-organizations/', MyOrganizationsView.as_view(), name='my-organizations'),

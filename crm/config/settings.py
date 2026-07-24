@@ -151,6 +151,7 @@ SIMPLE_JWT = {
 }
 
 GOOGLE_CLIENT_ID = env('GOOGLE_CLIENT_ID', default='')
+GOOGLE_CLIENT_SECRET = env('GOOGLE_CLIENT_SECRET', default='')
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
@@ -214,3 +215,6 @@ CELERY_BEAT_SCHEDULE = {
 
 WAGTAIL_SITE_NAME = 'Nova CRM Documentation'
 WAGTAILADMIN_BASE_URL = 'http://localhost:8000'
+
+# Fix for Google Identity Services popup (allows cross-origin postMessage)
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
