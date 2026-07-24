@@ -825,8 +825,7 @@ def test_analytics():
         "dashboard": DASHBOARD_ID,
         "name": "Revenue Chart",
         "report": REPORT_ID,
-        "component_type": "chart",
-        "config": {"chart_type": "bar", "data_source": "deals"}
+        "chart_type": "bar"
     })
     if res.status_code == 201:
         log_result("Analytics", "Create Dashboard Component", "PASS")
@@ -869,6 +868,8 @@ def test_omnichannel():
         "direction": "outbound",
         "status": "completed",
         "duration_seconds": 120,
+        "from_number": "+1234567890",
+        "to_number": "+0987654321",
         "subject": "Sales call"
     })
     if res.status_code == 201:
@@ -905,9 +906,13 @@ def test_omnichannel():
     
     # Create Email Message
     res = requests.post(f"{BASE_URL}/omnichannel/email-messages/", headers=HEADERS, json={
-        "email_integration": EMAIL_INT_ID,
+        "integration": EMAIL_INT_ID,
+        "message_id": f"msg_{int(time.time())}",
         "subject": "Test Email",
-        "body": "This is a test",
+        "body_text": "This is a test",
+        "from_address": "prospect@example.com",
+        "to_addresses": "test@example.com",
+        "sent_at": datetime.now().isoformat(),
         "direction": "outbound"
     })
     if res.status_code == 201:
@@ -1190,7 +1195,7 @@ def test_user_management():
     res = requests.post(f"{BASE_URL}/oauth-apps/", headers=HEADERS, json={
         "name": "Test OAuth App",
         "redirect_uri": "https://example.com/callback",
-        "allowed_scopes": ["ZohoCRM.users.READ"]
+        "allowed_scopes": ["NovaCRM.users.READ"]
     })
     if res.status_code == 201:
         OAUTH_APP = res.json()

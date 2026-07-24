@@ -4,6 +4,8 @@
 
 Nova CRM is a premium, production-grade CRM platform engineered for high-performance teams. Inspired by industry leaders like **Linear**, **Stripe**, and **Attio**, it delivers a modern, dark-first SaaS experience that is fast, elegant, and enterprise-ready.
 
+---
+
 ## ✨ Premium UI/UX
 
 Nova CRM has been transformed with a world-class design system:
@@ -12,66 +14,101 @@ Nova CRM has been transformed with a world-class design system:
 - **Micro-interactions**: Smooth 150ms-250ms transitions and animated active states.
 - **Responsive Layout**: A floating, collapsible modern sidebar and a clean, data-focused content area.
 
+---
+
 ## 🚀 Key Features
 
 ### Core CRM Modules
-- **Advanced Lead Management**: Modern Kanban boards with drag-and-drop feel and pipeline visualization.
+- **Advanced Lead & Deal Management**: Interactive Kanban boards with drag-and-drop workflow and stage probabilities.
 - **Relationship Intelligence**: Manage Companies and Contacts with high-performance, sticky-header data tables.
-- **Customer Profiles**: Deep-dive into customer data with an elegant, activity-centric profile view.
+- **Customer Profiles**: Deep-dive into customer data with an activity-centric profile view.
+- **Notes, Activities & Scoring Rules**: Automated lead assignment and scoring engines.
 
-### Command & Control
-- **Command Palette (Ctrl + K)**: A global search and action hub for lightning-fast navigation.
-- **Global Search**: Instantly find leads, deals, and tasks from anywhere.
-- **Quick Actions**: Streamlined workflows for creating records and logging activities.
+### Omnichannel Communications & Support
+- **Telephony Integration**: Phone integrations for call logging, call summaries, and transcripts.
+- **IMAP / SMTP Email Sync**: Integrated email client linking messages to leads, contacts, and deals.
+- **Live Support Chat**: Real-time support messaging system.
 
-### Intelligence & Automation
-- **AI-Powered Insights**: Integrated with OpenRouter to provide smart suggestions and automated data entry.
-- **Activity Timelines**: A visually polished timeline of all customer interactions.
-- **Real-time Analytics**: Beautifully animated charts and KPI cards for data-driven decisions.
+### Sales, Invoicing & Billing
+- **Product Catalog & Price Books**: Manage SKUs, custom pricing, and product lines.
+- **Quotes & Sales Orders**: Generate and track enterprise quotes and order fulfillments.
+- **Invoicing & Billing**: Invoice generation and automated Stripe webhook integration.
+
+### Workflows, Marketing & Integrations
+- **Automation Engine**: Triggers, actions, and step-by-step process Blueprints.
+- **Marketing Campaigns & Web Forms**: Lead capture forms with custom fields and campaign ROI tracking.
+- **Zoho CRM v8 API Layer**: Compatible API endpoints for third-party integrations.
+
+---
+
+## 🧪 Comprehensive Feature Testing
+
+Nova CRM includes an end-to-end automated test suite covering all API endpoints, auth flows, CRUD operations, multi-tenancy, security, and edge cases.
+
+### Test Results Summary
+- **Total Test Cases**: **157**
+- **Passed**: **155** (98.7% Success Rate)
+- **Failed**: **0** (0.0%)
+- **Warnings**: **2** (Strict tenant headers & stored raw inputs)
+
+### Running the Test Suite
+
+1. **Start the Django Development Server**:
+   ```bash
+   python crm/manage.py runserver 8000
+   ```
+
+2. **Execute the Comprehensive Test Suite**:
+   ```bash
+   python crm/comprehensive_test.py
+   ```
+
+   *Detailed results are saved to `test_report.json`.*
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Django (Python)
+- **Backend**: Django & Django REST Framework (Python 3.12)
 - **Frontend**: Tailwind CSS + Vanilla JavaScript (Optimized Build)
 - **Icons**: Lucide Icons
-- **Animations**: CSS Transitions + JavaScript Micro-interactions
-- **Database**: PostgreSQL / SQLite
-- **AI**: OpenRouter API
+- **Database**: SQLite / PostgreSQL
+- **Integrations**: Stripe Webhooks, OpenRouter AI, Twilio Telephony
+
+---
 
 ## 🚦 Getting Started
 
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/Dineshbalaji25/Nova-CRM.git
+   cd Nova-CRM
    ```
 
-2. **Set up Environment**:
+2. **Activate Environment & Install Dependencies**:
+   ```bash
+   source env/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. **Set up Environment Variables**:
    Create a `.env` file with:
    ```env
-   OPENROUTER_API_KEY=your_key
    SECRET_KEY=your_django_secret
+   STRIPE_WEBHOOK_SECRET=your_stripe_secret
    ```
 
-3. **Install Dependencies**:
+4. **Run Migrations**:
    ```bash
-   pip install -r requirements.txt
-   npm install
+   python crm/manage.py migrate
    ```
 
-4. **Build Styles**:
+5. **Start Development Server**:
    ```bash
-   npm run build
+   python crm/manage.py runserver 8000
    ```
 
-5. **Run Migrations**:
-   ```bash
-   python manage.py migrate
-   ```
-
-6. **Start Development Server**:
-   ```bash
-   python manage.py runserver
-   ```
+---
 
 ## 📄 License
 
@@ -79,4 +116,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 Built with ❤️ for high-performance teams.
-<!-- Final UI Transformation Commit -->

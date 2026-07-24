@@ -14,14 +14,16 @@ def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     
+    webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None)
+    if not sig_header or not webhook_secret:
+        return HttpResponseBadRequest("Missing Stripe signature or webhook secret")
+
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            payload, sig_header, webhook_secret
         )
-    except ValueError as e:
-        return HttpResponseBadRequest()
-    except stripe.error.SignatureVerificationError as e:
-        return HttpResponseBadRequest()
+    except Exception as e:
+        return HttpResponseBadRequest(f"Webhook error: {str(e)}")
     
     evt_type = event.get('type')
     data = event.get('data', {}).get('object', {})

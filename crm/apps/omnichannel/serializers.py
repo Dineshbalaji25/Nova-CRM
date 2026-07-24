@@ -17,7 +17,7 @@ class EmailIntegrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailIntegration
         fields = '__all__'
-        read_only_fields = ('tenant', 'created_at', 'updated_at')
+        read_only_fields = ('tenant', 'user', 'created_at', 'updated_at')
         extra_kwargs = {
             'password': {'write_only': True}
         }

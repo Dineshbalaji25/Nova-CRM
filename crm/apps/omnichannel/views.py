@@ -28,6 +28,9 @@ class EmailIntegrationViewSet(BaseTenantViewSet):
     queryset = EmailIntegration.objects.all()
     serializer_class = EmailIntegrationSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(tenant_id=self.request.tenant_id, user=self.request.user)
+
 class EmailMessageViewSet(BaseTenantViewSet):
     queryset = EmailMessage.objects.select_related('integration', 'lead', 'contact', 'deal').all()
     serializer_class = EmailMessageSerializer
