@@ -15,12 +15,21 @@ class LeadConversionService:
         # 1. Create or Find Company
         company = None
         if lead.company_name:
-            # Simple match by name and tenant
-            company, created = Company.objects.get_or_create(
-                tenant_id=lead.tenant_id,
-                name=lead.company_name,
-                defaults={'owner': lead.owner}
-            )
+            # Handle race condition: two concurrent conversions of same company name
+            # may both attempt INSERT and one will fail with IntegrityError
+            from django.db import IntegrityError
+            try:
+                company, created = Company.objects.get_or_create(
+                    tenant_id=lead.tenant_id,
+                    name=lead.company_name,
+                    defaults={'owner': lead.owner}
+                )
+            except IntegrityError:
+                # Another request created the company between our SELECT and INSERT
+                company = Company.objects.get(
+                    tenant_id=lead.tenant_id,
+                    name=lead.company_name
+                )
 
         # 2. Create Contact
         contact = Contact.objects.create(
@@ -65,21 +74,51 @@ class ScoringEngine:
     def process_record(cls, instance, model_name):
         """
         Evaluates scoring rules and applies points.
+        Uses bulk operations to avoid N+1 queries and recursive signal loops.
         """
-        rules = ScoringRule.objects.filter(target_model=model_name, is_active=True, tenant_id=instance.tenant_id)
-        
+        rules = ScoringRule.objects.filter(
+            target_model=model_name, is_active=True, tenant_id=instance.tenant_id, is_deleted=False
+        )
+        if not rules.exists():
+            return
+
+        # Prefetch already-applied rule IDs in a single query to avoid N+1
+        applied_ids = set(
+            AppliedScoringRule.objects.filter(
+                record_model=model_name, record_id=instance.id
+            ).values_list('rule_id', flat=True)
+        )
+
         # Build context for evaluator
         context = {model_name: instance.__dict__}
-        
+
+        total_score_change = 0
+        new_applications = []
+
         for rule in rules:
-            # Check if already applied
-            if AppliedScoringRule.objects.filter(rule=rule, record_model=model_name, record_id=instance.id).exists():
+            if rule.id in applied_ids:
                 continue
-                
             if evaluate_condition(context, rule.criteria):
-                instance.score += rule.score_change
-                instance.save(update_fields=['score'])
-                AppliedScoringRule.objects.create(rule=rule, record_model=model_name, record_id=instance.id)
+                total_score_change += rule.score_change
+                new_applications.append(
+                    AppliedScoringRule(
+                        rule=rule,
+                        record_model=model_name,
+                        record_id=instance.id,
+                    )
+                )
+
+        # Apply score change with a single save() call outside the loop
+        # This prevents recursive post_save signal loops
+        if total_score_change != 0:
+            instance.score += total_score_change
+            instance.save(update_fields=['score'])
+
+        # Bulk-create all new AppliedScoringRule records
+        if new_applications:
+            AppliedScoringRule.objects.bulk_create(
+                new_applications, ignore_conflicts=True
+            )
 
 class TerritoryEngine:
     @classmethod
@@ -87,7 +126,7 @@ class TerritoryEngine:
         """
         Evaluates territory assignment rules.
         """
-        rules = AssignmentRule.objects.filter(target_model=model_name, is_active=True, tenant_id=instance.tenant_id).order_by('position')
+        rules = AssignmentRule.objects.filter(target_model=model_name, is_active=True, tenant_id=instance.tenant_id, is_deleted=False).order_by('position')
         
         context = {model_name: instance.__dict__}
         
@@ -96,10 +135,14 @@ class TerritoryEngine:
                 if rule.assign_to_user and hasattr(instance, 'owner'):
                     instance.owner = rule.assign_to_user
                     instance.save(update_fields=['owner'])
+                    # Stop after first owner assignment to prevent subsequent rules
+                    # from overwriting the assignment
+                    if not rule.assign_to_territory:
+                        break
                     
                 if rule.assign_to_territory and hasattr(instance, 'territories'):
                     instance.territories.add(rule.assign_to_territory)
                     
-                # If rule matches, do we stop? Usually yes for assignment, but since it's territories we can just apply all matches or first match.
-                # Standard CRM usually stops at first match for Owner, but can add multiple territories. Let's not break loop to allow multiple unless specified.
-                pass
+                # If we assigned an owner, break after also handling territory on same rule
+                if rule.assign_to_user:
+                    break

@@ -24,16 +24,45 @@ class IsOrganizationMember(permissions.BasePermission):
         # Ideally cached (Phase 8: Add Redis caching here)
         from apps.users.models import OrganizationMember
         
-        has_membership = OrganizationMember.objects.filter(
+        membership = OrganizationMember.objects.filter(
             user=request.user,
             organization_id=tenant_id,
             is_active=True
-        ).exists()
+        ).first()
 
-        if has_membership:
-            request.user.current_role = OrganizationMember.objects.get(
-                user=request.user, organization_id=tenant_id
-            ).role
+        if membership:
+            request.user.current_role = membership.role
             return True
         
         return False
+
+
+class HasOAuthScope(permissions.BasePermission):
+    """
+    Enforces OAuth scope restrictions on token-authenticated requests.
+    
+    Usage on a ViewSet:
+        permission_classes = [IsAuthenticated, HasOAuthScope]
+        required_scopes = ['NovaCRM.modules.contacts.READ']
+    
+    If the request was not made with an OAuth token (no request.oauth_scopes),
+    this permission defers to other permission classes (passes through).
+    """
+    required_scopes = []
+
+    def has_permission(self, request, view):
+        # Only enforce if this is an OAuth token request
+        if not hasattr(request, 'oauth_scopes'):
+            return True  # Non-OAuth request — let other permissions decide
+
+        # NovaCRM.modules.ALL grants unrestricted access
+        if 'NovaCRM.modules.ALL' in request.oauth_scopes:
+            return True
+
+        # Check view-level required_scopes attribute
+        view_scopes = getattr(view, 'required_scopes', self.required_scopes)
+        if not view_scopes:
+            return True  # No specific scopes required
+
+        # Grant access if any required scope is present
+        return any(scope in request.oauth_scopes for scope in view_scopes)

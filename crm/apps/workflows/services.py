@@ -14,9 +14,10 @@ class BlueprintService:
         """
         # Ex: entry_criteria = {"field": "deal.amount", "operator": "gt", "value": 1000}
         active_blueprints = Blueprint.objects.filter(
-            target_model=model_name, 
+            target_model=model_name,
             is_active=True,
-            tenant_id=instance.tenant_id
+            tenant_id=instance.tenant_id,
+            is_deleted=False,
         )
         
         context = {
@@ -71,8 +72,9 @@ class BlueprintService:
         Returns list of transitions available for the current record.
         """
         contexts = BlueprintRecordContext.objects.filter(
-            record_model=model_name, 
-            record_id=instance.id
+            record_model=model_name,
+            record_id=instance.id,
+            is_deleted=False,
         ).select_related('current_state')
         
         available = []

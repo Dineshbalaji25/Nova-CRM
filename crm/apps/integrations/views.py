@@ -6,6 +6,7 @@ from rest_framework import status, permissions
 from .models import IntegrationProvider, IntegrationLog
 from .services import TalesTimelineSyncService
 import json
+import hmac
 
 @login_required(login_url='/login')
 def integrations_dashboard(request):
@@ -44,7 +45,14 @@ class TalesTimelineWebhookView(APIView):
         if not secret:
             return Response({"error": "Missing secret"}, status=status.HTTP_401_UNAUTHORIZED)
         
-        provider = IntegrationProvider.objects.filter(webhook_secret=secret, is_active=True).first()
+        # Constant-time secret comparison to prevent timing attacks
+        providers = IntegrationProvider.objects.filter(is_active=True)
+        provider = None
+        for p in providers:
+            if p.webhook_secret and hmac.compare_digest(str(p.webhook_secret), str(secret)):
+                provider = p
+                break
+        
         if not provider:
             return Response({"error": "Invalid secret"}, status=status.HTTP_401_UNAUTHORIZED)
         

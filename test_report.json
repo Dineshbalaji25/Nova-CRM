@@ -1,0 +1,954 @@
+{
+  "timestamp": "2026-07-24T20:20:28.940050",
+  "summary": {
+    "pass": 155,
+    "fail": 0,
+    "warn": 2,
+    "total": 157,
+    "success_rate": "98.7%"
+  },
+  "details": [
+    {
+      "category": "Auth",
+      "test": "User Registration",
+      "status": "PASS",
+      "detail": "Created user with tenant 1ba1e9e2-ff27-4271-9685-2b910850f981"
+    },
+    {
+      "category": "Auth",
+      "test": "Duplicate Registration Rejected",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "Short Password Rejected",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "Missing Org Name Rejected",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "User Login",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "Wrong Password Rejected",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "Auth Check Endpoint",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "Token Refresh",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "List My Organizations",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "Switch Tenant",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "Unauthenticated Access Blocked",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Auth",
+      "test": "Missing Tenant Header Handling",
+      "status": "WARN",
+      "detail": "Status 403"
+    },
+    {
+      "category": "Auth",
+      "test": "Google Auth (Not Configured)",
+      "status": "PASS",
+      "detail": "Returns 400"
+    },
+    {
+      "category": "Auth",
+      "test": "OAuth Scopes List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Company",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "List Companies",
+      "status": "PASS",
+      "detail": "Count: 1"
+    },
+    {
+      "category": "CRM",
+      "test": "Retrieve Company",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Update Company",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Contact",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "List Contacts",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Retrieve Contact",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Update Contact",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Lead",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "List Leads",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Update Lead Status",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Pipeline",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Stage",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Deal",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "List Deals",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Retrieve Deal",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Update Deal Amount",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Note",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "List Notes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Activity",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Complete Activity",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Tag",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Custom Field",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Territory",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Assignment Rule",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Create Scoring Rule",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Score Breakdown",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "CRM",
+      "test": "Delete Note",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "Get Metadata",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "Create Workflow",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "List Workflows",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "List Executions",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "Create Blueprint",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "Create Blueprint State",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "Create Second Blueprint State",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "Create Blueprint Transition",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Workflows",
+      "test": "Blueprint Record Status",
+      "status": "PASS",
+      "detail": "Status 200"
+    },
+    {
+      "category": "Sales",
+      "test": "Create Product",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Sales",
+      "test": "List Products",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Sales",
+      "test": "Create Price Book",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Sales",
+      "test": "Create Quote",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Sales",
+      "test": "List Quotes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Sales",
+      "test": "Create Sales Order",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Sales",
+      "test": "List Sales Orders",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Sales",
+      "test": "Create Invoice",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Sales",
+      "test": "List Invoices",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Marketing",
+      "test": "Create Campaign",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Marketing",
+      "test": "List Campaigns",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Marketing",
+      "test": "Create Campaign Member",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Marketing",
+      "test": "Create Web Form",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Marketing",
+      "test": "List Web Forms",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Marketing",
+      "test": "Create Web Form Field",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Analytics",
+      "test": "Dashboard Stats",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Analytics",
+      "test": "Create Report",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Analytics",
+      "test": "List Reports",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Analytics",
+      "test": "Create Dashboard",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Analytics",
+      "test": "List Dashboards",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Analytics",
+      "test": "Create Dashboard Component",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "Create Phone Integration",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "List Phone Integrations",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "Create Call Log",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "List Call Logs",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "Create Email Integration",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "List Email Integrations",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "Create Email Message",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "List Email Messages",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "Unified Timeline",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "Create Support Chat (User)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "Create Support Chat (Support)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Omnichannel",
+      "test": "List Support Chat",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Billing",
+      "test": "List Plans",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Billing",
+      "test": "List My Subscription",
+      "status": "PASS",
+      "detail": "Status 200"
+    },
+    {
+      "category": "Billing",
+      "test": "List Billing Invoices",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Billing",
+      "test": "List Usage Records",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Billing",
+      "test": "Stripe Webhook (Invalid)",
+      "status": "PASS",
+      "detail": "Returns 400"
+    },
+    {
+      "category": "Audit",
+      "test": "List Audit Logs",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Audit",
+      "test": "Audit Logs Created for Actions",
+      "status": "PASS",
+      "detail": "Count: 43"
+    },
+    {
+      "category": "Portals",
+      "test": "List Portal Admin",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Portals",
+      "test": "List Portal Users",
+      "status": "PASS",
+      "detail": "Status 403"
+    },
+    {
+      "category": "Portals",
+      "test": "List Portal Deals",
+      "status": "PASS",
+      "detail": "Status 403"
+    },
+    {
+      "category": "Portals",
+      "test": "List Portal Invoices",
+      "status": "PASS",
+      "detail": "Status 403"
+    },
+    {
+      "category": "Integrations",
+      "test": "Tales Timeline Webhook",
+      "status": "PASS",
+      "detail": "Status 401"
+    },
+    {
+      "category": "Integrations",
+      "test": "Zoho API - Contacts",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Integrations",
+      "test": "Zoho API - Deals",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Integrations",
+      "test": "Zoho API - Accounts",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Integrations",
+      "test": "Zoho API - Leads",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Integrations",
+      "test": "Zoho API - Tasks",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "API",
+      "test": "List Webhook Endpoints",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "API",
+      "test": "Create Webhook Endpoint",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "API",
+      "test": "List Webhook Logs",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Users",
+      "test": "List Profiles",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Users",
+      "test": "Create Profile",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Users",
+      "test": "List Roles",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Users",
+      "test": "Create Role",
+      "status": "PASS",
+      "detail": "Status 201"
+    },
+    {
+      "category": "Users",
+      "test": "List API Keys",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Users",
+      "test": "Create API Key",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Users",
+      "test": "Create OAuth App",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Users",
+      "test": "List OAuth Apps",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Landing Page (/)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Login Page (/login)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Register Page (/register)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Dashboard (/dashboard)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Leads Page (/leads)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Contacts Page (/contacts)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Companies Page (/companies)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Deals Page (/deals)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Tasks Page (/tasks)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Workflows Page (/workflows)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Scoring Rules Page (/scoring-rules)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Settings Page (/settings)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Billing Page (/billing)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Audit Page (/audit)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Team Page (/team)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Products Page (/products)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Quotes Page (/quotes)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Sales Orders Page (/sales-orders)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Invoices Page (/invoices)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Blueprints Page (/blueprints)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Campaigns Page (/campaigns)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Web Forms Page (/webforms)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Dashboards Page (/dashboards)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Reports Page (/reports)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Territories Page (/territories)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Roles Page (/roles)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Profiles Page (/profiles)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Portals Page (/portals)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Calls Page (/calls)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Emails Page (/emails)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Frontend",
+      "test": "Integrations Page (/integrations)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Security",
+      "test": "Cross-Tenant Isolation (Retrieve)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Security",
+      "test": "Cross-Tenant Isolation (List)",
+      "status": "PASS",
+      "detail": "Tenant 2 sees 0 companies"
+    },
+    {
+      "category": "Security",
+      "test": "Invalid Token Rejected",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Security",
+      "test": "SQL Injection Protection",
+      "status": "PASS",
+      "detail": "No error (ORM protected)"
+    },
+    {
+      "category": "Security",
+      "test": "XSS Input Handling",
+      "status": "WARN",
+      "detail": "Script tag stored in DB"
+    },
+    {
+      "category": "Edge Case",
+      "test": "Non-existent Record (404)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Edge Case",
+      "test": "Invalid UUID Format",
+      "status": "PASS",
+      "detail": "Status 404"
+    },
+    {
+      "category": "Edge Case",
+      "test": "Missing Required Fields",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Edge Case",
+      "test": "Invalid Data Type",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Edge Case",
+      "test": "Pagination",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Edge Case",
+      "test": "Search Filter",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Edge Case",
+      "test": "Ordering",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Edge Case",
+      "test": "Empty Body POST",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "category": "Edge Case",
+      "test": "Very Long String",
+      "status": "PASS",
+      "detail": "Status 400"
+    }
+  ]
+}

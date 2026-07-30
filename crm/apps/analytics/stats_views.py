@@ -39,24 +39,12 @@ class DashboardStatsView(APIView):
                 "leads_converted": converted_leads,
                 "conversion_rate": round(conversion_rate, 1),
                 "win_rate": round(win_rate, 1),
-                "revenue_growth": 12.5, # Placeholder for trend analysis
+                "revenue_growth": None,
                 "deals_today": deals.filter(created_at__date=timezone.now().date()).count(),
-                "deals_trend": 8.2, # Placeholder
-                "leads_trend": -2.4, # Placeholder
-                "win_rate_trend": 5.0 # Placeholder
+                "deals_trend": None,
+                "leads_trend": None,
+                "win_rate_trend": None,
             },
-            "ai_insights": [
-                {
-                    "id": 1,
-                    "title": "High-value Deal at Risk",
-                    "description": "Acme Corp deal has had no activity for 5 days.",
-                    "type": "warning"
-                },
-                {
-                    "id": 2,
-                    "title": "Conversion Opportunity",
-                    "description": "Lead 'Jane Doe' has opened your proposal 3 times today.",
-                    "type": "insight"
-                }
-            ]
+            "trends_computed": False,
+            "ai_insights": [],
         })

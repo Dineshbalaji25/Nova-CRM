@@ -15,11 +15,12 @@ class WebhookDispatcher:
         Format: t={timestamp},v1={hash}
         """
         to_sign = f"{timestamp}.{payload_body}"
-        signature = hmac.new(
+        h = hmac.new(
             key=secret.encode('utf-8'),
             msg=to_sign.encode('utf-8'),
             digestmod=hashlib.sha256
-        ).hexdigest()
+        )
+        signature = h.hexdigest()
         return f"t={timestamp},v1={signature}"
 
     @classmethod

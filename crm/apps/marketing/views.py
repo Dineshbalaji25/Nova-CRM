@@ -35,6 +35,15 @@ from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 
+# Allowlists for web form field mapping — prevents mass assignment attacks
+LEAD_SAFE_FIELDS = frozenset({
+    'first_name', 'last_name', 'email', 'phone',
+    'company_name', 'source', 'title',
+})
+CONTACT_SAFE_FIELDS = frozenset({
+    'first_name', 'last_name', 'email', 'phone',
+})
+
 class WebFormSubmitView(APIView):
     """
     Public endpoint for submitting webforms.
@@ -55,9 +64,10 @@ class WebFormSubmitView(APIView):
             'owner': webform.assign_to,
         }
         
+        safe_fields = LEAD_SAFE_FIELDS if webform.target_model == 'lead' else CONTACT_SAFE_FIELDS
         custom_data = {}
         for key, value in data.items():
-            if hasattr(Lead if webform.target_model == 'lead' else Contact, key):
+            if key in safe_fields:
                 target_kwargs[key] = value
             else:
                 custom_data[key] = value

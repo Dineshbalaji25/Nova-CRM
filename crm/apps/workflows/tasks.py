@@ -12,23 +12,39 @@ def process_workflow_step(execution_id, node_id):
 def evaluate_scheduled_workflows():
     """
     Evaluates scheduled workflows (e.g. running every hour).
+    Only fires each workflow if its configured interval has elapsed since last execution.
     """
     from .models import Workflow, WorkflowExecution
     from django.utils import timezone
-    
+
+    now = timezone.now()
     workflows = Workflow.objects.filter(is_active=True, trigger_type='schedule')
+
+    fired = 0
     for wf in workflows:
-        # In MVP, we just create an execution and start the first node.
-        # In a real engine, we'd evaluate the schedule criteria (e.g. "every day at 8am")
+        # Check if enough time has elapsed since last execution
+        interval_minutes = wf.trigger_config.get('interval_minutes', 60)
+        if wf.last_executed_at is not None:
+            elapsed = (now - wf.last_executed_at).total_seconds() / 60
+            if elapsed < interval_minutes:
+                continue  # Not time yet
+
         execution = WorkflowExecution.objects.create(
             workflow=wf,
-            trigger_context={"trigger": "schedule", "time": str(timezone.now())}
+            trigger_context={"trigger": "schedule", "time": str(now)}
         )
         first_node = wf.nodes.first()
         if first_node:
             execution.current_node = first_node
             execution.save()
             process_workflow_step.delay(execution.id, first_node.id)
+
+        # Record the execution time
+        wf.last_executed_at = now
+        wf.save(update_fields=['last_executed_at'])
+        fired += 1
+
+    return f"Fired {fired} scheduled workflows"
 
 @shared_task(queue='default')
 def trigger_workflow_event(event_name, model_name, record_id, tenant_id):

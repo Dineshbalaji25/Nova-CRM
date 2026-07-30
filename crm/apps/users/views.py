@@ -71,6 +71,19 @@ class OAuthApplicationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(organization_id=self.request.tenant_id)
 
+    def create(self, request, *args, **kwargs):
+        from rest_framework import status as drf_status
+        from rest_framework.response import Response
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        # Include client_secret only at creation time
+        instance = serializer.instance
+        data = serializer.data
+        data['client_secret'] = instance.client_secret
+        headers = self.get_success_headers(serializer.data)
+        return Response(data, status=drf_status.HTTP_201_CREATED, headers=headers)
+
 
 def _parse_scope_list(scope_value):
     if not scope_value:
@@ -102,6 +115,14 @@ class TokenExchangeView(APIView):
         app_scopes = app.allowed_scopes or default_oauth_scopes()
 
         if grant_type == 'authorization_code':
+            # Validate redirect_uri if the app has one registered
+            redirect_uri = request.data.get('redirect_uri', '')
+            if app.redirect_uri and redirect_uri != app.redirect_uri:
+                return Response(
+                    {"error": "invalid_grant", "details": "redirect_uri mismatch"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             code = request.data.get('code')
             from django.core.cache import cache
             user_id = cache.get(f"oauth_code_{code}")
@@ -290,28 +311,21 @@ class GoogleAuthView(APIView):
             )
 
         try:
-            token_info_response = requests.get(
-                'https://oauth2.googleapis.com/tokeninfo',
-                params={'id_token': id_token},
-                timeout=5
+            from google.oauth2 import id_token as google_id_token
+            from google.auth.transport import requests as google_requests
+            token_info = google_id_token.verify_oauth2_token(
+                id_token,
+                google_requests.Request(),
+                settings.GOOGLE_CLIENT_ID
             )
-        except requests.RequestException:
+        except ValueError as e:
+            return Response({'error': f'Invalid Google token: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
             return Response({'error': 'Unable to verify Google token'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-        if token_info_response.status_code != 200:
-            return Response({'error': 'Invalid Google token'}, status=status.HTTP_400_BAD_REQUEST)
-
-        token_info = token_info_response.json()
         email = token_info.get('email')
-        audience = token_info.get('aud')
-        raw_email_verified = token_info.get('email_verified', False)
-        email_verified = raw_email_verified is True or str(raw_email_verified).lower() == 'true'
-
-        if not email or not email_verified:
+        if not email:
             return Response({'error': 'Google account email must be verified'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if audience != settings.GOOGLE_CLIENT_ID:
-            return Response({'error': 'Invalid Google token audience'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.filter(email=email).first()
         if user is None and not organization_name:

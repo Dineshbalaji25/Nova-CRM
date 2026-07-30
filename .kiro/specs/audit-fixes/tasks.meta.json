@@ -1,0 +1,498 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Fix insecure defaults in `config/settings.py` and `.env.example`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957171
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418973590
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419040052
+      }
+    ],
+    "2. Fix `hmac` call in `WebhookDispatcher.sign_payload()`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957218
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419045968
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419091657
+      }
+    ],
+    "3. Fix sensitive data leakage in `AuditMiddleware`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957261
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419098104
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419174372
+      }
+    ],
+    "4. Add `gte`/`lte` operators to workflow condition evaluator": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957344
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419099079
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419175271
+      }
+    ],
+    "5. Fix `OrganizationMemberSerializer` nonexistent `joined_at` field": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957447
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419100105
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419176409
+      }
+    ],
+    "6. Remove hardcoded fake dashboard stats": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957485
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419101008
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419176943
+      }
+    ],
+    "7. Raise `PermissionDenied` when `tenant_id` is missing in `BaseTenantViewSet`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957523
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419102120
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419177963
+      }
+    ],
+    "8. Refactor `IsOrganizationMember` to single database query": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957563
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419102981
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419178770
+      }
+    ],
+    "9. Fix Google Auth to use official library": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957600
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419184551
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422538881
+      }
+    ],
+    "10. Fix webhook secret timing attack in `TalesTimelineWebhookView`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957639
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419185541
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422451166
+      }
+    ],
+    "11. Fix mass assignment in `WebFormSubmitView`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957676
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419186422
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422539854
+      }
+    ],
+    "12. Add OAuth redirect URI validation": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957718
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419187182
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422540666
+      }
+    ],
+    "13. Add Stripe `invoice.paid` and `invoice.payment_failed` handlers": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957790
+      },
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785419188312
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422541273
+      }
+    ],
+    "14. Make `client_secret` write-only in `OAuthApplicationSerializer`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957874
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422553565
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422968479
+      }
+    ],
+    "15. Add OAuth scope enforcement": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957908
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422554332
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422969265
+      }
+    ],
+    "16. Fix `ReportExecutor` ORM field injection": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957944
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422555429
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422966842
+      }
+    ],
+    "17. Implement `BillingService.record_usage()`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418957980
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422556319
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422970074
+      }
+    ],
+    "18. Fix `ScoringEngine` signal loop and N+1 queries": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958020
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422557884
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422967774
+      }
+    ],
+    "19. Fix workflow engine to advance to next node": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958055
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422976594
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423088500
+      }
+    ],
+    "20. Add tenant scoping to AI deal suggestions task": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958089
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422978328
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423089314
+      }
+    ],
+    "21. Fix `TerritoryEngine` to break after first owner assignment": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958125
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422978458
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423089921
+      }
+    ],
+    "22. Fix `GDPRService.anonymize_tenant_data()` to use bulk update": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958163
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422979475
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423090802
+      }
+    ],
+    "23. Fix `LeadConversionService` race condition": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958198
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785422980175
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423091349
+      }
+    ],
+    "24. Add `is_deleted=False` to service layer queries": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958288
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423103570
+      },
+      {
+        "executionId": "3e8a6309-09f3-4039-b074-78492382bfba",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785424134919
+      }
+    ],
+    "25. Fix portal ViewSets to scope querysets": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958345
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423104659
+      },
+      {
+        "executionId": "3e8a6309-09f3-4039-b074-78492382bfba",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785424135734
+      }
+    ],
+    "26. Add CSV import size and billing limit guards": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958381
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423105859
+      },
+      {
+        "executionId": "3e8a6309-09f3-4039-b074-78492382bfba",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785424136459
+      }
+    ],
+    "27. Encrypt `PhoneIntegration.auth_token`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958429
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423106528
+      },
+      {
+        "executionId": "3e8a6309-09f3-4039-b074-78492382bfba",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785424137549
+      }
+    ],
+    "28. Add `deal` FK to `CallLog` and fix `OmnichannelService`": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958465
+      },
+      {
+        "executionId": "5dc5bdd1-6201-461f-9f65-71a38da49a44",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785423107868
+      },
+      {
+        "executionId": "3e8a6309-09f3-4039-b074-78492382bfba",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785424137982
+      }
+    ],
+    "29. Add `last_executed_at` to `Workflow` model": [
+      {
+        "executionId": "4b1368df-4f84-413c-938f-c9a2919d4476",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785418958501
+      },
+      {
+        "executionId": "3e8a6309-09f3-4039-b074-78492382bfba",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785424153329
+      },
+      {
+        "executionId": "3e8a6309-09f3-4039-b074-78492382bfba",
+        "chatSessionId": "sess_be6a6f11-01a6-432c-807e-dee07a211a94",
+        "timestamp": 1785424168623
+      }
+    ]
+  }
+}

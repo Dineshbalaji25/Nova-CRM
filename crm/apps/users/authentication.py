@@ -78,6 +78,11 @@ class OAuthTokenAuthentication(authentication.BaseAuthentication):
         # Set tenant_id on request for models/middleware/permissions
         request.tenant_id = str(token_obj.application.organization.id)
 
+        # Attach parsed scopes list for scope enforcement
+        request.oauth_scopes = [
+            s.strip() for s in token_obj.scopes.split(',') if s.strip()
+        ]
+
         return (token_obj.user, None)
 
     def authenticate_header(self, request):

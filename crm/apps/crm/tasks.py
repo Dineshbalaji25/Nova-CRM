@@ -12,8 +12,29 @@ logger = logging.getLogger(__name__)
 def generate_ai_suggestions_for_all_deals():
     """
     Generate AI suggestions for open deals periodically.
+    Only processes deals for tenants with active or trialing subscriptions.
     """
-    deals = Deal.objects.filter(stage__pipeline__is_default=True, stage__win_probability__lt=100)
+    from apps.billing.models import Subscription
+
+    # Only process deals for tenants with active subscriptions
+    active_tenant_ids = set(
+        Subscription.objects.filter(
+            status__in=['active', 'trialing']
+        ).values_list('tenant_id', flat=True)
+    )
+
+    if not active_tenant_ids:
+        logger.info("No active tenants found for AI suggestions.")
+        return "No active tenants"
+
+    deals = Deal.objects.filter(
+        stage__pipeline__is_default=True,
+        stage__win_probability__lt=100,
+        tenant_id__in=active_tenant_ids,
+        is_deleted=False,
+    )
+
+    processed = 0
     for deal in deals:
         try:
             client = openai.OpenAI(
@@ -44,7 +65,8 @@ def generate_ai_suggestions_for_all_deals():
                 suggestion=suggestion,
                 confidence_score=0.85
             )
+            processed += 1
         except Exception as e:
             logger.error(f"Error generating AI suggestion for deal {deal.id}: {str(e)}")
     
-    return f"Triggered AI suggestions for {deals.count()} deals"
+    return f"Generated AI suggestions for {processed}/{deals.count()} deals across {len(active_tenant_ids)} active tenants"

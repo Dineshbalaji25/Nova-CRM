@@ -279,8 +279,12 @@ def evaluate_condition(context, config):
             return actual_value != target_value
         elif operator == 'gt':
             return actual_value > target_value
+        elif operator == 'gte':
+            return actual_value >= target_value
         elif operator == 'lt':
             return actual_value < target_value
+        elif operator == 'lte':
+            return actual_value <= target_value
         elif operator == 'contains':
             return str(target_value).lower() in str(actual_value).lower()
     except (ValueError, TypeError):

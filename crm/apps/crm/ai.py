@@ -14,15 +14,19 @@ class AISuggestionService:
         """
         try:
             if target_model == 'lead':
-                instance = Lead.objects.get(id=target_id, tenant_id=tenant_id)
+                instance = Lead.objects.filter(id=target_id, tenant_id=tenant_id, is_deleted=False).first()
+                if not instance:
+                    return None
                 context_name = f"{instance.first_name} {instance.last_name} from {instance.company_name}"
             else:
-                instance = Deal.objects.get(id=target_id, tenant_id=tenant_id)
+                instance = Deal.objects.filter(id=target_id, tenant_id=tenant_id, is_deleted=False).first()
+                if not instance:
+                    return None
                 context_name = instance.title
                 
             # Gather history
-            notes = list(Note.objects.filter(**{target_model: instance}).values_list('body', flat=True)[:5])
-            activities = list(Activity.objects.filter(**{target_model: instance}).values('activity_type', 'subject', 'body', 'occurred_at')[:5])
+            notes = list(Note.objects.filter(**{target_model: instance}, is_deleted=False).values_list('body', flat=True)[:5])
+            activities = list(Activity.objects.filter(**{target_model: instance}, is_deleted=False).values('activity_type', 'subject', 'body', 'occurred_at')[:5])
             
             history_summary = f"Record: {context_name}\n"
             history_summary += f"Status: {getattr(instance, 'status', 'N/A')}\n"

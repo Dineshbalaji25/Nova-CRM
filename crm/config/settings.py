@@ -11,10 +11,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = env('SECRET_KEY', default='django-insecure-change-me-in-prod')
+from django.core.exceptions import ImproperlyConfigured
+_secret_key = env('SECRET_KEY', default='')
+if not _secret_key:
+    raise ImproperlyConfigured(
+        "SECRET_KEY environment variable is not set. "
+        "Set it in your .env file or environment."
+    )
+SECRET_KEY = _secret_key
 JWT_SECRET_KEY = env('JWT_SECRET_KEY', default=SECRET_KEY)
-DEBUG = env.bool('DEBUG', default=True)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+DEBUG = env.bool('DEBUG', default=False)
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+
+# Security settings — secure by default, overridable via .env for local dev
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=not DEBUG)
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=not DEBUG)
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=not DEBUG)
+SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)
+SESSION_COOKIE_HTTPONLY = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Application definition
 INSTALLED_APPS = [

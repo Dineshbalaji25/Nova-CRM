@@ -46,12 +46,25 @@ class PortalDataViewSet(PortalFilterMixin, viewsets.ReadOnlyModelViewSet):
 # Specialized Portal ViewSets
 class PortalDealViewSet(PortalFilterMixin, viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsPortalUser]
-    from apps.crm.models import Deal
-    from apps.crm.serializers import DealSerializer
-    queryset = Deal.objects.all()
-    serializer_class = DealSerializer
+    serializer_class = None  # set below after import
+
+    def get_queryset(self):
+        from apps.crm.models import Deal
+        return Deal.objects.filter(
+            tenant_id=self.request.tenant_id,
+            is_deleted=False,
+        )
+
+    def get_serializer_class(self):
+        from apps.crm.serializers import DealSerializer
+        return DealSerializer
 
 class PortalBillingInvoiceViewSet(PortalFilterMixin, viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsPortalUser]
-    queryset = BillingInvoice.objects.all()
     serializer_class = BillingInvoiceSerializer
+
+    def get_queryset(self):
+        return BillingInvoice.objects.filter(
+            tenant_id=self.request.tenant_id,
+            is_deleted=False,
+        )

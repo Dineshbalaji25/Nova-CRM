@@ -49,6 +49,9 @@ class OAuthApplicationSerializer(serializers.ModelSerializer):
             'created_at'
         )
         read_only_fields = ('id', 'client_id', 'client_secret', 'created_at')
+        extra_kwargs = {
+            'client_secret': {'write_only': True},
+        }
 
     def validate_allowed_scopes(self, value):
         invalid_scopes = [scope for scope in value if scope not in OAUTH_SCOPE_CHOICES]
@@ -86,8 +89,7 @@ class OrganizationMemberSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = OrganizationMember
-        fields = ('id', 'organization', 'role', 'joined_at', 'is_active')
-        # Note: joined_at comes from BaseModel.created_at
+        fields = ('id', 'organization', 'role', 'created_at', 'is_active')
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 

@@ -3,6 +3,12 @@ from django.utils.deprecation import MiddlewareMixin
 from django.urls import resolve
 from .models import AuditLog
 
+SENSITIVE_KEYS = frozenset({
+    'password', 'client_secret', 'access_token', 'refresh_token',
+    'api_key', 'auth_token', 'webhook_secret', 'key', 'secret',
+    'token', 'cvv', 'card_number',
+})
+
 class AuditMiddleware(MiddlewareMixin):
     """
     Automatic auditing of write operations (POST, PUT, PATCH, DELETE).
@@ -46,13 +52,17 @@ class AuditMiddleware(MiddlewareMixin):
             
             changes = {}
             if request.method in ('POST', 'PUT', 'PATCH'):
-                # Very naive sensitive data masking
-                try:
-                    payload = json.loads(request.body) if request.body else {}
-                    cleaned_changes = {k: v for k, v in payload.items() if 'password' not in k}
-                    changes = {'payload': cleaned_changes}
-                except:
-                    pass
+                content_type = request.content_type or ''
+                if 'application/json' in content_type:
+                    try:
+                        payload = json.loads(request.body) if request.body else {}
+                        cleaned_changes = {
+                            k: '***' if any(s in k.lower() for s in SENSITIVE_KEYS) else v
+                            for k, v in payload.items()
+                        }
+                        changes = {'payload': cleaned_changes}
+                    except (json.JSONDecodeError, UnicodeDecodeError, ValueError):
+                        pass
 
             AuditLog.objects.create(
                 tenant_id=tenant_id,

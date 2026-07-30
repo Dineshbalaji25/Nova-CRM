@@ -12,7 +12,7 @@ class PhoneIntegration(TenantAwareModel):
     name = models.CharField(max_length=100) # e.g. "Primary Twilio Account"
     provider = models.CharField(max_length=50, default='twilio')
     account_sid = models.CharField(max_length=255)
-    auth_token = models.CharField(max_length=255)
+    auth_token = EncryptedCharField(max_length=255)
     phone_number = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
 
@@ -44,6 +44,7 @@ class CallLog(TenantAwareModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     lead = models.ForeignKey(Lead, on_delete=models.SET_NULL, null=True, blank=True)
     contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True, blank=True)
+    deal = models.ForeignKey(Deal, on_delete=models.SET_NULL, null=True, blank=True, related_name='calls')
     
     notes = models.TextField(blank=True)
 

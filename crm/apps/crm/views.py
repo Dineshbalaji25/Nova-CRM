@@ -22,6 +22,13 @@ class BaseTenantViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 
     def get_queryset(self):
+        from rest_framework.exceptions import PermissionDenied
+        if not getattr(self.request, 'tenant_id', None):
+            raise PermissionDenied(
+                'Tenant context is required. '
+                'Provide the X-Tenant-ID header with your organization ID.'
+            )
+
         model = self.queryset.model
         kwargs = {}
         
@@ -113,18 +120,33 @@ class ContactViewSet(BaseTenantViewSet):
 
     @action(detail=False, methods=['post'], url_path='import-csv')
     def import_csv(self, request):
+        from apps.billing.services import BillingService
+
         file = request.FILES.get('file')
         if not file:
             return Response({'error': 'No file provided'}, status=400)
-        
+
+        # Guard: file size limit (5MB)
+        MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+        if file.size > MAX_FILE_SIZE:
+            return Response(
+                {'error': 'File too large. Maximum allowed size is 5MB.'},
+                status=400
+            )
+
         try:
             decoded_file = file.read().decode('utf-8')
             io_string = io.StringIO(decoded_file)
             reader = csv.DictReader(io_string)
-            
+
             contacts_to_create = []
             for row in reader:
-                # Basic mapping: first_name, last_name, email, phone
+                # Guard: row count limit
+                if len(contacts_to_create) >= 10000:
+                    return Response(
+                        {'error': 'Too many rows. Maximum allowed is 10,000 contacts per import.'},
+                        status=400
+                    )
                 contact = Contact(
                     tenant_id=request.tenant_id,
                     owner=request.user,
@@ -134,9 +156,29 @@ class ContactViewSet(BaseTenantViewSet):
                     phone=row.get('phone', ''),
                 )
                 contacts_to_create.append(contact)
-            
+
+            if not contacts_to_create:
+                return Response({'error': 'No valid rows found in CSV.'}, status=400)
+
+            # Guard: check billing limit before creating
+            allowed, reason = BillingService.check_limit(
+                request.tenant_id, 'contacts', increment=len(contacts_to_create)
+            )
+            if not allowed:
+                return Response(
+                    {'error': f'Import blocked: {reason}'},
+                    status=402
+                )
+
             Contact.objects.bulk_create(contacts_to_create)
-            return Response({'message': f'Successfully imported {len(contacts_to_create)} contacts'})
+            return Response({
+                'message': f'Successfully imported {len(contacts_to_create)} contacts'
+            })
+        except UnicodeDecodeError:
+            return Response(
+                {'error': 'File encoding not supported. Please upload a UTF-8 encoded CSV.'},
+                status=400
+            )
         except Exception as e:
             return Response({'error': str(e)}, status=400)
 

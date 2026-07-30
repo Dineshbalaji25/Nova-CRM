@@ -19,7 +19,7 @@ class EmailProcessor:
         tenant_id = email_msg.integration.tenant_id
         
         # 1. Try to find a Contact
-        contact = Contact.objects.filter(tenant_id=tenant_id, email=from_email).first()
+        contact = Contact.objects.filter(tenant_id=tenant_id, email=from_email, is_deleted=False).first()
         if contact:
             email_msg.contact = contact
             email_msg.save()
@@ -27,7 +27,7 @@ class EmailProcessor:
             return
             
         # 2. Try to find a Lead
-        lead = Lead.objects.filter(tenant_id=tenant_id, email=from_email).first()
+        lead = Lead.objects.filter(tenant_id=tenant_id, email=from_email, is_deleted=False).first()
         if lead:
             email_msg.lead = lead
             email_msg.save()
@@ -62,7 +62,11 @@ class OmnichannelService:
         filter_kwargs = {f"{entity_type}_id": entity_id, "tenant_id": tenant_id}
         
         emails = EmailMessage.objects.filter(**filter_kwargs)
-        calls = CallLog.objects.filter(**filter_kwargs)
+        try:
+            calls = CallLog.objects.filter(**filter_kwargs)
+        except Exception:
+            # The entity_type field may not exist on CallLog (e.g. 'deal' before migration)
+            calls = CallLog.objects.none()
         
         timeline = []
         

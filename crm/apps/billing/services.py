@@ -56,8 +56,35 @@ class BillingService:
     @staticmethod
     def record_usage(tenant_id, metric, count=1):
         """
-        Async helper to increment usage.
+        Atomically increments usage counter for a metric in the current billing period.
+        Uses F() expressions to avoid race conditions.
         """
-        # Would typically be a Celery task
-        # UsageRecord.objects.F('count') + count
-        pass
+        from django.db.models import F
+        from datetime import timedelta
+
+        now = timezone.now()
+        start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        # Calculate end of month
+        if now.month == 12:
+            end_of_month = start_of_month.replace(year=now.year + 1, month=1)
+        else:
+            end_of_month = start_of_month.replace(month=now.month + 1)
+
+        # Try atomic increment first
+        updated = UsageRecord.objects.filter(
+            tenant_id=tenant_id,
+            metric=metric,
+            period_start=start_of_month,
+        ).update(count=F('count') + count)
+
+        if not updated:
+            # Record doesn't exist yet — create it
+            UsageRecord.objects.get_or_create(
+                tenant_id=tenant_id,
+                metric=metric,
+                period_start=start_of_month,
+                defaults={
+                    'count': count,
+                    'period_end': end_of_month,
+                }
+            )

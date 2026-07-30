@@ -51,5 +51,8 @@ class PortalFilterMixin:
                     queryset = queryset.filter(contact=contact)
                 elif hasattr(model, 'company') and contact.company:
                     queryset = queryset.filter(company=contact.company)
-                    
-        return queryset
+
+            return queryset
+
+        # No portal membership found — deny access by returning empty queryset
+        return queryset.none()

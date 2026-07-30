@@ -16,6 +16,12 @@ class Workflow(TenantAwareModel):
     # Configuration for the trigger.
     # Ex: {"event": "deal.created", "filters": {"pipeline_id": 1}}
     trigger_config = models.JSONField(default=dict)
+
+    # Tracks when this workflow was last executed (for scheduled workflows)
+    last_executed_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text='Last time this scheduled workflow was triggered'
+    )
     
     def __str__(self):
         return self.name
