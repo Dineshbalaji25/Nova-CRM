@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "buildCommand": "cd crm && bash build.sh",
+  "builds": [
+    {
+      "src": "crm/api/index.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/crm/staticfiles/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "crm/api/index.py"
+    }
+  ]
+}

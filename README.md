@@ -1,3 +1,13 @@
+---
+title: Nova CRM
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Nova CRM — World-Class Enterprise CRM
 
 ![Nova CRM Dashboard](crm/static/img/auth-bg.png)

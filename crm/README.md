@@ -1,3 +1,13 @@
+---
+title: Nova CRM
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Antigravity CRM (SaaS)
 
 A modern, API-first, multi-tenant CRM built with Django, DRF, and Vanilla JS.

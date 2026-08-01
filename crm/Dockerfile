@@ -40,14 +40,16 @@ RUN pip install --no-cache /wheels/*
 # Copy project code
 COPY . .
 
-# Create non-root user
-RUN addgroup --system app && adduser --system --group app
-RUN chown -R app:app /app
+# Expose Hugging Face Space port 7860 and standard port 8000
+EXPOSE 7860
+EXPOSE 8000
+
+ENV PORT=7860
+
+# Ensure entrypoint is executable
+RUN chmod +x /app/entrypoint.sh
 
 USER app
 
-# Expose port (Documentation only)
-EXPOSE 8000
-
-# Default command (overridden by compose)
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Default command uses entrypoint.sh to migrate, collectstatic, and run Gunicorn
+CMD ["/app/entrypoint.sh"]
