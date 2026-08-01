@@ -118,14 +118,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 import dj_database_url
 
-# Database configuration with Postgres/SQLite fallback
+# Database configuration with Neon PostgreSQL / SQLite fallback
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
+    is_neon_db = 'neon.tech' in DATABASE_URL
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
-            conn_max_age=600,
+            conn_max_age=env.int('DATABASE_CONN_MAX_AGE', default=600),
             conn_health_checks=True,
+            ssl_require=env.bool('DATABASE_SSL_REQUIRE', default=is_neon_db or not DEBUG),
         )
     }
 else:

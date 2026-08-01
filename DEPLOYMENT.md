@@ -70,7 +70,19 @@ In your Vercel Project Dashboard (**Settings -> Environment Variables**), add:
 
 ---
 
-## 3. Architecture & Static Assets Notes
+## 3. Neon PostgreSQL Database Setup 🐘
+
+Nova CRM natively supports **Neon Serverless PostgreSQL** with SSL requirements and connection pooling.
+
+### Steps to connect Neon DB:
+1. Create a database on [Neon.tech](https://neon.tech).
+2. Copy your connection string from the Neon dashboard (e.g. `postgresql://neondb_owner:password@ep-cool-name-123456.us-east-2.aws.neon.tech/neondb?sslmode=require`).
+3. Add `DATABASE_URL` to your environment variables on **Vercel** or **Hugging Face Spaces**.
+4. The application automatically detects Neon DB hostnames (`*.neon.tech`) and enforces SSL (`ssl_require=True`) and connection pooling (`conn_max_age=600`).
+
+---
+
+## 4. Architecture & Static Assets Notes
 
 - **Static Files**: Managed automatically using `WhiteNoise`. When deploying, `collectstatic` compiles assets to `staticfiles/`.
 - **Database**: Production deployments on Hugging Face or Vercel recommended to use hosted PostgreSQL (e.g., [Neon.tech](https://neon.tech), [Supabase](https://supabase.com), or AWS RDS).
