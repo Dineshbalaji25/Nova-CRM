@@ -21,7 +21,8 @@ if not _secret_key:
 SECRET_KEY = _secret_key
 JWT_SECRET_KEY = env('JWT_SECRET_KEY', default=SECRET_KEY)
 DEBUG = env.bool('DEBUG', default=False)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', '.vercel.app', '.hf.space', '.hf.co', '*'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', '.vercel.app', '.hf.space', '.hf.co'])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['https://*.hf.space', 'https://*.vercel.app'])
 
 # Security settings — secure by default, overridable via .env for local dev
 SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=not DEBUG)
@@ -30,6 +31,7 @@ CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=not DEBUG)
 SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)
 SESSION_COOKIE_HTTPONLY = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 INSTALLED_APPS = [
@@ -119,7 +121,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 import dj_database_url
 
 # Database configuration with Neon PostgreSQL / SQLite fallback
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
 if DATABASE_URL:
     is_neon_db = 'neon.tech' in DATABASE_URL
     DATABASES = {
@@ -132,7 +134,10 @@ if DATABASE_URL:
     }
 else:
     DATABASES = {
-        'default': env.db('DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
 
 # Password validation

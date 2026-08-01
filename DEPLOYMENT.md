@@ -31,6 +31,7 @@ In your Hugging Face Space settings under **Variables and Secrets**, add the fol
 | `ALLOWED_HOSTS` | `*.hf.space,localhost` | Allowed domain names |
 | `DEBUG` | `False` | Turn off debug mode in production |
 | `DATABASE_URL` | `postgres://user:pass@host:5432/dbname` | Managed PostgreSQL DB (Neon/Supabase) |
+| `FIELD_ENCRYPTION_KEY` | `Fernet key (32 url-safe base64 bytes)` | Model field encryption key (Generate with `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`) |
 
 > **Note**: If `DATABASE_URL` is omitted, the application will automatically fall back to an internal SQLite database for quick evaluation.
 
@@ -67,6 +68,7 @@ In your Vercel Project Dashboard (**Settings -> Environment Variables**), add:
 | `ALLOWED_HOSTS` | `.vercel.app,localhost` | Allowed host patterns |
 | `DEBUG` | `False` | Production mode |
 | `DATABASE_URL` | `postgres://user:pass@ep-xyz.neon.tech/neondb` | External PostgreSQL Database |
+| `FIELD_ENCRYPTION_KEY` | `Fernet key (32 url-safe base64 bytes)` | Model field encryption key |
 
 ---
 

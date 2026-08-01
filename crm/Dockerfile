@@ -40,6 +40,8 @@ RUN pip install --no-cache /wheels/*
 # Copy project code
 COPY . .
 
+RUN addgroup --system app && adduser --system --group app && chown -R app:app /app
+
 # Expose Hugging Face Space port 7860 and standard port 8000
 EXPOSE 7860
 EXPOSE 8000
